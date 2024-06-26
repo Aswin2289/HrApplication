@@ -31,11 +31,12 @@ public class CommonUtils {
     Leave.Status.ACCEPTED_BY_HR.value, Leave.Status.ACCEPTED.value
   };
   private final byte[] leaveAddedStatus = {Leave.Status.ADDED.value};
-  private final Integer[] userRole = {1, 2};
+  private final Integer[] userRole = {1, 2,4};
   private final Integer[] adminRole = { 1};
+  private final Integer[] hodRole = { 4};
 
   private final Integer[] userRoleCheck = {3};
-  private final Integer[] userAllRoleCheck = {1, 2, 3};
+  private final Integer[] userAllRoleCheck = {1, 2, 3 ,4};
 
   public UserDetails getCurrentUser() {
     return SecurityUtils.getCurrentUserDetails();
@@ -66,6 +67,19 @@ public class CommonUtils {
       User user =
               userRepository
                       .findByEmployeeIdAndStatusInAndRoleIdIn(username, userStatus, adminRole)
+                      .orElseThrow(
+                              () ->
+                                      new BadRequestException(
+                                              messageSource.getMessage("ACCESS_DENIED", null, Locale.ENGLISH)));
+    }
+  }
+  public void validateHod() {
+    UserDetails currentUser = getCurrentUser();
+    if (currentUser != null) {
+      String username = currentUser.getUsername();
+      User user =
+              userRepository
+                      .findByEmployeeIdAndStatusInAndRoleIdIn(username, userStatus, hodRole)
                       .orElseThrow(
                               () ->
                                       new BadRequestException(
@@ -175,37 +189,70 @@ public class CommonUtils {
     List<Leave> leaves = leaveRepository.findLeavesByCriteria(user, leaveTypeIds, transactionType, status);
     return leaves.stream().mapToInt(Leave::getDaysAdjusted).sum();
   }
-//  public boolean isTimeToAddLeaveDays(Date joiningDate) {
-//    LocalDate currentDate = LocalDate.now();
-//
-//      // Calculate the next anniversary date
-//    LocalDate nextAnniversary = joiningDate.toInstant()
-//            .atZone(ZoneId.systemDefault())
-//            .toLocalDate();
-//    while (nextAnniversary.isBefore(currentDate) || nextAnniversary.isEqual(currentDate)) {
-//      nextAnniversary = nextAnniversary.plusYears(1);
-//    }
-//    nextAnniversary = nextAnniversary.minusYears(1); // Get the last anniversary before current date
-//
-//    // Check if today is the anniversary
-//    return currentDate.isEqual(nextAnniversary);
-//  }
+
 //  public boolean isTimeToAddLeaveDays() {
 //    LocalDate currentDate = LocalDate.now();
 //    return currentDate.getDayOfMonth() == 1;
 //  }
-public boolean isTimeToAddLeaveDays(User user) {
-  LocalDate currentDate = LocalDate.now();
-  LocalDate joiningDate = user.getJoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-  LocalDate rejoiningDate = user.getRejoiningDate() != null ? user.getRejoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+//public boolean isTimeToAddLeaveDays(User user) {
+//  LocalDate currentDate = LocalDate.now();
+//  LocalDate joiningDate = user.getJoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//  LocalDate rejoiningDate = user.getRejoiningDate() != null ? user.getRejoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+//
+//  // Calculate the anniversary date of joining or rejoining
+//  LocalDate anniversaryDate = joiningDate.withYear(currentDate.getYear());
+//  if (rejoiningDate != null && rejoiningDate.isAfter(joiningDate)) {
+//    anniversaryDate = rejoiningDate.withYear(currentDate.getYear());
+//  }
+//
+//  return currentDate.isEqual(anniversaryDate);
+//}
+  public boolean isTimeToAddLeaveDays(User user, List<Leave> leaves) {
+    LocalDate currentDate = LocalDate.now();
+    LocalDate joiningDate = user.getJoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate rejoiningDate = user.getRejoiningDate() != null
+            ? user.getRejoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            : null;
 
-  // Calculate the anniversary date of joining or rejoining
-  LocalDate anniversaryDate = joiningDate.withYear(currentDate.getYear());
-  if (rejoiningDate != null && rejoiningDate.isAfter(joiningDate)) {
-    anniversaryDate = rejoiningDate.withYear(currentDate.getYear());
+    // Calculate the anniversary date of joining or rejoining
+    LocalDate anniversaryDate = joiningDate.withYear(currentDate.getYear());
+    if (rejoiningDate != null && rejoiningDate.isAfter(joiningDate)) {
+      anniversaryDate = rejoiningDate.withYear(currentDate.getYear());
+    }
+
+    if (!currentDate.isEqual(anniversaryDate)) {
+      return false;
+    }
+
+    // Check if the user is currently on leave
+    for (Leave leave : leaves) {
+      if (leave.getUser().equals(user) && leave.getStatus() == Leave.Status.ACCEPTED.value) {
+        LocalDate leaveFrom = leave.getLeaveFrom();
+        LocalDate leaveTo = leave.getLeaveTo();
+        if ((currentDate.isEqual(leaveFrom) || currentDate.isAfter(leaveFrom))
+                && (currentDate.isEqual(leaveTo) || currentDate.isBefore(leaveTo))) {
+          return false;
+        }
+      }
+    }
+
+    // Check if the user has worked a full month since the last leave
+    LocalDate lastLeaveEndDate = null;
+    for (Leave leave : leaves) {
+      if (leave.getUser().equals(user) && leave.getStatus() == Leave.Status.ACCEPTED.value
+              && (leave.getLeaveType().getId() == 1 || leave.getLeaveType().getId() == 4)) {
+        LocalDate leaveTo = leave.getLeaveTo();
+        if (lastLeaveEndDate == null || leaveTo.isAfter(lastLeaveEndDate)) {
+          lastLeaveEndDate = leaveTo;
+        }
+      }
+    }
+
+    if (lastLeaveEndDate != null && lastLeaveEndDate.plusMonths(1).isAfter(currentDate)) {
+      return false;
+    }
+
+    return true;
   }
-
-  return currentDate.isEqual(anniversaryDate);
-}
 
 }

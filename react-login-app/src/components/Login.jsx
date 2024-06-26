@@ -35,6 +35,8 @@ function Login() {
       }
       else if(localStorage.getItem('role') === '1') {
         navigate('/dashboardAdmin');
+      }else if(localStorage.getItem('role') === '4') {
+        navigate('/hodDashboard');
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errorCode) {
@@ -49,7 +51,8 @@ function Login() {
   return (
     <div className="relative h-screen">
       <ToastContainer theme='colored' autoClose={2000} stacked closeOnClick />
-      <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: "url('assets/qger_login.png')", opacity: 0.7 }} />
+      {/* , opacity: 0.6 */}
+      <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: "url('assets/WEP.png')", opacity: 0.7  }} />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-md rounded p-5 w-full max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">

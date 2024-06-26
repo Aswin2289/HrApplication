@@ -58,10 +58,14 @@ public class SchedulerServiceImpl implements SchedulerService {
   @Override
   @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
   public void addYearlyLeaveDaysScheduler() {
-    System.out.println("Executing monthly leave addition task...");
+    System.out.println("Executing yearly leave addition task...");
     List<User> users = userRepository.findAllByStatusIn(userStatus);
+    byte[] status={Leave.Status.ACCEPTED.value};
+    byte transaction=Leave.TransactionType.SUBTRACT.value;
+    List<Long> leaveTypeIds = Arrays.asList(1L, 2L);
     for (User user : users) {
-      if (commonUtils.isTimeToAddLeaveDays(user)) {
+      List<Leave> leaves = leaveRepository.findByUserAndStatusInAndTransactionTypeAndLeaveTypeIdIn(user,status,transaction,leaveTypeIds); // Assuming leaveRepository is available
+      if (commonUtils.isTimeToAddLeaveDays(user, leaves)) {
         LeaveUpdateDTO leaveUpdateDTO = new LeaveUpdateDTO();
         leaveUpdateDTO.setUser(Math.toIntExact(user.getId()));
         leaveUpdateDTO.setLeaveType(1); // Assuming 1 is the ID for the leave type

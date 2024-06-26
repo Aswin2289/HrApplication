@@ -22,6 +22,7 @@ import AllAcceptedLeaveRequestPage from "../pages/Admin/all-accepted-leave-reque
 import PendingApplicationPage from "../pages/Employee/pending-application-page";
 import PDFViewPage from "../pages/pdf-view-page";
 import HodDashboardPage from "../pages/hod/hod-dashboard-page";
+import AllPendingHodLeaveRequestPage from "../pages/hod/all-pending-hod-leave-request-page";
 
 function RouterComponent() {
   const { isAuthenticated, getUserDetails } = useAuth();
@@ -36,10 +37,9 @@ function RouterComponent() {
         return <Navigate to="/employeeDashboard" />;
       } else if (role === 1) {
         return <Navigate to="/dashboardAdmin" />;
-      }else if (role === 4) {
+      } else if (role === 4) {
         return <Navigate to="/hodDashboard" />;
-      }
-      else{
+      } else {
         return <Navigate to="/login" />;
       }
     }
@@ -57,18 +57,23 @@ function RouterComponent() {
       />
       <Route
         path="/addEmployee"
-        element={<AuthGuard element={<AddEmployeePage />} allowedRoles={[1,2]} />}
+        element={
+          <AuthGuard element={<AddEmployeePage />} allowedRoles={[1, 2]} />
+        }
       />
       <Route
         path="/listEmployee"
         element={
-          <AuthGuard element={<ListEmployeePage />} allowedRoles={[1,2]} />
+          <AuthGuard element={<ListEmployeePage />} allowedRoles={[1, 2, 4]} />
         }
       />
       <Route
         path="/employeeDetail"
         element={
-          <AuthGuard element={<EmployeeDetailPage />} allowedRoles={[1,2]} />
+          <AuthGuard
+            element={<EmployeeDetailPage />}
+            allowedRoles={[1, 2, 4]}
+          />
         }
       />
       <Route
@@ -83,14 +88,15 @@ function RouterComponent() {
       <Route
         path="/employeeLeaveList"
         element={
-          <AuthGuard element={<EmployeeLeaveListPage />} allowedRoles={[1,2]} />
+          <AuthGuard
+            element={<EmployeeLeaveListPage />}
+            allowedRoles={[1, 2]}
+          />
         }
       />
       <Route
         path="/pdfview"
-        element={
-          <AuthGuard element={<PDFViewPage />} allowedRoles={[1,2]} />
-        }
+        element={<AuthGuard element={<PDFViewPage />} allowedRoles={[1, 2]} />}
       />
       {/* Employee routers added below */}
       <Route
@@ -102,39 +108,49 @@ function RouterComponent() {
       <Route
         path="/addLeave"
         element={
-          <AuthGuard element={<AddLeavePage />} allowedRoles={[1, 2, 3]} />
+          <AuthGuard element={<AddLeavePage />} allowedRoles={[1, 2, 3, 4]} />
         }
       />
       <Route
         path="/pendingLeaves"
         element={
-          <AuthGuard element={<PendingLeavePage />} allowedRoles={[1, 2, 3]} />
+          <AuthGuard
+            element={<PendingLeavePage />}
+            allowedRoles={[1, 2, 3, 4]}
+          />
         }
       />
       <Route
         path="/approvedLeaves"
         element={
-          <AuthGuard element={<ApprovedLeavePage />} allowedRoles={[1, 2, 3]} />
+          <AuthGuard
+            element={<ApprovedLeavePage />}
+            allowedRoles={[1, 2, 3, 4]}
+          />
         }
       />
       <Route
         path="/rejectedLeaves"
         element={
-          <AuthGuard element={<RejectedLeavePage />} allowedRoles={[1, 2, 3]} />
+          <AuthGuard
+            element={<RejectedLeavePage />}
+            allowedRoles={[1, 2, 3, 4]}
+          />
         }
       />
       <Route
         path="/pendingApplication"
         element={
-          <AuthGuard element={<PendingApplicationPage />} allowedRoles={[1, 2, 3]} />
+          <AuthGuard
+            element={<PendingApplicationPage />}
+            allowedRoles={[1, 2, 3, 4]}
+          />
         }
       />
       {/* Super ADmin routers added below */}
       <Route
         path="/dashboardAdmin"
-        element={
-          <AuthGuard element={<DashboardAdmin />} allowedRoles={[1]} />
-        }
+        element={<AuthGuard element={<DashboardAdmin />} allowedRoles={[1]} />}
       />
       <Route
         path="/allPendingLeaveRequest"
@@ -154,11 +170,20 @@ function RouterComponent() {
           />
         }
       />
-       {/* Super ADmin routers added below */}
-       <Route
+      {/* HOD routers added below */}
+      <Route
         path="/hodDashboard"
         element={
           <AuthGuard element={<HodDashboardPage />} allowedRoles={[4]} />
+        }
+      />
+      <Route
+        path="/allpendingrequesthod"
+        element={
+          <AuthGuard
+            element={<AllPendingHodLeaveRequestPage />}
+            allowedRoles={[4]}
+          />
         }
       />
       <Route path="*" element={<NotFound />} />

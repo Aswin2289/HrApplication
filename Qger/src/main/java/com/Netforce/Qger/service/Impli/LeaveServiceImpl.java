@@ -16,7 +16,6 @@ import com.Netforce.Qger.security.SecurityUtils;
 import com.Netforce.Qger.security.TokenManager;
 import com.Netforce.Qger.service.LeaveService;
 import com.Netforce.Qger.util.CommonUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -55,22 +54,24 @@ public class LeaveServiceImpl implements LeaveService {
     User user = commonUtils.validateAllUser();
     int eligibleYears = user.getYearStatus();
 
-    List<LeaveType> leaveTypes = leaveTypeRepository.findAllByStatusOrderByOrderCount(LeaveType.Status.ACTIVE.value);
+    List<LeaveType> leaveTypes =
+        leaveTypeRepository.findAllByStatusOrderByOrderCount(LeaveType.Status.ACTIVE.value);
 
     // Filter leave types based on eligibleYears using ids
     return new ArrayList<>(leaveTypes);
   }
+
   @Override
   public List<LeaveType> getAllLeaveTypesHr() {
     User user = commonUtils.validateAllUser();
     int eligibleYears = user.getYearStatus();
 
-    List<LeaveType> leaveTypes = leaveTypeRepository.findAllByStatusOrderByOrderCount(LeaveType.Status.ACTIVE.value);
+    List<LeaveType> leaveTypes =
+        leaveTypeRepository.findAllByStatusOrderByOrderCount(LeaveType.Status.ACTIVE.value);
 
     // Filter leave types based on eligibleYears using ids
     return leaveTypes;
   }
-
 
   @Override
   public void applyLeave(LeaveRequestDTO leaveRequestDTO) {
@@ -134,8 +135,8 @@ public class LeaveServiceImpl implements LeaveService {
 
     leaveRequestDTO.setTransactionType(Leave.TransactionType.SUBTRACT.value);
     if (getAvailableLeave(user) > 0) {
-        leaveRequestDTO.setStatus(Leave.Status.PENDING.value);
-            leaveRepository.save(new Leave(leaveRequestDTO, user, leaveType));
+      leaveRequestDTO.setStatus(Leave.Status.PENDING.value);
+      leaveRepository.save(new Leave(leaveRequestDTO, user, leaveType));
     } else {
       throw new BadRequestException(
           messageSource.getMessage("INSUFFICIENT_LEAVE_BALANCE", null, Locale.ENGLISH));
@@ -148,7 +149,7 @@ public class LeaveServiceImpl implements LeaveService {
 
   @Override
   public PagedResponseDTO<LeavePendingResponseDTO> getLeavePendingResponse(
-      Integer page, Integer size, String sort, String order, byte[] status,byte transactionType) {
+      Integer page, Integer size, String sort, String order, byte[] status, byte transactionType) {
 
     boolean orderD = !order.equalsIgnoreCase("asc");
     User user = commonUtils.validateAllUser();
@@ -208,7 +209,7 @@ public class LeaveServiceImpl implements LeaveService {
 
   @Override
   public PagedResponseDTO<LeavePendingResponseDTO> getAllForHrLeavePendingResponse(
-      Integer page, Integer size, String sort, String order, byte[] status,byte[] department) {
+      Integer page, Integer size, String sort, String order, byte[] status, byte[] department) {
 
     boolean orderD = !order.equalsIgnoreCase("asc");
     User user = commonUtils.validateAllUser();
@@ -221,7 +222,7 @@ public class LeaveServiceImpl implements LeaveService {
         PageRequest.of(page - 1, size, (orderD) ? Sort.Direction.DESC : Sort.Direction.ASC, sort);
     Page<Leave> leavePage =
         leaveRepository.findAllByStatusInAndTransactionTypeAndUserDepartmentIn(
-            status, Leave.TransactionType.SUBTRACT.value,department, pageable);
+            status, Leave.TransactionType.SUBTRACT.value, department, pageable);
 
     List<LeavePendingResponseDTO> pendingResponses =
         leavePage.getContent().stream()
@@ -259,17 +260,18 @@ public class LeaveServiceImpl implements LeaveService {
     leave.setStatus(Leave.Status.REJECTED.value);
     leaveRepository.save(leave);
   }
+
   @Override
   public void rejectAcceptedLeaveRequest(Integer id) {
     commonUtils.validateHR();
     byte status = Leave.Status.ACCEPTED.value;
     Leave leave =
-            leaveRepository
-                    .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
-                    .orElseThrow(
-                            () ->
-                                    new BadRequestException(
-                                            messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
     leave.setStatus(Leave.Status.REJECTED.value);
     leaveRepository.save(leave);
   }
@@ -359,14 +361,14 @@ public class LeaveServiceImpl implements LeaveService {
   @Override
   public void adminRejectLeaveRequest(Integer id) {
     commonUtils.validateAdmin();
-    byte status = Leave.Status.PENDING.value;
+    byte status = Leave.Status.ACCEPTED_BY_HR.value;
     Leave leave =
-            leaveRepository
-                    .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
-                    .orElseThrow(
-                            () ->
-                                    new BadRequestException(
-                                            messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
     leave.setStatus(Leave.Status.REJECTED.value);
     leaveRepository.save(leave);
   }
@@ -376,43 +378,103 @@ public class LeaveServiceImpl implements LeaveService {
     commonUtils.validateAdmin();
     byte status = Leave.Status.PENDING.value;
     Leave leave =
-            leaveRepository
-                    .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
-                    .orElseThrow(
-                            () ->
-                                    new BadRequestException(
-                                            messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
     byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
     Integer userId = Math.toIntExact(leave.getUser().getId());
     User user =
-            userRepository
-                    .findByIdAndStatusIn(userId, userStatus)
-                    .orElseThrow(
-                            () ->
-                                    new BadRequestException(
-                                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+        userRepository
+            .findByIdAndStatusIn(userId, userStatus)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
     if (getAvailableLeave(user) >= leave.getDaysAdjusted()) {
       leave.setStatus(Leave.Status.ACCEPTED.value);
       leaveRepository.save(leave);
     } else {
       throw new BadRequestException(
-              messageSource.getMessage("INSUFFICIENT_LEAVE_BALANCE", null, Locale.ENGLISH));
+          messageSource.getMessage("INSUFFICIENT_LEAVE_BALANCE", null, Locale.ENGLISH));
     }
   }
 
   @Override
   public void adminDeleteLeaveRequest(Integer id) {
     commonUtils.validateAdmin();
-    byte status = Leave.Status.PENDING.value;
+    byte status = Leave.Status.ACCEPTED_BY_HR.value;
     Leave leave =
-            leaveRepository
-                    .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
-                    .orElseThrow(
-                            () ->
-                                    new BadRequestException(
-                                            messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
 
     leave.setStatus(Leave.Status.DELETED.value);
     leaveRepository.save(leave);
+  }
+
+  @Override
+  public void hodRejectLeaveRequest(Integer id) {
+    commonUtils.validateHod();
+    byte status = Leave.Status.PENDING.value;
+    Leave leave =
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+    leave.setStatus(Leave.Status.REJECTED.value);
+    leaveRepository.save(leave);
+  }
+
+  @Override
+  public void hodDeleteLeaveRequest(Integer id) {
+    commonUtils.validateHod();
+    byte status = Leave.Status.PENDING.value;
+    Leave leave =
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+
+    leave.setStatus(Leave.Status.DELETED.value);
+    leaveRepository.save(leave);
+  }
+
+  @Override
+  public void hodAcceptLeaveRequest(Integer id) {
+    commonUtils.validateHod();
+    byte status = Leave.Status.PENDING.value;
+    Leave leave =
+        leaveRepository
+            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("LEAVE_NOT_FOUND", null, Locale.ENGLISH)));
+    byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
+    Integer userId = Math.toIntExact(leave.getUser().getId());
+    User user =
+        userRepository
+            .findByIdAndStatusIn(userId, userStatus)
+            .orElseThrow(
+                () ->
+                    new BadRequestException(
+                        messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+    if (getAvailableLeave(user) >= leave.getDaysAdjusted()) {
+      leave.setStatus(Leave.Status.ACCEPTED.value);
+      leaveRepository.save(leave);
+    } else {
+      throw new BadRequestException(
+          messageSource.getMessage("INSUFFICIENT_LEAVE_BALANCE", null, Locale.ENGLISH));
+    }
   }
 }

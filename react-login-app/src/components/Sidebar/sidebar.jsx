@@ -515,7 +515,7 @@ function Sidebar() {
                   </li>
                   <li className="py-2 cursor-pointer">
                     <NavLink
-                      to="/pendingAllEmployeeLeave"
+                      to="/allpendingrequesthod"
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >

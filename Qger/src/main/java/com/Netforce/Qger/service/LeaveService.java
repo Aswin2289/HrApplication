@@ -29,6 +29,9 @@ public interface LeaveService {
   void adminAcceptLeaveRequest(Integer id);
   void adminDeleteLeaveRequest(Integer id);
   void rejectAcceptedLeaveRequest(Integer id);
+  void hodRejectLeaveRequest(Integer id);
+  void hodDeleteLeaveRequest(Integer id);
+  void hodAcceptLeaveRequest(Integer id);
 
 
 

@@ -23,7 +23,7 @@ public interface LeaveRepository extends JpaRepository<Leave, Integer> {
 
   Page<Leave> findAllByStatusInAndTransactionTypeAndUserDepartmentIn(
       byte[] status, byte transactionType,byte[]department, Pageable pageable);
-
+List<Leave> findByUserAndStatusInAndTransactionTypeAndLeaveTypeIdIn(User user,byte[] status,byte transactionType,List<Long> leaveTypeIds);
   Optional<Leave> findByIdAndStatusAndTransactionType(Integer id, byte status, byte transaction);
   Optional<Leave> findByIdAndStatusInAndTransactionType(Integer id, byte[] status, byte transaction);
 

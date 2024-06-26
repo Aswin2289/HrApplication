@@ -106,7 +106,7 @@ public class LeaveController {
       @RequestParam(required = false, defaultValue = "asc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    byte[] status = {Leave.Status.PENDING.value};
+    byte[] status = {Leave.Status.PENDING.value, Leave.Status.ACCEPTED_BY_HOD.value};
     byte[] department ={User.Department.PRODUCTION.value, User.Department.OFFICE.value};
 
     PagedResponseDTO<LeavePendingResponseDTO> responseDTOPagedResponseDTO =
@@ -205,5 +205,18 @@ public class LeaveController {
     PagedResponseDTO<LeavePendingResponseDTO> responseDTOPagedResponseDTO =
             leaveService.getAllForHrLeavePendingResponse(page, size, sortBy, sortOrder, status,department);
     return ResponseEntity.ok(responseDTOPagedResponseDTO);
+  }
+
+  @PutMapping("/hod/rejectLeave/{id}")
+  public ResponseEntity<Object> hodRejectLeave(@PathVariable("id") Integer id) {
+    leaveService.hodRejectLeaveRequest(id);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("201", "Employee Leave Rejected"), HttpStatus.CREATED);
+  }
+  @PutMapping("/hod/deleteLeave/{id}")
+  public ResponseEntity<Object> hodDeleteLeave(@PathVariable("id") Integer id) {
+    leaveService.hodDeleteLeaveRequest(id);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
   }
 }
