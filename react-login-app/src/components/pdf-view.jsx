@@ -26,14 +26,14 @@ function PdfView() {
 
   const handleView = () => {
     if (pdfId) {
-      getPdf(pdfId);
+      getPdf(1);
     }
   };
 
   return (
     <div className="App">
       <h1>Add pdf</h1>
-      {/* <header className="App-header">
+      <header className="App-header">
         <div>
           <input type="file" onChange={handleFileChange} />
           <button onClick={handleUpload} disabled={isLoading}>
@@ -57,7 +57,7 @@ function PdfView() {
             <iframe src={pdf} width="100%" height="600px" title="PDF Viewer" />
           )}
         </div>
-      </header> */}
+      </header>
     </div>
   );
 }
