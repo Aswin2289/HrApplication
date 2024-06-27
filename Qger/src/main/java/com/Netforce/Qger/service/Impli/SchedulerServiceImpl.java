@@ -62,7 +62,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     List<User> users = userRepository.findAllByStatusIn(userStatus);
     byte[] status={Leave.Status.ACCEPTED.value};
     byte transaction=Leave.TransactionType.SUBTRACT.value;
-    List<Long> leaveTypeIds = Arrays.asList(1L, 2L);
+    List<Long> leaveTypeIds = Arrays.asList(1L, 4L);
     for (User user : users) {
       List<Leave> leaves = leaveRepository.findByUserAndStatusInAndTransactionTypeAndLeaveTypeIdIn(user,status,transaction,leaveTypeIds); // Assuming leaveRepository is available
       if (commonUtils.isTimeToAddLeaveDays(user, leaves)) {

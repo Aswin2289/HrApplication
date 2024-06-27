@@ -143,10 +143,14 @@ public class LeaveController {
   @GetMapping("/admin/pendingLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getAllAdminPendingLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    byte[] status = {Leave.Status.ACCEPTED_BY_HR.value};
+    byte[] status = {
+      Leave.Status.ACCEPTED_BY_HR.value,
+      Leave.Status.ACCEPTED_BY_HOD.value,
+      Leave.Status.PENDING.value
+    };
     byte[] department ={User.Department.PRODUCTION.value, User.Department.OFFICE.value};
 
     PagedResponseDTO<LeavePendingResponseDTO> responseDTOPagedResponseDTO =

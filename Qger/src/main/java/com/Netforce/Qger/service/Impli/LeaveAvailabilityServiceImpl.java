@@ -46,7 +46,7 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
         long daysInCompany = ChronoUnit.DAYS.between(eligibilityStartDate, currentDate);
 
         // List of relevant leave type IDs (e.g., 1 for casual leave, 2 for sick leave, 4 for leave without pay)
-        List<Long> relevantLeaveTypeIds = Arrays.asList(1L, 2L, 4L);
+        List<Long> relevantLeaveTypeIds = Arrays.asList(1L,3L, 4L);
 
         // List of relevant leave statuses (e.g., 0 for accepted)
         List<Byte> relevantStatuses = List.of((byte) 0);

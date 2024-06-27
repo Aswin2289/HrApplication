@@ -10,7 +10,7 @@ const useAddEmployee = () => {
       return axiosInstance.post('/user/add', data).then((res) => res.data);
     },
     onSuccess: () => {
-      navigate('/dashboard'); // Example: Navigate to dashboard after adding employee
+      navigate('/'); // Example: Navigate to dashboard after adding employee
     },
     onError: () => {
     },

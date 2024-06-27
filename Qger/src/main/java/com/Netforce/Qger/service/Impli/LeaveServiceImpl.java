@@ -376,10 +376,14 @@ public class LeaveServiceImpl implements LeaveService {
   @Override
   public void adminAcceptLeaveRequest(Integer id) {
     commonUtils.validateAdmin();
-    byte status = Leave.Status.PENDING.value;
+    byte[] status = {
+      Leave.Status.PENDING.value,
+      Leave.Status.ACCEPTED_BY_HR.value,
+      Leave.Status.ACCEPTED_BY_HOD.value
+    };
     Leave leave =
         leaveRepository
-            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .findByIdAndStatusInAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
             .orElseThrow(
                 () ->
                     new BadRequestException(
