@@ -304,11 +304,10 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     ITC Document
+                     View Document
                     </NavLink>
                   </li>
-                  <li className="py-2 cursor-pointer">UTC Document</li>
-                  <li className="py-2 cursor-pointer">Data Document</li>
+                  <li className="py-2 cursor-pointer">Add Documents</li>
                 </ul>
               )}
               <div

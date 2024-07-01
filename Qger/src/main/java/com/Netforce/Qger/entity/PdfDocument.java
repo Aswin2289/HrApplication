@@ -21,6 +21,8 @@ public class PdfDocument {
     @Column(columnDefinition="LONGBLOB")
     private byte[] data;
 
+    private String documentName;
+
     public  PdfDocument(String name, byte[] data) {
         this.name = name;
         this.data = data;

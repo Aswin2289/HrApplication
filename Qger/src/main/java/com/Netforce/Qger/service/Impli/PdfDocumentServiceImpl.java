@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -18,7 +19,7 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
 
     private final PdfDocumentRepository pdfDocumentRepository;
     private final MessageSource messageSource;
-    public PdfDocument savePdf(MultipartFile file) {
+    public PdfDocument savePdf(MultipartFile file,String documentName) {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new BadRequestException(
                     messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH));
@@ -28,16 +29,34 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
             PdfDocument pdfDocument = new PdfDocument();
             pdfDocument.setName(file.getOriginalFilename());
             pdfDocument.setData(file.getBytes());
+            pdfDocument.setDocumentName(documentName); // Set documentName from original filename
             return pdfDocumentRepository.save(pdfDocument);
         } catch (IOException e) {
             throw new RuntimeException("Error while processing file", e);
         }
-
     }
+
 
     @Override
     public PdfDocument getPdf(Long id) {
         return pdfDocumentRepository.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
+    }
+
+    public List<PdfDocument> getAllPdfDocuments() {
+        return pdfDocumentRepository.findAll();
+    }
+    @Override
+    public PdfDocument updatePdf(Integer id, MultipartFile file) {
+        PdfDocument existingPdf = pdfDocumentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
+
+        try {
+            existingPdf.setName(file.getOriginalFilename());
+            existingPdf.setData(file.getBytes());
+            return pdfDocumentRepository.save(existingPdf);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while updating file", e);
+        }
     }
 }

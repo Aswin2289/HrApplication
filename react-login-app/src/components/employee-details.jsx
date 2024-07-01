@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import useEmployeeDetails from "../hooks/useEmployeeDetails";
 import { useLocation } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -18,6 +18,7 @@ import * as z from "zod";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
+import useAuth from "../hooks/use-auth";
 const schema = z.object({
   leaveType: z.number().min(1, "Leave type is required"),
   days: z.string().refine((value) => /^\d+$/.test(value), {
@@ -35,6 +36,8 @@ const EmployeeDetails = () => {
   const { employeeDetails, isLoading, error } = useEmployeeDetails(employeeId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
   const {
     leaveTypes,
     isLoading: leaveTypesLoading,
@@ -88,7 +91,7 @@ const EmployeeDetails = () => {
     reset();
   };
 
-  const onSubmit = async (data,e) => {
+  const onSubmit = async (data, e) => {
     try {
       const leaveData = {
         daysUpdated: parseInt(data.days), // Assuming 'days' is a string, parse it to an integer
@@ -104,7 +107,6 @@ const EmployeeDetails = () => {
       console.error("Failed to submit leave:", error);
     }
     setIsModalOpen(false);
-
   };
   const handleRejoinVacation = () => {
     toast.success("Leave added successfully");
@@ -218,6 +220,7 @@ const EmployeeDetails = () => {
               {employeeDetails.status === 1 ? "Vacation" : "Re-joining"}
             </Button>
             <Button
+              disabled={role !== 1}
               variant="contained"
               style={{
                 textTransform: "none",
