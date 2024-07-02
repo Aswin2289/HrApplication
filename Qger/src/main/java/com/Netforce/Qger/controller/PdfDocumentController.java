@@ -1,10 +1,14 @@
 package com.Netforce.Qger.controller;
 
 import com.Netforce.Qger.entity.PdfDocument;
+import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
+import com.Netforce.Qger.entity.dto.responseDto.SuccessResponseDTO;
 import com.Netforce.Qger.service.PdfDocumentService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,10 +57,17 @@ public class PdfDocumentController {
   @PutMapping("/update/{id}")
   public ResponseEntity<String> updatePdf(
           @PathVariable Integer id,
-          @RequestParam("file") MultipartFile file
-
-  ) {
-    PdfDocument updatedDocument = pdfDocumentService.updatePdf(id, file);
+          @RequestParam(value = "file", required = false) MultipartFile file,
+          @RequestParam("documentName") String documentName) {
+    PdfDocument updatedDocument = pdfDocumentService.updatePdf(id, file, documentName);
     return ResponseEntity.ok("File updated successfully: " + updatedDocument.getName());
   }
+
+  @PutMapping("/delete/{id}")
+  public ResponseEntity<Object> deletePdf(@PathVariable Integer id) {
+    pdfDocumentService.deletePdfDocument(id);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("201", "Pdf Document Deleted Successfully"), HttpStatus.CREATED);
+  }
+
 }

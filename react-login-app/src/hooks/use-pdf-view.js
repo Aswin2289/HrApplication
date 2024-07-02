@@ -59,7 +59,7 @@ const usePdfView = () => {
       formData.append("file", file);
       formData.append("documentName", documentName);
 
-      const response = await axiosInstance.put(`/pdfdocument/${id}`, formData, {
+      const response = await axiosInstance.put(`/pdfdocument/update/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -92,6 +92,22 @@ const usePdfView = () => {
     }
   };
 
+  const deletePdf = async (id) => {
+    setIsViewLoading(true);
+    try {
+      const response = await axiosInstance.put(`/pdfdocument/delete/${id}`);
+      setIsViewLoading(false);
+      return response.data;
+    } catch (error) {
+      setIsViewLoading(false);
+      setViewError(
+        error.response && error.response.data
+          ? error.response.data.message
+          : "An error occurred while fetching the PDF."
+      );
+    }
+  };
+
   return {
     pdfList,
     isViewLoading,
@@ -101,6 +117,7 @@ const usePdfView = () => {
     updatePdf,
     getPdf,
     fetchPdfList,
+    deletePdf
   };
 };
 

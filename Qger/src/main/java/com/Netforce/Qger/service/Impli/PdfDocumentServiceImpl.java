@@ -22,14 +22,15 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
     public PdfDocument savePdf(MultipartFile file,String documentName) {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new BadRequestException(
-                    messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH));
+                    messageSource.getMessage("PDF_NOT_FOUND", null, Locale.ENGLISH));
         }
 
         try {
             PdfDocument pdfDocument = new PdfDocument();
             pdfDocument.setName(file.getOriginalFilename());
             pdfDocument.setData(file.getBytes());
-            pdfDocument.setDocumentName(documentName); // Set documentName from original filename
+            pdfDocument.setDocumentName(documentName);
+            pdfDocument.setStatus(PdfDocument.Status.ACTIVE.value);// Set documentName from original filename
             return pdfDocumentRepository.save(pdfDocument);
         } catch (IOException e) {
             throw new RuntimeException("Error while processing file", e);
@@ -39,24 +40,41 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
 
     @Override
     public PdfDocument getPdf(Long id) {
-        return pdfDocumentRepository.findById(Math.toIntExact(id))
+        return pdfDocumentRepository.findByIdAndStatus(Math.toIntExact(id),PdfDocument.Status.ACTIVE.value)
                 .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
     }
 
     public List<PdfDocument> getAllPdfDocuments() {
-        return pdfDocumentRepository.findAll();
+        return pdfDocumentRepository.findAllByStatus(PdfDocument.Status.ACTIVE.value);
     }
     @Override
-    public PdfDocument updatePdf(Integer id, MultipartFile file) {
-        PdfDocument existingPdf = pdfDocumentRepository.findById(id)
+    public PdfDocument updatePdf(Integer id, MultipartFile file, String docName) {
+        PdfDocument existingPdf = pdfDocumentRepository.findByIdAndStatus(id, PdfDocument.Status.ACTIVE.value)
                 .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
 
         try {
-            existingPdf.setName(file.getOriginalFilename());
-            existingPdf.setData(file.getBytes());
+            if (file != null && !file.isEmpty()) {
+                existingPdf.setName(file.getOriginalFilename());
+                existingPdf.setData(file.getBytes());
+            }
+            existingPdf.setDocumentName(docName);
             return pdfDocumentRepository.save(existingPdf);
         } catch (IOException e) {
             throw new RuntimeException("Error while updating file", e);
         }
+    }
+
+
+    @Override
+    public void deletePdfDocument(long id){
+        System.out.println("---------+"+id);
+        PdfDocument existingPdf = pdfDocumentRepository.findByIdAndStatus(id,PdfDocument.Status.ACTIVE.value)
+                .orElseThrow(
+                        () ->
+                                new BadRequestException(
+                                        messageSource.getMessage("PDF_NOT_FOUND", null, Locale.ENGLISH)));
+        existingPdf.setStatus(PdfDocument.Status.INACTIVE.value);
+        pdfDocumentRepository.save(existingPdf);
+
     }
 }

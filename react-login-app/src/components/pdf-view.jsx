@@ -17,6 +17,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
 
+
 const schema = z.object({
   documentName: z.string().min(1, "Document name is required"),
   file: z
@@ -38,10 +39,11 @@ const PdfView = () => {
     updatePdf,
     getPdf,
     fetchPdfList,
+    deletePdf,
   } = usePdfView();
   const [file, setFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDocumentType, setSelectedDocumentType] = useState("");
+  const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [pdfData, setPdfData] = useState(null);
   const {
     register,
@@ -58,33 +60,38 @@ const PdfView = () => {
     fetchPdfList();
   }, []);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      reset();
-    }
-  }, [isModalOpen, reset]);
-
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  const handleModalOpen = () => {
+  const handleModalOpen = (id = null) => {
     setIsModalOpen(true);
+    setSelectedDocumentId(id);
+    if (id) {
+      const selectedPdf = pdfList.find((pdf) => pdf.id === id);
+      if (selectedPdf) {
+        setValue("documentName", selectedPdf.documentName);
+      }
+    } else {
+      reset();
+      setValue("documentName", "");
+    }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setSelectedDocumentId(null);
     setFile(null);
     reset();
   };
 
   const onSubmit = async (data) => {
     try {
-      if (selectedDocumentType === "addNew") {
+      if (selectedDocumentId === null) {
         const response = await uploadPdf(file, data.documentName);
         console.log(response); // Handle response if needed
       } else {
-        const response = await updatePdf(selectedDocumentType, file, data.documentName);
+        const response = await updatePdf(selectedDocumentId, file, data.documentName);
         console.log(response); // Handle response if needed
       }
       toast.success("Document saved successfully");
@@ -106,14 +113,26 @@ const PdfView = () => {
     }
   };
 
+  const handleEdit = (id) => {
+    handleModalOpen(id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deletePdf(id);
+      toast.success("Document deleted successfully");
+      fetchPdfList(); // Fetch the updated list of PDF documents
+    } catch (error) {
+      toast.error("Failed to delete document");
+      console.error("Failed to delete document:", error);
+    }
+  };
+
   return (
     <div>
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      <div className="flex justify-end mb-8 ">
-        <MyButton
-          onClick={handleModalOpen}
-          disabled={isViewLoading}
-        >
+      <div className="flex justify-end mb-8">
+        <MyButton onClick={() => handleModalOpen()} disabled={isViewLoading}>
           Add Document
         </MyButton>
         {uploadError && <p className="text-red-500">Error: {uploadError}</p>}
@@ -125,6 +144,8 @@ const PdfView = () => {
             logoSrc="https://via.placeholder.com/100"
             onClickView={() => handleView(pdfDoc.id)}
             documentName={pdfDoc.documentName}
+            onEdit={() => handleEdit(pdfDoc.id)}
+            onDelete={() => handleDelete(pdfDoc.id)}
           />
         ))}
         {viewError && <p className="text-red-500">Error: {viewError}</p>}
@@ -139,34 +160,30 @@ const PdfView = () => {
       >
         <div className="bg-white p-8 rounded-lg w-96">
           <h2 id="add-document-modal-title" className="text-2xl font-bold mb-4">
-            Add Document
+            {selectedDocumentId === null ? "Add Document" : "Edit Document"}
           </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FormControl fullWidth error={!!errors.documentType}>
-              <InputLabel id="document-type-label">Document Type</InputLabel>
-              <Select
-                labelId="document-type-label"
-                id="document-type"
-                value={selectedDocumentType}
-                onChange={(e) => setSelectedDocumentType(e.target.value)}
-                label="Document Type"
-              >
-                <MenuItem value="addNew">Add New Document</MenuItem>
-                {pdfList.map((pdfDoc) => (
-                  <MenuItem key={pdfDoc.id} value={pdfDoc.id}>
-                    {pdfDoc.documentName}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.documentType && (
-                <p className="text-red-500">{errors.documentType.message}</p>
-              )}
-            </FormControl>
+            {selectedDocumentId === null && (
+              <FormControl fullWidth error={!!errors.documentType}>
+                <InputLabel id="document-type-label">Document Type</InputLabel>
+                <Select
+                  labelId="document-type-label"
+                  id="document-type"
+                  value={"addNew"}
+                  onChange={(e) => handleModalOpen()}
+                  label="Document Type"
+                  disabled={true}
+                >
+                  <MenuItem value="addNew">Add New Document</MenuItem>
+                </Select>
+              </FormControl>
+            )}
             <TextField
               id="document-name"
               label="Document Name"
               fullWidth
               error={!!errors.documentName}
+              InputLabelProps={{ shrink: true }}
               {...register("documentName")}
               helperText={
                 errors.documentName ? errors.documentName.message : null
@@ -190,7 +207,6 @@ const PdfView = () => {
         </div>
       </Modal>
 
-      {/* Add a modal or component to display the PDF */}
       {pdfData && (
         <Modal
           open={!!pdfData}
@@ -209,7 +225,14 @@ const PdfView = () => {
               width="100%"
               height="600px"
             >
-              <p>Unable to display PDF file. This browser may not support embedded PDFs. Please download the file to view it: <a href={`data:application/pdf;base64,${pdfData}`}>Download PDF</a>.</p>
+              <p>
+                Unable to display PDF file. This browser may not support
+                embedded PDFs. Please download the file to view it:{" "}
+                <a href={`data:application/pdf;base64,${pdfData}`}>
+                  Download PDF
+                </a>
+                .
+              </p>
             </object>
           </Box>
         </Modal>
