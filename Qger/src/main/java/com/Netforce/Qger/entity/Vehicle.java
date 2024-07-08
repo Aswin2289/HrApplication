@@ -1,5 +1,6 @@
 package com.Netforce.Qger.entity;
 
+import com.Netforce.Qger.entity.dto.requestDto.VehicleRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class Vehicle {
     private LocalDate istimaraDate;
 
     private long totalKilometer;
-    private String Remarks;
+    private String remarks;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,7 +41,11 @@ public class Vehicle {
     @JsonIgnoreProperties("user_id")
     private User user;
 
+
     private byte status;
+    private byte assigned;
+    private long istimaraNumber;
+    private LocalDate registrationDate;
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdDate;
@@ -64,5 +69,31 @@ public class Vehicle {
         PRIVATE((byte)0),COMMERCIAL((byte)1),TRAILER((byte)2),EQUIPMENT((byte)3),HEAVY_EQUIPMENT((byte)4);
         public final byte value;
         VehicleType(byte value){this.value=value;}
+    }
+
+    public enum Assigned{
+        ASSIGNED((byte)0),NOT_ASSIGNED((byte)1),CANT_ASSIGNED((byte)2);
+        public final byte value;
+        Assigned(byte value){this.value=value;}
+    }
+
+    public Vehicle(VehicleRequestDto vehicleRequestDto){
+        this.vehicleNumber=vehicleRequestDto.getVehicleNumber();
+        this.manufactureDate=vehicleRequestDto.getManufactureDate();
+        this.vehicleType=vehicleRequestDto.getVehicleType();
+        this.modal=vehicleRequestDto.getModal();
+        this.brand=vehicleRequestDto.getBrand();
+        this.insuranceProvider=vehicleRequestDto.getInsuranceProvider();
+        this.insuranceExpire=vehicleRequestDto.getInsuranceExpire();
+        this.istimaraDate=vehicleRequestDto.getIstimaraDate();
+        this.totalKilometer=vehicleRequestDto.getTotalKilometer();
+        this.istimaraNumber=vehicleRequestDto.getIstimaraNumber();
+        this.registrationDate=vehicleRequestDto.getRegistrationDate();
+        this.remarks=vehicleRequestDto.getRemarks();
+
+        this.assigned= Assigned.NOT_ASSIGNED.value;
+        this.status=Status.ACTIVE.value;
+
+
     }
 }

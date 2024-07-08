@@ -132,7 +132,7 @@ public class LeaveController {
   public ResponseEntity<Object> deleteLeave(@PathVariable("id") Integer id) {
     leaveService.deleteLeaveRequest(id);
     return new ResponseEntity<>(
-        new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
+        new SuccessResponseDTO("201", "Employee Leave Deleted"), HttpStatus.CREATED);
   }
 
   @GetMapping("/count")
@@ -176,7 +176,7 @@ public class LeaveController {
   public ResponseEntity<Object> adminDeleteLeave(@PathVariable("id") Integer id) {
     leaveService.adminDeleteLeaveRequest(id);
     return new ResponseEntity<>(
-        new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
+        new SuccessResponseDTO("201", "Employee Leave Deleted"), HttpStatus.CREATED);
   }
 
   @GetMapping("/admin/acceptedLeave")

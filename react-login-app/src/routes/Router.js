@@ -23,6 +23,9 @@ import PendingApplicationPage from "../pages/Employee/pending-application-page";
 import PDFViewPage from "../pages/pdf-view-page";
 import HodDashboardPage from "../pages/hod/hod-dashboard-page";
 import AllPendingHodLeaveRequestPage from "../pages/hod/all-pending-hod-leave-request-page";
+import AddVehiclePage from "../pages/add-vehicle-page";
+import VehicleListPage from "../pages/vehicle-list-page";
+import VehicleDetailPage from "../pages/vehicle-detail-page";
 
 function RouterComponent() {
   const { isAuthenticated, getUserDetails } = useAuth();
@@ -144,6 +147,33 @@ function RouterComponent() {
           <AuthGuard
             element={<PendingApplicationPage />}
             allowedRoles={[1, 2, 3, 4]}
+          />
+        }
+      />
+      <Route
+        path="/addVehicle"
+        element={
+          <AuthGuard
+            element={<AddVehiclePage />}
+            allowedRoles={[1, 2]}
+          />
+        }
+      />
+      <Route
+        path="/listVehicle"
+        element={
+          <AuthGuard
+            element={<VehicleListPage />}
+            allowedRoles={[1, 2]}
+          />
+        }
+      />
+      <Route
+        path="/detailVehicle"
+        element={
+          <AuthGuard
+            element={<VehicleDetailPage />}
+            allowedRoles={[1, 2]}
           />
         }
       />

@@ -43,7 +43,6 @@ public class CommonUtils {
   }
 
   public long calculateDaysDifference(LocalDate startDate, LocalDate endDate) {
-    System.out.println(startDate + "------" + endDate);
     return ChronoUnit.DAYS.between(startDate, endDate);
   }
 

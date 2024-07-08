@@ -351,8 +351,24 @@ function Sidebar() {
               {/* Conditional rendering of the dropdown menu */}
               {dropdownVehicleOpen && (
                 <ul className="list-disc pl-5">
-                  <li className="py-2 cursor-pointer">Add vehicle</li>
-                  <li className="py-2 cursor-pointer">List vehicle</li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/addVehicle"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                     Add Vehicle
+                    </NavLink>
+                  </li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/listVehicle"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                     List Vehicle
+                    </NavLink>
+                  </li>
                 </ul>
               )}
             </React.Fragment>
