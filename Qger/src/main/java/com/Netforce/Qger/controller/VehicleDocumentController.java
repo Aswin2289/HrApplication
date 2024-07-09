@@ -41,10 +41,10 @@ public class VehicleDocumentController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updatePdf(
-            @PathVariable Integer documentId,
+            @PathVariable Integer id,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam("documentName") String documentName) {
-        VehicleDocument updatedDocument = vehicleDocumentService.updateVehicleDocument(file, documentName,documentId);
+        VehicleDocument updatedDocument = vehicleDocumentService.updateVehicleDocument(file, documentName,id);
         return ResponseEntity.ok("File updated successfully: " + updatedDocument.getName());
     }
 

@@ -76,5 +76,11 @@ public class vehicleController {
         return vehicleService.getVehicleDetail(id);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Object>updateVehicle(@PathVariable("id")Integer id,@Valid @RequestBody VehicleRequestDto vehicleRequestDto){
+        vehicleService.updateVehicle(id,vehicleRequestDto);
+        return new ResponseEntity<>(
+                new SuccessResponseDTO("201", "Vehicle Updated Successfully"), HttpStatus.CREATED);
+    }
 
 }

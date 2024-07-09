@@ -20,4 +20,6 @@ public interface VehicleService {
     void assignVehicle(Integer id, Integer userId);
     void removeAssignee(Integer id);
     VehicleResponseDTO getVehicleDetail(Integer id);
+
+    void updateVehicle(Integer id,VehicleRequestDto vehicleRequestDto);
 }

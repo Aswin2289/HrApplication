@@ -86,6 +86,7 @@ const useVehicleDocument = () => {
   const updatePdf = async (id, file, documentName) => {
     setIsUploadLoading(true);
     setUploadError(null);
+    console.log("Uploading", id, documentName);
 
     try {
       const formData = new FormData();

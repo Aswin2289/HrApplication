@@ -225,4 +225,50 @@ public class vehicleServiceImpl implements VehicleService {
         return vehicleResponseDTO;
 
     }
+
+
+    @Override
+    public void updateVehicle(Integer id,VehicleRequestDto vehicleRequestDto){
+        commonUtils.validateHR();
+        byte[] vehicleStatus={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+        Vehicle vehicle=vehicleRepository.findByIdAndStatusIn(id,vehicleStatus).orElseThrow(
+                () ->
+                        new BadRequestException(
+                                messageSource.getMessage("VEHICLE_NOT_EXIST", null, Locale.ENGLISH)));
+        if(vehicle.getManufactureDate()!=vehicleRequestDto.getManufactureDate()) {
+            if (vehicleRequestDto.getManufactureDate().isAfter(LocalDate.now())) {
+                throw new BadRequestException(
+                        messageSource.getMessage("MANUFACTURE_DATE_INVALID", null, Locale.ENGLISH));
+            }
+            vehicle.setManufactureDate(vehicleRequestDto.getManufactureDate());
+
+        }
+        if (vehicle.getInsuranceExpire()!=vehicleRequestDto.getInsuranceExpire()) {
+            if (vehicleRequestDto.getInsuranceExpire().isBefore(LocalDate.now())) {
+                throw new BadRequestException(
+                        messageSource.getMessage("INSURANCE_EXPIRE_DATE_INVALID", null, Locale.ENGLISH));
+            }
+            vehicle.setInsuranceExpire(vehicleRequestDto.getInsuranceExpire());
+
+        }
+        if (vehicle.getIstimaraDate()!=vehicleRequestDto.getIstimaraDate()) {
+            if (vehicleRequestDto.getIstimaraDate().isBefore(LocalDate.now())) {
+                throw new BadRequestException(
+                        messageSource.getMessage("ISTIMARA_DATE_INVALID", null, Locale.ENGLISH));
+            }
+            vehicle.setIstimaraDate(vehicleRequestDto.getIstimaraDate());
+            
+        }
+        vehicle.setVehicleNumber(vehicleRequestDto.getVehicleNumber());
+        vehicle.setVehicleType(vehicleRequestDto.getVehicleType());
+        vehicle.setModal(vehicleRequestDto.getModal());
+        vehicle.setBrand(vehicleRequestDto.getBrand());
+        vehicle.setInsuranceProvider(vehicleRequestDto.getInsuranceProvider());
+        vehicle.setTotalKilometer(vehicleRequestDto.getTotalKilometer());
+        vehicle.setIstimaraNumber(vehicleRequestDto.getIstimaraNumber());
+        vehicle.setRegistrationDate(vehicleRequestDto.getRegistrationDate());
+        vehicle.setRemarks(vehicleRequestDto.getRemarks());
+        vehicleRepository.save(vehicle);
+
+    }
 }

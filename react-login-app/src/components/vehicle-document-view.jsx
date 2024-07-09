@@ -55,6 +55,19 @@ const VehicleDocumentView = ({ vehicleId }) => {
     fetchPdfList(vehicleId);
     setIsModalOpen(false);
   };
+  const handleModalOpen = (id = null) => {
+    setIsModalOpen(true);
+    setSelectedDocumentId(id);
+    if (id) {
+      const selectedPdf = pdfList.find((pdf) => pdf.id === id);
+      if (selectedPdf) {
+        setValue("documentName", selectedPdf.documentName);
+      }
+    } else {
+      reset();
+      setValue("documentName", "");
+    }
+  };
 
   const onSubmit = async (data) => {
     // Handle form submission logic
@@ -127,19 +140,7 @@ const VehicleDocumentView = ({ vehicleId }) => {
       console.error("Failed to delete document:", error);
     }
   };
-  const handleModalOpen = (id = null) => {
-    setIsModalOpen(true);
-    setSelectedDocumentId(id);
-    if (id) {
-      const selectedPdf = pdfList.find((pdf) => pdf.id === id);
-      if (selectedPdf) {
-        setValue("documentName", selectedPdf.documentName);
-      }
-    } else {
-      reset();
-      setValue("documentName", "");
-    }
-  };
+  
 
   const handleEdit = (id) => {
     handleModalOpen(id);
