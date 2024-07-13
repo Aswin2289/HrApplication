@@ -17,6 +17,8 @@ function Dashboard() {
   const [passportExpire, setPassportExpire] = useState(0);
   const [licenseExpire, setLicenseExpire] = useState(0);
   const [statusRender, setStatusRender] = useState(0);
+  const [istimaraExpire, setIstimaExpire] = useState(0);
+  const [insuranceExpire, setInsuranceExpire] = useState(0);
 
   const navigate = useNavigate();
 
@@ -31,6 +33,8 @@ function Dashboard() {
       setQidExpire(totalEmployees.body.qidExpire);
       setPassportExpire(totalEmployees.body.passportExpire);
       setLicenseExpire(totalEmployees.body.licenseExpire);
+      setIstimaExpire(totalEmployees.body.istimaExpire);
+      setInsuranceExpire(totalEmployees.body.insuranceExpire);
     }
   }, [totalEmployees]);
 
@@ -97,6 +101,10 @@ function Dashboard() {
     setStatusRender(5);
     navigate('/listEmployee', { state: { statusRender:5 } });
   }
+  const handleIstimaExpire = () => {
+    setStatusRender(5);
+    navigate("/listVehicle", { state: { statusRender: 6 } });
+  };
 
   return (
     <Layout>
@@ -179,6 +187,28 @@ function Dashboard() {
             <div onClick={handleLicenseExpireeEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
               <h3 className="text-xl font-bold">License Expire</h3>
               <CardCounter value={licenseExpire} /><span> Number of persons</span>
+            </div>
+          </div>
+          <div className="flex flex-row p-1 gap-3">
+            <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
+              <div
+                onClick={handleIstimaExpire}
+                className="cursor-pointer hover:p-4 rounded-lg p-4  transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                <h3 className="text-xl font-bold">Istimara Expire</h3>
+                <CardCounter value={istimaraExpire} />
+                <span> Number of vehicles</span>
+              </div>
+            </div>
+            <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
+              <div
+                onClick={handleIstimaExpire}
+                className="cursor-pointer hover:p-4 rounded-lg  p-4 r transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                <h3 className="text-lg font-bold">Insurance Expire</h3>
+                <CardCounter value={insuranceExpire} />
+                <span> Number of vehicles</span>
+              </div>
             </div>
           </div>
         </div>

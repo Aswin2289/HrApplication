@@ -103,7 +103,7 @@ function DashboardAdmin() {
   };
   const handleIstimaExpire = () => {
     setStatusRender(5);
-    navigate("/listVehicle", { state: { statusRender: 5 } });
+    navigate("/listVehicle", { state: { statusRender: 6 } });
   };
 
   return (
