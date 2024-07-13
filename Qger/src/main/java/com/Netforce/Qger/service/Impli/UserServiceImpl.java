@@ -3,6 +3,7 @@ package com.Netforce.Qger.service.Impli;
 import com.Netforce.Qger.entity.Role;
 import com.Netforce.Qger.entity.User;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.expectionHandler.BadRequestException;
@@ -241,6 +242,8 @@ public class UserServiceImpl implements UserService {
     employeeDetailsResponseDTO.setNoOfDaysLicenseExpire(noOfDaysLicense);
     employeeDetailsResponseDTO.setRole(user.getRole().getName());
     employeeDetailsResponseDTO.setStatus(user.getStatus());
+    employeeDetailsResponseDTO.setDepartment(user.getDepartment());
+    employeeDetailsResponseDTO.setPrevExperience(user.getPrevExperience());
     return employeeDetailsResponseDTO;
   }
 
@@ -372,5 +375,74 @@ public class UserServiceImpl implements UserService {
             employeeHrLeaveDetailDTOS, usersPage.getTotalPages(), usersPage.getTotalElements(), page);
   }
 
+
+
+  @Override
+  public void updateUser(Integer id, EmployeeUpdateRequestDtTO employeeUpdateRequestDtTO){
+    commonUtils.validateHR();
+
+    User user =
+            userRepository
+                    .findByIdAndStatusIn(id, userStatus)
+                    .orElseThrow(
+                            () ->
+                                    new BadRequestException(
+                                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+
+    LocalDate currentDate = LocalDate.now();
+    if(user.getQidExpire()!=employeeUpdateRequestDtTO.getQidExpire()) {
+      if (employeeUpdateRequestDtTO.getQidExpire().isBefore(currentDate)
+              || employeeUpdateRequestDtTO.getQidExpire().isEqual(currentDate)) {
+        throw new BadRequestException(messageSource.getMessage("QID_EXPIRED", null, Locale.ENGLISH));
+      }
+    }
+    if (user.getPassportExpire()!=employeeUpdateRequestDtTO.getPassportExpire()) {
+      if (employeeUpdateRequestDtTO.getPassportExpire().isBefore(currentDate)
+              || employeeUpdateRequestDtTO.getPassportExpire().isEqual(currentDate)) {
+        throw new BadRequestException(
+                messageSource.getMessage("PASSPORT_EXPIRED", null, Locale.ENGLISH));
+      }
+    }
+    if(user.getLicenseExpire()!=employeeUpdateRequestDtTO.getLicenseExpire()) {
+      if (employeeUpdateRequestDtTO.getLicenseExpire().isBefore(currentDate)
+              || employeeUpdateRequestDtTO.getLicenseExpire().isEqual(currentDate)) {
+        throw new BadRequestException(
+                messageSource.getMessage("LICENCE_EXPIRED", null, Locale.ENGLISH));
+      }
+    }
+
+    Role role =
+            roleRepository
+                    .findById(employeeUpdateRequestDtTO.getRole())
+                    .orElseThrow(
+                            () ->
+                                    new BadRequestException(
+                                            messageSource.getMessage("ROLE_NOT_FOUND", null, Locale.ENGLISH)));
+
+
+
+    user.setEmployeeId(employeeUpdateRequestDtTO.getEmployeeId());
+    user.setName(employeeUpdateRequestDtTO.getName());
+    user.setQid(employeeUpdateRequestDtTO.getQid());
+    user.setQidExpire(employeeUpdateRequestDtTO.getQidExpire());
+    user.setGender(employeeUpdateRequestDtTO.getGender());
+    user.setNationality(employeeUpdateRequestDtTO.getNationality());
+    user.setQualification(employeeUpdateRequestDtTO.getQualification());
+    user.setJobTitle(employeeUpdateRequestDtTO.getJobTitle());
+    user.setContractPeriod(employeeUpdateRequestDtTO.getContractPeriod());
+    user.setRole(role);
+    user.setJoiningDate(employeeUpdateRequestDtTO.getJoiningDate());
+    user.setPrevExperience(employeeUpdateRequestDtTO.getPrevExperience());
+    user.setExperience(employeeUpdateRequestDtTO.getExperience());
+    user.setPassport(employeeUpdateRequestDtTO.getPassport());
+    user.setPassportExpire(employeeUpdateRequestDtTO.getPassportExpire());
+    user.setLicense(employeeUpdateRequestDtTO.getLicense());
+    user.setLicenseExpire(employeeUpdateRequestDtTO.getLicenseExpire());
+    user.setDepartment(employeeUpdateRequestDtTO.getDepartment());
+
+    userRepository.save(user);
+
+  }
 
 }

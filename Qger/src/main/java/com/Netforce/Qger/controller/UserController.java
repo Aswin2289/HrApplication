@@ -1,6 +1,7 @@
 package com.Netforce.Qger.controller;
 
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.service.UserService;
@@ -81,5 +82,13 @@ public class UserController {
     PagedResponseDTO<EmployeeHrLeaveDetailDTO> responseDTOPagedResponseDTO =
         userService.getAllEmployeesLeaveDetails(page, size, sortBy, sortOrder, searchKeyword,status);
     return ResponseEntity.ok(responseDTOPagedResponseDTO);
+  }
+
+  @PutMapping("/update/{id}")
+  public ResponseEntity<Object>updateUser(@PathVariable("id") Integer id, @Valid @RequestBody EmployeeUpdateRequestDtTO employeeUpdateRequestDtTO){
+    userService.updateUser(id,employeeUpdateRequestDtTO);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("200", "Employee Updated Successfully"), HttpStatus.OK);
+
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Lottie from "lottie-react";
 import addCarAnimation from "../profile/car_parkinng.json";
 import useAddVehicle from "../hooks/use-add-vehicle";
+import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // Define the VehicleType enum as constants
 const VehicleType = {
@@ -33,6 +35,7 @@ const schema = z.object({
 });
 
 function AddVehicle() {
+  const { id } = useParams();
   const {
     register,
     handleSubmit,
@@ -44,7 +47,7 @@ function AddVehicle() {
     mode: "onBlur",
   });
 
-  const { addVehicle } = useAddVehicle(); // Initialize your custom hook
+  const { addVehicle, getVehicleDetails, updateVehicle } = useAddVehicle(); // Custom hook methods
 
   const [vehicleData, setVehicleData] = useState({
     manufactureDate: new Date(),
@@ -52,16 +55,68 @@ function AddVehicle() {
     istimaraDate: new Date(),
     registrationDate: new Date(),
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editVehicleData, setEditVehicleData] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      // Fetch vehicle details based on ID when component mounts
+      setIsEditing(true);
+      getVehicleDetailsFn(id);
+    }
+  }, [id]); // Fetch details when ID changes
+
+  const getVehicleDetailsFn = async (id) => {
+    try {
+      const vehicle = await getVehicleDetails(id);
+      setEditVehicleData(vehicle);
+
+      const parseDate = (dateString) => {
+        const date = new Date(dateString);
+        return isNaN(date) ? new Date() : date; // Return a new Date() if parsing fails
+      };
+      // Populate form fields with fetched data
+      setValue("vehicleNumber", vehicle.vehicleNumber);
+      setValue("vehicleType", vehicle.vehicleType);
+      setValue("modal", vehicle.modal);
+      setValue("brand", vehicle.brand);
+      setValue("insuranceProvider", vehicle.insuranceProvider);
+      setValue("totalKilometer", vehicle.totalKilometer);
+      setValue("remarks", vehicle.remarks);
+      setValue("istimaraNumber", vehicle.istimaraNumber);
+      setVehicleData({
+        // manufactureDate: new Date(vehicle.manufactureDate),
+        manufactureDate: parseDate(vehicle.manufactureDate),
+        insuranceExpire: new Date(vehicle.insuranceExpire),
+        istimaraDate: new Date(vehicle.istimaraDate),
+        registrationDate: new Date(vehicle.registrationDate),
+      });
+    } catch (error) {
+      console.error("Error fetching vehicle details:", error);
+      toast.error("Error fetching vehicle details");
+    }
+  };
 
   const onSubmit = async (data) => {
-    data.manufactureDate = vehicleData.manufactureDate;
-    data.insuranceExpire = vehicleData.insuranceExpire;
-    data.istimaraDate = vehicleData.istimaraDate;
-    data.registrationDate = vehicleData.registrationDate;
+    const vehicleDetails = {
+      ...data,
+      manufactureDate: vehicleData.manufactureDate,
+      insuranceExpire: vehicleData.insuranceExpire,
+      istimaraDate: vehicleData.istimaraDate,
+      registrationDate: vehicleData.registrationDate,
+    };
 
     try {
-      await addVehicle(data);
-      toast.success("Vehicle added successfully");
+      if (isEditing) {
+        await updateVehicle(editVehicleData.id, vehicleDetails);
+        toast.success("Vehicle updated successfully");
+        navigate("/listVehicle");
+      } else {
+        await addVehicle(vehicleDetails);
+        toast.success("Vehicle added successfully");
+      }
+      
       // Reset form after successful submission
       setValue("vehicleNumber", "");
       setValue("vehicleType", "");
@@ -79,7 +134,7 @@ function AddVehicle() {
       });
     } catch (error) {
       toast.error(
-        "Error adding vehicle: " +
+        "Error " + (isEditing ? "updating" : "adding") + " vehicle: " +
           (error.response ? error.response.data.message : error.message)
       );
     }
@@ -87,7 +142,9 @@ function AddVehicle() {
 
   return (
     <div className="container mx-auto mt-8 px-4">
-      <h2 className="text-2xl font-bold mb-10">Add Vehicle &nbsp; 🚗</h2>
+      <h2 className="text-2xl font-bold mb-10">
+        {isEditing ? "Edit Vehicle" : "Add Vehicle"} &nbsp; 🚗
+      </h2>
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
       <div className="flex flex-col md:flex-row md:space-x-4">
         <div className="w-full">
@@ -310,7 +367,7 @@ function AddVehicle() {
                 type="submit"
                 className="bg-red-900 text-white px-4 py-2 rounded hover:bg-red-700 w-full"
               >
-                Submit
+                {isEditing ? "Update" : "Submit"}
               </button>
               <button
                 type="reset"

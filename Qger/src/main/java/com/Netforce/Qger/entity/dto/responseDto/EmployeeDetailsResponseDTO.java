@@ -34,4 +34,6 @@ public class EmployeeDetailsResponseDTO {
     private Integer noOfDaysQidExpire;
     private Integer noOfDaysPassportExpire;
     private Integer noOfDaysLicenseExpire;
+    private byte department;
+    private Integer prevExperience;
 }

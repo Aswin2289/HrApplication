@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import userProfileImage from "../../profile/john_doe.jpg"; // import user profile image
 import { NavLink } from "react-router-dom";
 import useAuth from "../../hooks/use-auth";
+import Footer from "../Footer/footer";
 function Sidebar() {
   const { getUserDetails } = useAuth();
   // Example user name
@@ -43,10 +44,10 @@ function Sidebar() {
   return (
     <div className="h-screen text-gray-600 w-96" ref={sidebarRef}>
       <div
-        className="h-screen bg-red-400 bg-opacity-25 rounded-lg"
+        className="h-screen flex flex-col bg-red-400 bg-opacity-25 rounded-lg"
         ref={sidebarRef}
       >
-        <div className="p-4 ">
+        <div className="flex-grow p-4 ">
           <div
             className="flex items-center mb-4 bg-gray-600 bg-opacity-25 rounded-lg p-4 cursor-pointer"
             // onClick={toggleDropdown}
@@ -61,9 +62,19 @@ function Sidebar() {
                 {username}
               </span>
               <div className="flex gap-3">
-              <span className="text-sm text-gray-600">{role === 1 ? 'Admin' : role === 2 ? 'HR' : role === 3 ? 'Employee' :role === 4 ? 'HOD' : 'NaN'}</span>
+                <span className="text-sm text-gray-600">
+                  {role === 1
+                    ? "Admin"
+                    : role === 2
+                    ? "HR"
+                    : role === 3
+                    ? "Employee"
+                    : role === 4
+                    ? "HOD"
+                    : "NaN"}
+                </span>
 
-              <span className="text-sm text-gray-500">ID: {id}</span>
+                <span className="text-sm text-gray-500">ID: {id}</span>
               </div>
             </div>
           </div>
@@ -143,7 +154,7 @@ function Sidebar() {
                       List Employee
                     </NavLink>
                   </li>
-                  <li className="py-2 cursor-pointer">
+                  {/* <li className="py-2 cursor-pointer">
                     <NavLink
                       to="/dashboard"
                       activeclassname="bg-gray-600 bg-opacity-25"
@@ -151,7 +162,7 @@ function Sidebar() {
                     >
                       Employee Summary
                     </NavLink>
-                  </li>
+                  </li> */}
                 </ul>
               )}
               <div
@@ -210,7 +221,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Pending Request
+                      My Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -219,7 +230,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Rejected Request
+                      My Rejected Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -237,7 +248,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     All Pending Request
+                      All Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -246,7 +257,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     Employee Leave List
+                      Employee Leave List
                     </NavLink>
                   </li>
                 </ul>
@@ -304,10 +315,9 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     View Document
+                      View Document
                     </NavLink>
                   </li>
-                  <li className="py-2 cursor-pointer">Add Documents</li>
                 </ul>
               )}
               <div
@@ -357,7 +367,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     Add Vehicle
+                      Add Vehicle
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -366,7 +376,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     List Vehicle
+                      List Vehicle
                     </NavLink>
                   </li>
                 </ul>
@@ -440,15 +450,7 @@ function Sidebar() {
                       List Employee
                     </NavLink>
                   </li>
-                  <li className="py-2 cursor-pointer">
-                    <NavLink
-                      to="/dashboard"
-                      activeclassname="bg-gray-600 bg-opacity-25"
-                      className="block pl-2 rounded-lg"
-                    >
-                      Employee Summary
-                    </NavLink>
-                  </li>
+                  
                 </ul>
               )}
               <div
@@ -507,7 +509,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Pending Request
+                      My Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -516,7 +518,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Rejected Request
+                      My Rejected Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -534,7 +536,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     All Pending Request
+                      All Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -543,12 +545,12 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     Employee Leave List
+                      Employee Leave List
                     </NavLink>
                   </li>
                 </ul>
               )}
-             
+
               <div
                 className="flex items-center mb-2 cursor-pointer"
                 onClick={toggleVehicleDocument}
@@ -840,7 +842,7 @@ function Sidebar() {
                       List Employee
                     </NavLink>
                   </li>
-                  <li className="py-2 cursor-pointer">
+                  {/* <li className="py-2 cursor-pointer">
                     <NavLink
                       to="/dashboard"
                       activeclassname="bg-gray-600 bg-opacity-25"
@@ -848,7 +850,7 @@ function Sidebar() {
                     >
                       Employee Summary
                     </NavLink>
-                  </li>
+                  </li> */}
                 </ul>
               )}
               <div
@@ -907,7 +909,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Pending Request
+                      My Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -916,7 +918,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     My Rejected Request
+                      My Rejected Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -934,7 +936,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     All Pending Request
+                      All Pending Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -943,7 +945,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     All Accepted Request
+                      All Accepted Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">
@@ -952,7 +954,7 @@ function Sidebar() {
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
-                     Employee Leave List
+                      Employee Leave List
                     </NavLink>
                   </li>
                 </ul>
@@ -1056,8 +1058,13 @@ function Sidebar() {
               )}
             </React.Fragment>
           )}
+          
+        </div>
+        <div className="mt-auto">
+        <Footer/>
         </div>
       </div>
+      
     </div>
   );
 }

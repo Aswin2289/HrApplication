@@ -148,7 +148,7 @@ const EmployeeDetails = () => {
             </div>
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">Gender:</span>
-              <span>{employeeDetails.gender === 1 ? "Male" : "Female"}</span>
+              <span>{employeeDetails.gender === 0 ? "Male" : "Female"}</span>
             </div>
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">Contract Period:</span>

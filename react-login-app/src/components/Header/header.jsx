@@ -23,7 +23,7 @@ function Header() {
   };
 
   return (
-    <div className="bg-red-800 text-white py-4 px-8 flex justify-between items-center">
+    <div className="bg-red-800 text-white py-4 px-8 flex justify-between items-center fixed w-full">
       {/* Logo */}
       <Link
         to="/"

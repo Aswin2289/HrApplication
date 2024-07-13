@@ -19,6 +19,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
+import UpdateModal from "./update-modal";
 
 function ListEmployee() {
   const location = useLocation();
@@ -35,6 +36,8 @@ function ListEmployee() {
   const [lisenceExpireState, setlisenceExpireState] = useState(false);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [statusFilters, setStatusFilters] = useState({
     onPremise: false, // Initially selected
     vacation: false, // Initially selected
@@ -145,6 +148,18 @@ function ListEmployee() {
 
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedEmployeeId(null); // Reset selected employee ID when closing modal
+  };
+
+  const handleShowModal = (employeeId) => {
+    setSelectedEmployeeId(employeeId);
+    setShowModal(true);
+  };
+  const handleEditClick = (employeeId) => {
+    handleShowModal(employeeId);
   };
 
   const handleRowsPerPageChange = (event) => {
@@ -520,6 +535,8 @@ function ListEmployee() {
                             height="20"
                             viewBox="0 0 24 24"
                             id="edit"
+                            onClick={() => handleEditClick(employee.id)}
+                            style={{ cursor: "pointer" }}
                           >
                             <path fill="none" d="M0 0h24v24H0V0z"></path>
                             <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
@@ -585,6 +602,8 @@ function ListEmployee() {
           />
         </>
       )}
+      <UpdateModal show={showModal} handleClose={handleCloseModal} employeeId={selectedEmployeeId} />
+  
     </div>
   );
 }

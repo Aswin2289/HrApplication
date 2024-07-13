@@ -3,6 +3,7 @@ package com.Netforce.Qger.service;
 
 import com.Netforce.Qger.entity.User;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeDetailsResponseDTO;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeHrLeaveDetailDTO;
@@ -27,4 +28,5 @@ public interface UserService {
     PagedResponseDTO<EmployeeHrLeaveDetailDTO> getAllEmployeesLeaveDetails(Integer page, Integer size, String sort, String order, String searchKeyword,String status);
 
 
+    void updateUser(Integer id, EmployeeUpdateRequestDtTO employeeUpdateRequestDtTO);
 }

@@ -160,6 +160,15 @@ function RouterComponent() {
         }
       />
       <Route
+        path="/addVehicle/:id"
+        element={
+          <AuthGuard
+            element={<AddVehiclePage />}
+            allowedRoles={[1, 2]}
+          />
+        }
+      />
+      <Route
         path="/listVehicle"
         element={
           <AuthGuard

@@ -27,6 +27,7 @@ public class VehicleResponseDTO {
     private long istimaraNumber;
 
     private LocalDate registrationDate;
+    private LocalDate manufactureDate;
     private String userName;
     private Integer noOfDaysInsuranceExpire;
     private Integer noOfDaysIstimaraExpire;

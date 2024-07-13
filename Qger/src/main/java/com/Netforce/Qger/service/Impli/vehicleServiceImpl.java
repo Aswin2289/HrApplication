@@ -109,6 +109,7 @@ public class vehicleServiceImpl implements VehicleService {
                             vehicle.getStatus(),
                             vehicle.getIstimaraNumber(),
                             vehicle.getRegistrationDate(),
+                            vehicle.getManufactureDate(),
                             userName,
                             noOfDaysInsuranceExpire,
                             noOfDaysIstimara
@@ -219,6 +220,7 @@ public class vehicleServiceImpl implements VehicleService {
                 Math.toIntExact(
                         commonUtils.calculateDaysDifference(today, vehicle.getIstimaraDate()));
 
+        vehicleResponseDTO.setManufactureDate(vehicle.getManufactureDate());
         vehicleResponseDTO.setUserName(userName);
         vehicleResponseDTO.setNoOfDaysInsuranceExpire(noOfDaysInsuranceExpire);
         vehicleResponseDTO.setNoOfDaysIstimaraExpire(noOfDaysIstimara);
@@ -257,7 +259,7 @@ public class vehicleServiceImpl implements VehicleService {
                         messageSource.getMessage("ISTIMARA_DATE_INVALID", null, Locale.ENGLISH));
             }
             vehicle.setIstimaraDate(vehicleRequestDto.getIstimaraDate());
-            
+
         }
         vehicle.setVehicleNumber(vehicleRequestDto.getVehicleNumber());
         vehicle.setVehicleType(vehicleRequestDto.getVehicleType());

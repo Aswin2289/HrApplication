@@ -55,6 +55,7 @@ function VehicleList() {
   const [employeeId, setEmployeeId] = useState(null);
   const [vehicleData, setVehicleData] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
+  const [vehicleId, setVehicleId] = useState(null);
   useEffect(() => {
     if (statusRender === "active") {
       setStatusVehicle("0");
@@ -277,6 +278,12 @@ function VehicleList() {
       console.error("Failed to unassign vehicle:", error);
     }
   };
+  const handleEditClick = (id) => {
+    if(id!=null) {
+    navigate(`/addVehicle/${id}`);
+    }
+  // setIsModalOpen(true);  // Set state to open the modal
+};
 
   return (
     <div className="container mx-auto mt-8">
@@ -553,6 +560,8 @@ function VehicleList() {
                           height="20"
                           viewBox="0 0 24 24"
                           id="edit"
+                          onClick={() => handleEditClick(vehicle.id)} 
+                          style={{ cursor: "pointer" }}
                         >
                           <path fill="none" d="M0 0h24v24H0V0z"></path>
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
