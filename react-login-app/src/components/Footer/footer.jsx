@@ -12,12 +12,12 @@ function Footer() {
   return (
     // <footer className="bg-gray-700 p-0 mt-auto">
     <footer className="bg-red-300 bg-opacity-25 rounded-lg p-0 mt-auto bottom-0 left-0 w-full">
-      <p className="text-center text-gray-600 mt-2 font-thin text-sm">
+      <p className="text-center text-gray-600 mt-2 font-thin text-xs">
         &copy; {new Date().getFullYear()} All rights Reserved | Qatar German
         Gasket Factory
       </p>
       <div className="flex items-center justify-center mb-2">
-        <span className="text-red-500"> Powerd By: &nbsp;</span>
+        <span className="text-red-500 text-xs"> Powerd By: &nbsp;</span>
         <svg
           id="Layer_1"
           data-name="Layer 1"
@@ -147,7 +147,7 @@ function Footer() {
             </g>
           </g>
         </svg>
-        <div className="text-gray-500 font-thin cursor-pointer" onClick={handleOnclic}>NetForce Technologies</div>
+        <div className="text-gray-500 font-thin cursor-pointer text-xs" onClick={handleOnclic}>NetForce Technologies</div>
       </div>
     </footer>
   );

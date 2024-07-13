@@ -164,7 +164,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<AddVehiclePage />}
-            allowedRoles={[1, 2]}
+            allowedRoles={[1, 2,4]}
           />
         }
       />
@@ -173,7 +173,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<VehicleListPage />}
-            allowedRoles={[1, 2]}
+            allowedRoles={[1, 2,4]}
           />
         }
       />
@@ -182,7 +182,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<VehicleDetailPage />}
-            allowedRoles={[1, 2]}
+            allowedRoles={[1, 2,4]}
           />
         }
       />

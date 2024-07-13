@@ -2,6 +2,7 @@ package com.Netforce.Qger.service.Impli;
 
 import com.Netforce.Qger.entity.Role;
 import com.Netforce.Qger.entity.User;
+import com.Netforce.Qger.entity.Vehicle;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
@@ -10,6 +11,7 @@ import com.Netforce.Qger.expectionHandler.BadRequestException;
 import com.Netforce.Qger.repository.RoleRepository;
 import com.Netforce.Qger.repository.UserCriteriaRepository;
 import com.Netforce.Qger.repository.UserRepository;
+import com.Netforce.Qger.repository.VehicleRepository;
 import com.Netforce.Qger.security.JwtUserDetailsService;
 import com.Netforce.Qger.security.TokenManager;
 import com.Netforce.Qger.service.UserService;
@@ -44,6 +46,8 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   private final RoleRepository roleRepository;
+
+  private final VehicleRepository vehicleRepository;
 
   private final MessageSource messageSource;
 
@@ -269,7 +273,11 @@ public class UserServiceImpl implements UserService {
     int licenseExpire =
         userRepository.countByLicenseExpireAfterAndLicenseExpireBeforeAndStatusIn(
             today, twoMonthsFromNow, userStatusQid);
+    LocalDate expireDayIn = today.plusDays(45);
+    byte[] vehicleStatus={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+    int countIstimaraExpire=vehicleRepository.countByIstimaraDateAfterAndIstimaraDateBeforeAndStatusIn(today,expireDayIn,vehicleStatus);
 
+    int countInsuranceExpire=vehicleRepository.countByInsuranceExpireAfterAndInsuranceExpireBeforeAndStatusIn(today,expireDayIn,vehicleStatus);
     Map<String, Integer> counts = new HashMap<>();
     counts.put("total", total);
     counts.put("activeCount", activeCount);
@@ -277,6 +285,8 @@ public class UserServiceImpl implements UserService {
     counts.put("qidExpire", qidExpire);
     counts.put("passportExpire", passportExpire);
     counts.put("licenseExpire", licenseExpire);
+    counts.put("istimaraExpire", countIstimaraExpire);
+    counts.put("insuranceExpire", countInsuranceExpire);
 
     return new ResponseEntity<>(counts, HttpStatus.OK);
   }
