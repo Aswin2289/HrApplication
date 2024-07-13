@@ -450,7 +450,6 @@ function Sidebar() {
                       List Employee
                     </NavLink>
                   </li>
-                  
                 </ul>
               )}
               <div
@@ -658,7 +657,7 @@ function Sidebar() {
                 <ul className="list-disc pl-5">
                   <li className="py-2 cursor-pointer">
                     <NavLink
-                      to="/addEmployee"
+                      to="/"
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
@@ -667,7 +666,7 @@ function Sidebar() {
                   </li>
                   <li className="py-2 cursor-pointer">
                     <NavLink
-                      to="/listEmployee"
+                      to="/"
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
@@ -1006,9 +1005,15 @@ function Sidebar() {
               {/* Conditional rendering of the dropdown menu */}
               {dropdownDocumentOpen && (
                 <ul className="list-disc pl-5">
-                  <li className="py-2 cursor-pointer">ITC Document</li>
-                  <li className="py-2 cursor-pointer">UTC Document</li>
-                  <li className="py-2 cursor-pointer">Data Document</li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/pdfview"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                      View Document
+                    </NavLink>
+                  </li>
                 </ul>
               )}
               <div
@@ -1052,19 +1057,33 @@ function Sidebar() {
               {/* Conditional rendering of the dropdown menu */}
               {dropdownVehicleOpen && (
                 <ul className="list-disc pl-5">
-                  <li className="py-2 cursor-pointer">Add vehicle</li>
-                  <li className="py-2 cursor-pointer">List vehicle</li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/addVehicle"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                      Add Vehicle
+                    </NavLink>
+                  </li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/listVehicle"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                      List Vehicle
+                    </NavLink>
+                  </li>
                 </ul>
               )}
             </React.Fragment>
           )}
-          
         </div>
         <div className="mt-auto">
-        <Footer/>
+          <Footer />
         </div>
       </div>
-      
     </div>
   );
 }
