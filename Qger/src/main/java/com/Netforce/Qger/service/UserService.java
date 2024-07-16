@@ -2,6 +2,7 @@ package com.Netforce.Qger.service;
 
 
 import com.Netforce.Qger.entity.User;
+import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
@@ -29,4 +30,7 @@ public interface UserService {
 
 
     void updateUser(Integer id, EmployeeUpdateRequestDtTO employeeUpdateRequestDtTO);
+    ResponseEntity<Object>getExperience(Integer id);
+
+    void changePassword(Integer id, ChangePasswordRequestDTO changePasswordRequestDTO);
 }

@@ -1,5 +1,6 @@
 package com.Netforce.Qger.controller;
 
+import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
@@ -90,5 +91,11 @@ public class UserController {
     return new ResponseEntity<>(
             new SuccessResponseDTO("200", "Employee Updated Successfully"), HttpStatus.OK);
 
+  }
+
+  @PutMapping("/changePassword/{id}")
+  public ResponseEntity<Object>changePassword(@PathVariable("id")Integer id, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
+    userService.changePassword(id,changePasswordRequestDTO);
+    return new ResponseEntity<>(new SuccessResponseDTO("200","Password Changed Successfully"),HttpStatus.OK);
   }
 }

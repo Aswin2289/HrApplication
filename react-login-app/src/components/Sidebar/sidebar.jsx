@@ -657,7 +657,7 @@ function Sidebar() {
                 <ul className="list-disc pl-5">
                   <li className="py-2 cursor-pointer">
                     <NavLink
-                      to="/"
+                      to="/profileview"
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >
@@ -666,7 +666,7 @@ function Sidebar() {
                   </li>
                   <li className="py-2 cursor-pointer">
                     <NavLink
-                      to="/"
+                      to="/changePassword"
                       activeclassname="bg-gray-600 bg-opacity-25"
                       className="block pl-2 rounded-lg"
                     >

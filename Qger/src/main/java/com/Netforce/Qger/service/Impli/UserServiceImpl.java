@@ -3,6 +3,7 @@ package com.Netforce.Qger.service.Impli;
 import com.Netforce.Qger.entity.Role;
 import com.Netforce.Qger.entity.User;
 import com.Netforce.Qger.entity.Vehicle;
+import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
 import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
@@ -17,6 +18,8 @@ import com.Netforce.Qger.security.TokenManager;
 import com.Netforce.Qger.service.UserService;
 import com.Netforce.Qger.util.CommonUtils;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -454,5 +457,61 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
 
   }
+
+  @Override
+  public ResponseEntity<Object> getExperience(Integer id) {
+    byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
+
+    User user = userRepository.findByIdAndStatusIn(id, userStatus).orElseThrow(
+            () ->
+                    new BadRequestException(
+                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+    LocalDate today = LocalDate.now();
+    LocalDate joiningDate = user.getJoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    int prevExperienceInMonths = user.getPrevExperience() != null ? user.getPrevExperience() : 0;
+
+    // Convert previous experience in months to fractional years
+    double prevExperienceInYears = prevExperienceInMonths / 12.0;
+
+    // Calculate the number of years and months between joiningDate and today
+    Period periodBetween = Period.between(joiningDate, today);
+    int yearsBetween = periodBetween.getYears();
+    int monthsBetween = periodBetween.getMonths();
+
+    // Convert the period between joiningDate and today to fractional years
+    double experienceInYears = yearsBetween + (monthsBetween / 12.0);
+
+    // Total experience with and without previous experience
+    double totalExperienceWithPrev = prevExperienceInYears + experienceInYears;
+
+      Map<String, Double> counts = new HashMap<>();
+    counts.put("totalWithPrev", totalExperienceWithPrev);
+    counts.put("totalWithoutPrev", experienceInYears);
+
+    return new ResponseEntity<>(counts, HttpStatus.OK);
+  }
+
+  @Override
+  public void changePassword(Integer id, ChangePasswordRequestDTO changePasswordRequestDTO){
+    User user = userRepository.findByIdAndStatusIn(id, userStatus).orElseThrow(
+            () ->
+                    new BadRequestException(
+                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+    if (!passwordEncoder.matches(changePasswordRequestDTO.getCurrentPassword(), user.getPassword())) {
+      throw new BadRequestException(
+              messageSource.getMessage("PASSWORD_NOT_MATCH", null, Locale.ENGLISH));
+    }
+    if(changePasswordRequestDTO.getNewPassword().equals(changePasswordRequestDTO.getConfirmPassword())){
+      user.setPassword(passwordEncoder.encode(changePasswordRequestDTO.getNewPassword()));
+      userRepository.save(user);
+    }else {
+      throw new BadRequestException(messageSource.getMessage("CONFIRM_PASSWORD_NOT_MATCH",null,Locale.ENGLISH));
+    }
+
+  }
+
+
 
 }

@@ -26,7 +26,18 @@ const useAddEmployee = () => {
     }
   };
 
-  return { addEmployee };
+  const changePassword =async (id,data) => {
+    try {
+      const response = await axiosInstance.put(`/user/changePassword/${id}`, data);
+      console.log(response.data);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error('Error changing password:', error.response? error.response.data : error.message);
+      throw error; // Optionally, throw the error if you want to handle it in the component
+    }
+  };
+
+  return { addEmployee,changePassword };
 };
 
 export default useAddEmployee;

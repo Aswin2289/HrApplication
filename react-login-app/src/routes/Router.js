@@ -26,6 +26,8 @@ import AllPendingHodLeaveRequestPage from "../pages/hod/all-pending-hod-leave-re
 import AddVehiclePage from "../pages/add-vehicle-page";
 import VehicleListPage from "../pages/vehicle-list-page";
 import VehicleDetailPage from "../pages/vehicle-detail-page";
+import ProfileViewPage from "../pages/Employee/profile-view-page";
+import ChangePasswordPage from "../pages/Employee/change-password-page";
 
 function RouterComponent() {
   const { isAuthenticated, getUserDetails } = useAuth();
@@ -106,6 +108,18 @@ function RouterComponent() {
         path="/employeeDashboard"
         element={
           <AuthGuard element={<EmployeeDashboardPage />} allowedRoles={[3]} />
+        }
+      />
+      <Route
+        path="/profileview"
+        element={
+          <AuthGuard element={<ProfileViewPage />} allowedRoles={[1, 2, 3, 4]} />
+        }
+      />
+      <Route
+        path="/changePassword"
+        element={
+          <AuthGuard element={<ChangePasswordPage />} allowedRoles={[1, 2, 3, 4]} />
         }
       />
       <Route
