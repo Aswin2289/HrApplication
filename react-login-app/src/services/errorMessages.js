@@ -69,8 +69,8 @@ const errorMessages = {
   
   // Additional mappings
   "UNKNOWN_ERROR": "An unknown error occurred.",
-  "2033": "No Remaining Leave Credits",
-  "2032": "Maximum 90 days can apply"
+  "2133": "No Remaining Leave Credits",
+  "2132": "Maximum 90 days can apply"
 };
 
 export default errorMessages;
