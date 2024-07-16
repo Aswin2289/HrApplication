@@ -126,12 +126,12 @@ const VehicleDetail = () => {
               {vehicleDetails.vehicleNumber}{" "}
               <span
                 className={`${
-                  vehicleDetails.status === 1
+                  vehicleDetails.assigned === 0
                     ? "bg-green-500 text-white rounded-md p-1"
                     : "bg-orange-500 text-white rounded-md p-1"
                 } font-normal text-sm`}
               >
-                {vehicleDetails.status === 1 ? "Assigned" : "Idle"}
+                {vehicleDetails.assigned === 0 ? "Assigned" : "Idle"}
               </span>
             </h2>
             <p className="text-gray-600 mb-4">
@@ -201,13 +201,13 @@ const VehicleDetail = () => {
                 style={{
                   textTransform: "none",
                   backgroundColor:
-                    vehicleDetails.status === 1 ? "orange" : "green",
+                    vehicleDetails.assigned === 0 ? "orange" : "green",
                 }}
                 onClick={handleAssignVehicle}
               >
-                {vehicleDetails.status === 1 ? "Reassign" : "Assign"}
+                {vehicleDetails.assigned === 0 ? "Reassign" : "Assign"}
               </Button>
-              {vehicleDetails.status === 1 && (
+              {vehicleDetails.assigned === 0 && (
                 <Button
                   variant="contained"
                   style={{ textTransform: "none", backgroundColor: "red" }}

@@ -10,13 +10,14 @@ import {
   TablePagination,
 } from "@mui/material";
 import { axiosInstance } from "../../services/interceptor"
+import useHodPendingLeave from "../../hooks/use-hod-pending-leave";
 function AllPendingHodLeaveRequest(){
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    
+    const {rejectPendingLeave,acceptPendingLeave ,deletePendingLeave} =useHodPendingLeave();
     const fetchLeave = async () => {
         setIsLoading(true);
         try {
@@ -50,38 +51,38 @@ function AllPendingHodLeaveRequest(){
     
       const handleDeleteClick =async (id) => {
         console.log("Delete Leave with id: ", id);
-        // try {
-        //   const response = await deletePendingLeaveAdmin(id);
-        //   console.log(response);
-        //   fetchLeave();
-        // } catch (error) {
-        //   console.error('Failed to Delete Request:', error.response ? error.response.data : error.message);
-        //   setError("Failed to Delete Request");
-        // }
+        try {
+          const response = await deletePendingLeave(id);
+          console.log(response);
+          fetchLeave();
+        } catch (error) {
+          console.error('Failed to Delete Request:', error.response ? error.response.data : error.message);
+          setError("Failed to Delete Request");
+        }
       };
     
       const handleApproveClick = async(id) => {
         console.log("Approve Leave with id: ", id);
-        // try {
-        //   const response = await acceptPendingLeaveAdmin(id);
-        //   console.log(response);
-        //   fetchLeave();
-        // } catch (error) {
-        //   console.error('Failed to accept leave:', error.response ? error.response.data : error.message);
-        //   setError("Failed to reject leave");
-        // }
+        try {
+          const response = await acceptPendingLeave(id);
+          console.log(response);
+          fetchLeave();
+        } catch (error) {
+          console.error('Failed to accept leave:', error.response ? error.response.data : error.message);
+          setError("Failed to reject leave");
+        }
       };
     
       const handleRejectClick = async (id) => {
         console.log("Reject Leave with id: ", id);
-        // try {
-        //   const response = await rejectPendingLeaveAdmin(id);
-        //   console.log(response);
-        //   fetchLeave();
-        // } catch (error) {
-        //   console.error('Failed to reject leave:', error.response ? error.response.data : error.message);
-        //   setError("Failed to reject leave");
-        // }
+        try {
+          const response = await rejectPendingLeave(id);
+          console.log(response);
+          fetchLeave();
+        } catch (error) {
+          console.error('Failed to reject leave:', error.response ? error.response.data : error.message);
+          setError("Failed to reject leave");
+        }
       };
     
       return (

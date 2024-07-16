@@ -95,7 +95,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<EmployeeLeaveListPage />}
-            allowedRoles={[1, 2]}
+            allowedRoles={[1, 2,4]}
           />
         }
       />

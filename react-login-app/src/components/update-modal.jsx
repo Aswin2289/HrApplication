@@ -22,7 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import MyButton from "./Button/my-button";
-
+import useAuth from "../hooks/use-auth";
 const GenderEnum = {
   MALE: "male",
   FEMALE: "female",
@@ -43,6 +43,8 @@ const roleOptions = [
 function UpdateModal({ show, handleClose, employeeId }) {
   const today = new Date();
   const tomorrow = new Date();
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const navigate = useNavigate();
@@ -184,7 +186,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
     data.passportExpire = employeeData.passportExpire;
     data.licenseExpire = employeeData.licenseExpire;
     data.joiningDate = employeeData.joiningDate;
-    console.log("---->",data.gender);
+    console.log("---->", data.gender);
     try {
       await updateEmployee(employeeId, data);
       toast.success("Employee updated successfully");
@@ -220,7 +222,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
     >
       <div className="fixed inset-0 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg w-1/2 p-8">
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h5" gutterBottom style={{marginBottom:"50px"}}>
             Update Employee
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -233,6 +235,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   {...register("employeeId")}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.employeeId}
+                  disabled={role === 3 || role === 4}
                   helperText={
                     errors.employeeId ? errors.employeeId.message : ""
                   }
@@ -246,6 +249,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   {...register("qid")}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.qid}
+                  disabled={role === 3 || role === 4}
                   helperText={errors.qid ? errors.qid.message : ""}
                 />
               </Grid>
@@ -261,6 +265,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   minDate={tomorrow}
                   placeholderText="dd/MM/YYYY"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
+                  disabled={role === 3 || role === 4}
                 />
                 {errors.qidExpire && (
                   <p className="text-red-500">{errors.qidExpire.message}</p>
@@ -330,6 +335,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   {...register("experience")}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.experience}
+                  disabled={role === 3 || role === 4}
                   helperText={
                     errors.experience ? errors.experience.message : ""
                   }
@@ -343,6 +349,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   {...register("contractPeriod")}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.contractPeriod}
+                  disabled={role === 3 || role === 4}
                   helperText={
                     errors.contractPeriod ? errors.contractPeriod.message : ""
                   }
@@ -357,6 +364,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.passport}
                   helperText={errors.passport ? errors.passport.message : ""}
+                  disabled={role === 3 || role === 4}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -371,6 +379,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   minDate={tomorrow}
                   placeholderText="dd/MM/YYYY"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
+                  disabled={role === 3 || role === 4}
                 />
                 {errors.passportExpire && (
                   <p className="text-red-500">
@@ -386,6 +395,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   {...register("license")}
                   InputLabelProps={{ shrink: true }}
                   error={!!errors.license}
+                  disabled={role === 3 || role === 4}
                   helperText={errors.license ? errors.license.message : ""}
                 />
               </Grid>
@@ -401,6 +411,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   minDate={tomorrow}
                   placeholderText="dd/MM/YYYY"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
+                  disabled={role === 3 || role === 4}
                 />
                 {errors.licenseExpire && (
                   <p className="text-red-500">{errors.licenseExpire.message}</p>
@@ -419,41 +430,45 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   }
                 />
               </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <InputLabel>Role</InputLabel>
-                  <Select
-                    label="Role"
-                    {...register("role")}
-                    value={getValues("role") || ""}
-                    onChange={(e) => setValue("role", e.target.value)}
-                    error={!!errors.role}
-                  >
-                    {roleOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
+              {(role !== 4 && role !==3) && (
+                <Grid item xs={6}>
+                  <FormControl fullWidth>
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                      label="Role"
+                      {...register("role")}
+                      value={getValues("role") || ""}
+                      onChange={(e) => setValue("role", e.target.value)}
+                      error={!!errors.role}
+                    >
+                      {roleOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
 
-                  {errors.role && (
-                    <p className="text-red-500">{errors.role.message}</p>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Department"
-                  variant="outlined"
-                  fullWidth
-                  {...register("department")}
-                  InputLabelProps={{ shrink: true }}
-                  error={!!errors.department}
-                  helperText={
-                    errors.department ? errors.department.message : ""
-                  }
-                />
-              </Grid>
+                    {errors.role && (
+                      <p className="text-red-500">{errors.role.message}</p>
+                    )}
+                  </FormControl>
+                </Grid>
+              )}
+              {(role !== 4 && role !==3) && (
+                <Grid item xs={6}>
+                  <TextField
+                    label="Department"
+                    variant="outlined"
+                    fullWidth
+                    {...register("department")}
+                    InputLabelProps={{ shrink: true }}
+                    error={!!errors.department}
+                    helperText={
+                      errors.department ? errors.department.message : ""
+                    }
+                  />
+                </Grid>
+              )}
               <Grid item xs={6}>
                 <InputLabel>Joining Date</InputLabel>
                 <DatePicker
@@ -465,6 +480,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   name="joiningDate"
                   placeholderText="dd/MM/YYYY"
                   className="border border-gray-300 rounded px-3 py-2 w-full"
+                  disabled={role === 3 || role === 4}
                 />
                 {errors.joiningDate && (
                   <p className="text-red-500">{errors.joiningDate.message}</p>

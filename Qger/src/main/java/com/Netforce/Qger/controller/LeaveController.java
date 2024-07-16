@@ -223,4 +223,10 @@ public class LeaveController {
     return new ResponseEntity<>(
             new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
   }
+  @PutMapping("/hod/acceptLeave/{id}")
+  public ResponseEntity<Object> hodAcceptLeave(@PathVariable("id") Integer id) {
+    leaveService.hodAcceptLeaveRequest(id);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
+  }
 }
