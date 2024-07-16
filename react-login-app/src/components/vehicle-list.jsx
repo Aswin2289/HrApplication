@@ -55,7 +55,8 @@ function VehicleList() {
   const [employeeId, setEmployeeId] = useState(null);
   const [vehicleData, setVehicleData] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
-  const [vehicleId, setVehicleId] = useState(null);
+  // const [vehicleId, setVehicleId] = useState(null);
+  console.log(employeeName);
   useEffect(() => {
     if (statusRender === "active") {
       setStatusVehicle("0");
@@ -89,7 +90,6 @@ function VehicleList() {
     isError,
     error,
     refetch,
-    reset,
   } = useQuery({
     queryKey: [
       "vehicles",
@@ -242,6 +242,7 @@ function VehicleList() {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+  console.log(errors);
   const onSubmit = async (data) => {
     try {
       const response = await assignVehicle(vehicleData.id, employeeId);

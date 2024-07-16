@@ -73,6 +73,7 @@ const usePdfView = () => {
           ? error.response.data.message
           : "An error occurred while updating the PDF."
       );
+      console.log(isUploadLoading);
     }
   };
 

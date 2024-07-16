@@ -7,7 +7,6 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,10 +34,8 @@ const VehicleDetail = () => {
   const [selectedUser, setSelectedUser] = useState("");
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
   } = useForm({
     resolver: zodResolver(schema),

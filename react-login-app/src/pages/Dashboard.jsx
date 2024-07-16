@@ -19,7 +19,7 @@ function Dashboard() {
   const [statusRender, setStatusRender] = useState(0);
   const [istimaraExpire, setIstimaExpire] = useState(0);
   const [insuranceExpire, setInsuranceExpire] = useState(0);
-
+  console.log(statusRender);
   const navigate = useNavigate();
 
   const barChartRef = useRef(null);

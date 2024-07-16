@@ -72,9 +72,11 @@ const useVehicleDocument = () => {
     try {
       const response = await axiosInstance.put(`/vehicle/document/delete/${id}`);
       setIsViewLoading(false);
+      console.log(isViewLoading);
       return response.data;
     } catch (error) {
       setIsViewLoading(false);
+      console.log(viewError);
       setViewError(
         error.response && error.response.data
           ? error.response.data.message
@@ -85,6 +87,7 @@ const useVehicleDocument = () => {
 
   const updatePdf = async (id, file, documentName) => {
     setIsUploadLoading(true);
+    console.log(isUploadLoading);
     setUploadError(null);
     console.log("Uploading", id, documentName);
 
@@ -107,6 +110,7 @@ const useVehicleDocument = () => {
           ? error.response.data.message
           : "An error occurred while updating the PDF."
       );
+      console.log(uploadError);
     }
   };
 

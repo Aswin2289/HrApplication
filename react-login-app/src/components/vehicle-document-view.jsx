@@ -4,10 +4,6 @@ import React, { useState, useEffect } from "react";
 import {
   IconButton,
   Modal,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -28,7 +24,7 @@ const VehicleDocumentView = ({ vehicleId }) => {
   } = useVehicleDocument();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState(null);
-  const [pdfData, setPdfData] = useState(null);
+  // const [pdfData, setPdfData] = useState(null);
 
   const {
     register,
