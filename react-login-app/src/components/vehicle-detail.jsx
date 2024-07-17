@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  Button,
-  Modal,
-  FormControl,
-  InputLabel,
-  Select,
-} from "@mui/material";
+import { Button, Modal, FormControl, InputLabel, Select } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { axiosInstance } from "../services/interceptor";
 import VehicleDocumentView from "./vehicle-document-view";
+
 const schema = z.object({
   assignUser: z.string().min(1, "User is required"),
 });
@@ -73,6 +68,7 @@ const VehicleDetail = () => {
     setSelectedUser("");
     reset();
   };
+
   const { data: employees } = useQuery({
     queryKey: [
       "employees",
@@ -220,8 +216,8 @@ const VehicleDetail = () => {
           </div>
           <div className="w-full md:w-1/3 flex flex-col justify-between items-center">
             <img
-              src="https://via.placeholder.com/150"
-              alt=""
+              src={vehicleDetails.imageUrl || "https://via.placeholder.com/150"}
+              alt="Vehicle"
               className="shadow-lg"
             />
           </div>
@@ -273,7 +269,7 @@ const VehicleDetail = () => {
         </Modal>
       </div>
       <div>
-        <VehicleDocumentView vehicleId={vehicleId}/>
+        <VehicleDocumentView vehicleId={vehicleId} />
       </div>
     </div>
   );

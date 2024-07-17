@@ -1,9 +1,10 @@
-import { axiosInstance } from "../services/interceptor";
+import { axiosInstance,axiosInstance1 } from "../services/interceptor";
 import { useMemo } from "react";
 
 const useAddVehicle = () => {
   const addVehicle = async (vehicleData) => {
     try {
+      console.log("---->",vehicleData.registrationDate);
       const response = await axiosInstance.post("/vehicle/add", vehicleData);
       console.log("Vehicle Added:", response.data);
       return response.data;

@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Lottie from "lottie-react";
 import addCarAnimation from "../profile/car_parkinng.json";
 import useAddVehicle from "../hooks/use-add-vehicle";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 // Define the VehicleType enum as constants
@@ -41,7 +41,6 @@ function AddVehicle() {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onBlur",
@@ -55,9 +54,13 @@ function AddVehicle() {
     istimaraDate: new Date(),
     registrationDate: new Date(),
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [editVehicleData, setEditVehicleData] = useState(null);
   const navigate = useNavigate();
+
+
+
 
   useEffect(() => {
     if (id) {
@@ -86,7 +89,6 @@ function AddVehicle() {
       setValue("remarks", vehicle.remarks);
       setValue("istimaraNumber", vehicle.istimaraNumber);
       setVehicleData({
-        // manufactureDate: new Date(vehicle.manufactureDate),
         manufactureDate: parseDate(vehicle.manufactureDate),
         insuranceExpire: new Date(vehicle.insuranceExpire),
         istimaraDate: new Date(vehicle.istimaraDate),
@@ -116,7 +118,7 @@ function AddVehicle() {
         await addVehicle(vehicleDetails);
         toast.success("Vehicle added successfully");
       }
-      
+
       // Reset form after successful submission
       setValue("vehicleNumber", "");
       setValue("vehicleType", "");
@@ -134,12 +136,12 @@ function AddVehicle() {
       });
     } catch (error) {
       toast.error(
-        "Error " + (isEditing ? "updating" : "adding") + " vehicle: " +
-          (error.response ? error.response.data.message : error.message)
+        `Error ${isEditing ? "updating" : "adding"} vehicle: ${
+          error.response ? error.response.data.message : error.message
+        }`
       );
     }
   };
-
   return (
     <div className="container mx-auto mt-8 px-4">
       <h2 className="text-2xl font-bold mb-10">
@@ -292,23 +294,31 @@ function AddVehicle() {
                 )}
               </div>
               <div className="flex-1">
-                <label className="block mb-1 label">Manufacture Date</label>
-                <DatePicker
-                  selected={vehicleData.manufactureDate}
-                  onChange={(date) =>
-                    setVehicleData({ ...vehicleData, manufactureDate: date })
-                  }
-                  maxDate={new Date()} // Disable future dates
-                  showYearDropdown
-                  showMonthDropdown
-                  dateFormat="dd/MM/yyyy"
-                  className="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-                {errors.manufactureDate && (
-                  <p className="text-red-500">
-                    {errors.manufactureDate.message}
-                  </p>
-                )}
+                <div className="flex gap-6">
+                  <div>
+                    <label className="block mb-1 label">Manufacture Date</label>
+                    <DatePicker
+                      selected={vehicleData.manufactureDate}
+                      onChange={(date) =>
+                        setVehicleData({
+                          ...vehicleData,
+                          manufactureDate: date,
+                        })
+                      }
+                      maxDate={new Date()} // Disable future dates
+                      showYearDropdown
+                      showMonthDropdown
+                      dateFormat="dd/MM/yyyy"
+                      className="border border-gray-300 rounded px-3 py-2 w-full"
+                    />
+                    {errors.manufactureDate && (
+                      <p className="text-red-500">
+                        {errors.manufactureDate.message}
+                      </p>
+                    )}
+                  </div>
+                  
+                </div>
               </div>
               <div className="flex-1">
                 <div className="flex gap-6">

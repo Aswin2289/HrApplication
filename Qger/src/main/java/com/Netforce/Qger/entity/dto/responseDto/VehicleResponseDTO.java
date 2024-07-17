@@ -31,6 +31,7 @@ public class VehicleResponseDTO {
     private String userName;
     private Integer noOfDaysInsuranceExpire;
     private Integer noOfDaysIstimaraExpire;
+//    private byte[] image;
 
 
 //    public VehicleResponseDTO(Long id, String vehicleNumber, byte vehicleType, String modal, String brand, String insuranceProvider, LocalDate insuranceExpire, LocalDate istimaraDate, long totalKilometer, Integer noOfDaysInsuranceExpire, Integer noOfDaysIstimara) {

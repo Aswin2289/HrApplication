@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -46,6 +47,8 @@ public class Vehicle {
     private byte assigned;
     private long istimaraNumber;
     private LocalDate registrationDate;
+    @Lob
+    private byte[] image;
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdDate;
@@ -90,9 +93,9 @@ public class Vehicle {
         this.istimaraNumber=vehicleRequestDto.getIstimaraNumber();
         this.registrationDate=vehicleRequestDto.getRegistrationDate();
         this.remarks=vehicleRequestDto.getRemarks();
-
         this.assigned= Assigned.NOT_ASSIGNED.value;
         this.status=Status.ACTIVE.value;
+        this.image=null;
 
 
     }

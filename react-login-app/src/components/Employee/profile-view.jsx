@@ -4,18 +4,17 @@ import useEmployeeDetails from "../../hooks/useEmployeeDetails";
 import { ToastContainer, toast } from "react-toastify";
 import Lottie from "lottie-react";
 import addEditIcon from "../../profile/edit.json";
-import { useNavigate } from "react-router-dom";
 import UpdateModal from "../update-modal";
 function ProfileView() {
   const { getUserDetails } = useAuth();
-  const { userId, id ,role} = getUserDetails();
-  const { employeeDetails, isLoading, error, refetch } =
+  const { userId, role} = getUserDetails();
+  const { employeeDetails, refetch } =
     useEmployeeDetails(userId);
-  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   if (!employeeDetails) {
+    toast.error("No employee details found.");
     return <div>No employee details found.</div>;
   }
   const handleEditClick = (id) => {
@@ -50,8 +49,11 @@ function ProfileView() {
                   onClick={() => handleEditClick(userId)}
                   loop={true}
                 />
+                
               </span>
+              
             )}
+          
           </h2>
           <span
             className={`${

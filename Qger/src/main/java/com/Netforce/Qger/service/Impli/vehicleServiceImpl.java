@@ -113,6 +113,7 @@ public class vehicleServiceImpl implements VehicleService {
                             userName,
                             noOfDaysInsuranceExpire,
                             noOfDaysIstimara
+//                            vehicle.getImage()
                     );
                 }).collect(Collectors.toList());
 

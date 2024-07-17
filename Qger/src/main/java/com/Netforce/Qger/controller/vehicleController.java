@@ -15,6 +15,7 @@ import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/vehicle")
@@ -24,7 +25,9 @@ public class vehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping("/add")
-    public ResponseEntity<Object> addUser(@Valid @RequestBody VehicleRequestDto vehicleRequestDto){
+    public ResponseEntity<Object> addUser(@RequestBody VehicleRequestDto vehicleRequestDto){
+        System.out.println("---------------------");
+
         vehicleService.addVehicle(vehicleRequestDto);
         return new ResponseEntity<>(
                 new SuccessResponseDTO("201", "Vehicle Added Successfully"), HttpStatus.CREATED);
