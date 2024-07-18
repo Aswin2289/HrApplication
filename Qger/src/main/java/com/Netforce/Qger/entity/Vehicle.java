@@ -48,6 +48,7 @@ public class Vehicle {
     private long istimaraNumber;
     private LocalDate registrationDate;
     @Lob
+    @Column(columnDefinition="LONGBLOB")
     private byte[] image;
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

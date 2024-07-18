@@ -16,7 +16,7 @@ import * as z from "zod";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
-
+import useAuth from "../hooks/use-auth";
 
 const schema = z.object({
   documentName: z.string().min(1, "Document name is required"),
@@ -55,6 +55,8 @@ const PdfView = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
 
   useEffect(() => {
     fetchPdfList();
@@ -91,7 +93,11 @@ const PdfView = () => {
         const response = await uploadPdf(file, data.documentName);
         console.log(response); // Handle response if needed
       } else {
-        const response = await updatePdf(selectedDocumentId, file, data.documentName);
+        const response = await updatePdf(
+          selectedDocumentId,
+          file,
+          data.documentName
+        );
         console.log(response); // Handle response if needed
       }
       toast.success("Document saved successfully");
@@ -131,12 +137,14 @@ const PdfView = () => {
   return (
     <div>
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      <div className="flex justify-end mb-8">
-        <MyButton onClick={() => handleModalOpen()} disabled={isViewLoading}>
-          Add Document
-        </MyButton>
-        {uploadError && <p className="text-red-500">Error: {uploadError}</p>}
-      </div>
+      {role !== 5 && (
+        <div className="flex justify-end mb-8">
+          <MyButton onClick={() => handleModalOpen()} disabled={isViewLoading}>
+            Add Document
+          </MyButton>
+          {uploadError && <p className="text-red-500">Error: {uploadError}</p>}
+        </div>
+      )}
       <div className="flex flex-wrap justify-center items-center gap-20">
         {pdfList.map((pdfDoc) => (
           <CertificateCard

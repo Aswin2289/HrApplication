@@ -59,15 +59,17 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
         int totalLeaveDays = relevantLeaves.stream().mapToInt(Leave::getDaysAdjusted).sum();
 
         // Calculate the total days considered for eligibility
-        long totalDaysConsidered = daysInCompany + totalLeaveDays;
+        long totalDaysConsidered = daysInCompany - totalLeaveDays;
 
         // Determine the eligibility based on the eligibility period
         long requiredDays = eligibilityPeriodYears * 365;
         boolean isEligible = totalDaysConsidered >= requiredDays;
+
         long daysLeft = isEligible ? 0 : (requiredDays - totalDaysConsidered);
 
+
         // Adjust the eligibility date by adding the total leave days
-        LocalDate eligibilityDate = currentDate.plusDays(daysLeft + totalLeaveDays);
+        LocalDate eligibilityDate = currentDate.plusDays(daysLeft);
         LocalDate sixMonthsBeforeEligibilityDate = eligibilityDate.minusMonths(6);
 
         boolean applyEligibility = !currentDate.isBefore(sixMonthsBeforeEligibilityDate) && !currentDate.isAfter(eligibilityDate);

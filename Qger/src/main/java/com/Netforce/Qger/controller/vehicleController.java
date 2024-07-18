@@ -1,5 +1,7 @@
 package com.Netforce.Qger.controller;
 
+import com.Netforce.Qger.entity.PdfDocument;
+import com.Netforce.Qger.entity.Vehicle;
 import com.Netforce.Qger.entity.dto.requestDto.VehicleRequestDto;
 import com.Netforce.Qger.entity.dto.responseDto.PagedResponseDTO;
 import com.Netforce.Qger.entity.dto.responseDto.SuccessResponseDTO;
@@ -12,10 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/vehicle")
@@ -85,5 +92,29 @@ public class vehicleController {
         return new ResponseEntity<>(
                 new SuccessResponseDTO("201", "Vehicle Updated Successfully"), HttpStatus.CREATED);
     }
+
+    @PutMapping("upload/{id}")
+    public ResponseEntity<Object>uploadImage(@PathVariable("id")Integer id,@RequestParam("file") MultipartFile file){
+        vehicleService.uploadImage(id,file);
+        return new ResponseEntity<>(
+                new SuccessResponseDTO("201", "Vehicle Image Uploaded Successfully"), HttpStatus.CREATED);
+
+    }
+//    @GetMapping("/viewImage/{id}")
+//    public ResponseEntity<Map<String, Object>> getImage(@PathVariable Long id) {
+////        PdfDocument pdfDocument = pdfDocumentService.getPdf(id);
+//        Vehicle vehicle=vehicleService.getImage(Math.toIntExact(id));
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("data", vehicle.getImage());
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
+@GetMapping("/viewImage/{id}")
+public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+    Vehicle vehicle = vehicleService.getImage(Math.toIntExact(id));
+    byte[] imageData = vehicle.getImage();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.IMAGE_JPEG); // Adjust media type if needed (e.g., MediaType.IMAGE_PNG)
+    return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+}
 
 }

@@ -228,7 +228,7 @@ function LeaveDetails() {
             <div className="flex justify-center">
               <div className="w-full sm:w-3/4 md:w-2/3 lg:w-2/3 bg-white rounded-lg p-4 flex flex-col items-start shadow-md">
                 <h2 className="text-lg font-semibold capitalize mb-2">
-                  Paid Ticket Available
+                  Air Ticket Eligibility
                 </h2>
                 <p className="text-sm text-gray-500">
                   <b>{ticketLeaveAvailability.daysLeft}</b> days left

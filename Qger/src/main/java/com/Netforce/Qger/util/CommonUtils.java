@@ -31,12 +31,12 @@ public class CommonUtils {
     Leave.Status.ACCEPTED_BY_HR.value, Leave.Status.ACCEPTED.value
   };
   private final byte[] leaveAddedStatus = {Leave.Status.ADDED.value};
-  private final Integer[] userRole = {1, 2,4};
+  private final Integer[] userRole = {1, 2,4,5};
   private final Integer[] adminRole = { 1};
   private final Integer[] hodRole = { 4};
 
   private final Integer[] userRoleCheck = {3};
-  private final Integer[] userAllRoleCheck = {1, 2, 3 ,4};
+  private final Integer[] userAllRoleCheck = {1, 2, 3 ,4,5};
 
   public UserDetails getCurrentUser() {
     return SecurityUtils.getCurrentUserDetails();

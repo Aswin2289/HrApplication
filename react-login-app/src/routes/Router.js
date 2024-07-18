@@ -28,6 +28,7 @@ import VehicleListPage from "../pages/vehicle-list-page";
 import VehicleDetailPage from "../pages/vehicle-detail-page";
 import ProfileViewPage from "../pages/Employee/profile-view-page";
 import ChangePasswordPage from "../pages/Employee/change-password-page";
+import AccountantDashboardPage from "../pages/accountant/accountannt-dashboard-page";
 
 function RouterComponent() {
   const { isAuthenticated, getUserDetails } = useAuth();
@@ -44,6 +45,8 @@ function RouterComponent() {
         return <Navigate to="/dashboardAdmin" />;
       } else if (role === 4) {
         return <Navigate to="/hodDashboard" />;
+      }else if (role === 5) {
+        return <Navigate to="/accountantDashboard" />;
       } else {
         return <Navigate to="/login" />;
       }
@@ -69,7 +72,7 @@ function RouterComponent() {
       <Route
         path="/listEmployee"
         element={
-          <AuthGuard element={<ListEmployeePage />} allowedRoles={[1, 2, 4]} />
+          <AuthGuard element={<ListEmployeePage />} allowedRoles={[1, 2, 4,5]} />
         }
       />
       <Route
@@ -77,7 +80,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<EmployeeDetailPage />}
-            allowedRoles={[1, 2, 4]}
+            allowedRoles={[1, 2, 4,5]}
           />
         }
       />
@@ -95,13 +98,13 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<EmployeeLeaveListPage />}
-            allowedRoles={[1, 2,4]}
+            allowedRoles={[1, 2,4,5]}
           />
         }
       />
       <Route
         path="/pdfview"
-        element={<AuthGuard element={<PDFViewPage />} allowedRoles={[1, 2]} />}
+        element={<AuthGuard element={<PDFViewPage />} allowedRoles={[1, 2 ,4,5]} />}
       />
       {/* Employee routers added below */}
       <Route
@@ -113,19 +116,19 @@ function RouterComponent() {
       <Route
         path="/profileview"
         element={
-          <AuthGuard element={<ProfileViewPage />} allowedRoles={[1, 2, 3, 4]} />
+          <AuthGuard element={<ProfileViewPage />} allowedRoles={[1, 2, 3, 4,5]} />
         }
       />
       <Route
         path="/changePassword"
         element={
-          <AuthGuard element={<ChangePasswordPage />} allowedRoles={[1, 2, 3, 4]} />
+          <AuthGuard element={<ChangePasswordPage />} allowedRoles={[1, 2, 3, 4,5]} />
         }
       />
       <Route
         path="/addLeave"
         element={
-          <AuthGuard element={<AddLeavePage />} allowedRoles={[1, 2, 3, 4]} />
+          <AuthGuard element={<AddLeavePage />} allowedRoles={[1, 2, 3, 4,5]} />
         }
       />
       <Route
@@ -133,7 +136,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<PendingLeavePage />}
-            allowedRoles={[1, 2, 3, 4]}
+            allowedRoles={[1, 2, 3, 4,5]}
           />
         }
       />
@@ -142,7 +145,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<ApprovedLeavePage />}
-            allowedRoles={[1, 2, 3, 4]}
+            allowedRoles={[1, 2, 3, 4,5]}
           />
         }
       />
@@ -151,7 +154,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<RejectedLeavePage />}
-            allowedRoles={[1, 2, 3, 4]}
+            allowedRoles={[1, 2, 3, 4,5]}
           />
         }
       />
@@ -160,7 +163,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<PendingApplicationPage />}
-            allowedRoles={[1, 2, 3, 4]}
+            allowedRoles={[1, 2, 3, 4,5]}
           />
         }
       />
@@ -187,7 +190,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<VehicleListPage />}
-            allowedRoles={[1, 2,4]}
+            allowedRoles={[1, 2,4,5]}
           />
         }
       />
@@ -196,7 +199,7 @@ function RouterComponent() {
         element={
           <AuthGuard
             element={<VehicleDetailPage />}
-            allowedRoles={[1, 2,4]}
+            allowedRoles={[1, 2,4,5]}
           />
         }
       />
@@ -239,6 +242,16 @@ function RouterComponent() {
           />
         }
       />
+      {/* ACCOUNTANT routers added below */}
+      <Route
+        path="/accountantDashboard"
+        element={
+          <AuthGuard
+            element={<AccountantDashboardPage />}
+            allowedRoles={[5]}
+          />
+        }
+        />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

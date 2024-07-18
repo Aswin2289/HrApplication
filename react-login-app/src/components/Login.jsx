@@ -37,6 +37,8 @@ function Login() {
         navigate('/dashboardAdmin');
       }else if(localStorage.getItem('role') === '4') {
         navigate('/hodDashboard');
+      }else if(localStorage.getItem('role') === '5') {
+        navigate('/accountantDashboard');
       }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errorCode) {

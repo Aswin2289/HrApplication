@@ -25,6 +25,7 @@ import MyButton from "./Button/my-button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
+import useAuth from "../hooks/use-auth";
 const schema = z.object({
   // userId: z.string().min(1, "Document name is required"),
 });
@@ -55,6 +56,8 @@ function VehicleList() {
   const [employeeId, setEmployeeId] = useState(null);
   const [vehicleData, setVehicleData] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
   // const [vehicleId, setVehicleId] = useState(null);
   console.log(employeeName);
   useEffect(() => {
@@ -555,6 +558,7 @@ function VehicleList() {
                     </TableCell>
                     <TableCell className="items-center">
                       <div className="flex gap-3">
+                      {role!==5 &&(
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
@@ -567,6 +571,7 @@ function VehicleList() {
                           <path fill="none" d="M0 0h24v24H0V0z"></path>
                           <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                         </svg>
+                      )}
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -581,7 +586,7 @@ function VehicleList() {
                             <circle cx="12" cy="12" r="3"></circle>
                           </g>
                         </svg>
-
+                        {role!==5 &&(
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="24"
@@ -602,7 +607,8 @@ function VehicleList() {
                             clipRule="evenodd"
                           ></path>
                         </svg>
-                        {vehicle.status === 1 && (
+                        )}
+                        {vehicle.status === 1 && role!==5 && (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 51.665 51.665"

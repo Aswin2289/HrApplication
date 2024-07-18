@@ -4,6 +4,7 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import pdfLogo from "../../profile/Download Pdf File.gif";
+import useAuth from "../../hooks/use-auth";
 const CertificateCard = ({
   logoSrc,
   documentName,
@@ -18,6 +19,8 @@ const CertificateCard = ({
       onEdit();
     }
   };
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
 
   const handleDelete = (event) => {
     event.stopPropagation(); // Prevent onClickView from triggering
@@ -63,12 +66,16 @@ const CertificateCard = ({
           marginTop: "10px",
         }}
       >
-        <IconButton onClick={handleEdit}>
-          <EditIcon style={{ fontSize: 20 }} />
-        </IconButton>
-        <IconButton onClick={handleDelete}>
-          <DeleteIcon style={{ fontSize: 20 }} />
-        </IconButton>
+        {role !== 5 && (
+          <div>
+            <IconButton onClick={handleEdit}>
+              <EditIcon style={{ fontSize: 20 }} />
+            </IconButton>
+            <IconButton onClick={handleDelete}>
+              <DeleteIcon style={{ fontSize: 20 }} />
+            </IconButton>
+          </div>
+        )}
         <IconButton onClick={handleDownload}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

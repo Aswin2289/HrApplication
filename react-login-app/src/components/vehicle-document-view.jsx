@@ -1,16 +1,12 @@
 import useVehicleDocument from "../hooks/use-vehicle-document";
 import CertificateCard from "./Certificatecard/CertificateCard";
 import React, { useState, useEffect } from "react";
-import {
-  IconButton,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { IconButton, Modal, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MyButton from "./Button/my-button";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
-
+import useAuth from "../hooks/use-auth";
 const VehicleDocumentView = ({ vehicleId }) => {
   const {
     pdfList,
@@ -25,7 +21,8 @@ const VehicleDocumentView = ({ vehicleId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   // const [pdfData, setPdfData] = useState(null);
-
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
   const {
     register,
     handleSubmit,
@@ -136,7 +133,6 @@ const VehicleDocumentView = ({ vehicleId }) => {
       console.error("Failed to delete document:", error);
     }
   };
-  
 
   const handleEdit = (id) => {
     handleModalOpen(id);
@@ -170,26 +166,32 @@ const VehicleDocumentView = ({ vehicleId }) => {
 
       <div className="bg-white rounded-lg shadow-lg p-4 md:p-8 flex flex-col md:flex-row w-full md:max-w-4/5 lg:max-w-3/4 xl:max-w-2/3">
         <div className="flex flex-wrap justify-center items-center gap-20">
-          <div className="bg-gray-100 p-5 rounded-lg text-center w-52 m-5 h-auto flex flex-col justify-center items-center transition duration-300 border border-gray-100 hover:border-gray-300 hover:shadow-md">
-            <IconButton
-              onClick={handleAddNewDocument}
-              className="w-36 h-40 mx-auto rounded-full bg-red-900 text-white hover:bg-red-900 focus:outline-none focus:ring-1 focus:ring-red-900"
-            >
-              <AddIcon style={{ fontSize: 40, color: "#cf0404" }} />
-            </IconButton>
-            <h3 className="text-lg font-bold mt-4">New Document</h3>
-          </div>
-          {pdfList.map((pdfDoc) => (
-            <CertificateCard
-              key={pdfDoc.id}
-              logoSrc="https://via.placeholder.com/100"
-              documentName={pdfDoc.documentName}
-              onEdit={() => handleEdit(pdfDoc.id)}
-              onDelete={() => handleDelete(pdfDoc.id)}
-              onClickView={() => handleView(pdfDoc.id)}
-              onDownload={() => handleDownload(pdfDoc.id)}
-            />
-          ))}
+          {role !== 5 && (
+            <div className="bg-gray-100 p-5 rounded-lg text-center w-52 m-5 h-auto flex flex-col justify-center items-center transition duration-300 border border-gray-100 hover:border-gray-300 hover:shadow-md">
+              <IconButton
+                onClick={handleAddNewDocument}
+                className="w-36 h-40 mx-auto rounded-full bg-red-900 text-white hover:bg-red-900 focus:outline-none focus:ring-1 focus:ring-red-900"
+              >
+                <AddIcon style={{ fontSize: 40, color: "#cf0404" }} />
+              </IconButton>
+              <h3 className="text-lg font-bold mt-4">New Document</h3>
+            </div>
+          )}
+          {pdfList.length === 0 ? (
+            <p>No records found</p>
+          ) : (
+            pdfList.map((pdfDoc) => (
+              <CertificateCard
+                key={pdfDoc.id}
+                logoSrc="https://via.placeholder.com/100"
+                documentName={pdfDoc.documentName}
+                onEdit={() => handleEdit(pdfDoc.id)}
+                onDelete={() => handleDelete(pdfDoc.id)}
+                onClickView={() => handleView(pdfDoc.id)}
+                onDownload={() => handleDownload(pdfDoc.id)}
+              />
+            ))
+          )}
           {viewError && <p className="text-red-500">Error: {viewError}</p>}
           {isViewLoading && <p>Loading...</p>}
         </div>

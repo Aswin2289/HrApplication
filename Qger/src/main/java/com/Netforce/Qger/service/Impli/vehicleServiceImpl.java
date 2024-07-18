@@ -20,7 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -273,5 +275,39 @@ public class vehicleServiceImpl implements VehicleService {
         vehicle.setRemarks(vehicleRequestDto.getRemarks());
         vehicleRepository.save(vehicle);
 
+    }
+
+
+    @Override
+    public void uploadImage(Integer id, MultipartFile file){
+        commonUtils.validateHR();
+        if (file.getSize() > 2 * 1024 * 1024) {
+            throw new BadRequestException(
+                    messageSource.getMessage("IMAGE_SIZE", null, Locale.ENGLISH));
+        }
+        byte[] vehicleStatus={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+
+        Vehicle vehicle=vehicleRepository.findByIdAndStatusIn(id,vehicleStatus).orElseThrow(
+                () ->
+                        new BadRequestException(
+                                messageSource.getMessage("VEHICLE_NOT_FOUND", null, Locale.ENGLISH)));
+
+        try{
+            vehicle.setImage(file.getBytes());
+            vehicleRepository.save(vehicle);
+
+        }catch (IOException e){
+            throw new BadRequestException(messageSource.getMessage("UNEXPECTED_ERROR",null,Locale.ENGLISH));
+        }
+
+    }
+    @Override
+    public Vehicle getImage(Integer id){
+        byte[] vehicleStatus={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+
+        return vehicleRepository.findByIdAndStatusIn(id,vehicleStatus).orElseThrow(
+                () ->
+                        new BadRequestException(
+                                messageSource.getMessage("VEHICLE_NOT_FOUND", null, Locale.ENGLISH)));
     }
 }

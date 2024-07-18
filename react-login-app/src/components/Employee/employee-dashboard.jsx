@@ -201,10 +201,11 @@ function EmployeeDashboard() {
                     />
                   </Grid>
                   <Grid item xs={9}>
-                    <Typography variant="h6">
+                  <Typography variant="h5">Total Experience</Typography>
+                    <Typography variant="body1" className="text-red-600">
                       {years} years {months} months
                     </Typography>
-                    <Typography variant="body2">Total Experience</Typography>
+                    
                   </Grid>
                 </Grid>
               </CardContent>
@@ -222,6 +223,9 @@ function EmployeeDashboard() {
                     />
                   </Grid>
                   <Grid item xs={9}>
+                  <Typography variant="h5" component="span">
+                      Air Ticket Eligibility
+                    </Typography>
                     {loading ? (
                       <Typography variant="body2">Loading...</Typography>
                     ) : ticketLeaveAvailability ? (

@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Button, Modal, FormControl, InputLabel, Select } from "@mui/material";
+import {
+  Button,
+  Modal,
+  FormControl,
+  InputLabel,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,7 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { axiosInstance } from "../services/interceptor";
 import VehicleDocumentView from "./vehicle-document-view";
-
+import useAuth from "../hooks/use-auth";
 const schema = z.object({
   assignUser: z.string().min(1, "User is required"),
 });
@@ -22,12 +29,22 @@ const schema = z.object({
 const VehicleDetail = () => {
   const location = useLocation();
   const { vehicleId } = location.state;
-  const { getVehicleDetails, assignVehicle, removeAssignee } = useAddVehicle();
+  const {
+    getVehicleDetails,
+    assignVehicle,
+    removeAssignee,
+    uploadImage,
+    viewImage,
+  } = useAddVehicle();
   const [vehicleDetails, setVehicleDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
-
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [key, setKey] = useState(0);
+  const [imageSize,setImageSize] = useState(0);
   const {
     handleSubmit,
     formState: { errors },
@@ -36,6 +53,8 @@ const VehicleDetail = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+  const { getUserDetails } = useAuth();
+  const { role } = getUserDetails();
 
   const VehicleType = {
     PRIVATE: { value: 0, label: "Private" },
@@ -56,16 +75,41 @@ const VehicleDetail = () => {
         setIsLoading(false);
       }
     };
+
+    const fetchVehicleImage = async () => {
+      try {
+        const imageResponse = await viewImage(vehicleId);
+        console.log("Vehicle Image:", imageResponse.data.size);
+        setImageSize(imageResponse.data.size);
+        // const imageUrl = URL.createObjectURL(new Blob([imageResponse.data]));
+        // setImageUrl(imageUrl);
+        const imageUrl = URL.createObjectURL(imageResponse.data);
+        setImageUrl(imageUrl);
+        console.log(imageUrl);
+      } catch (error) {
+        console.error("Error fetching vehicle image:", error);
+      }
+    };
     fetchVehicleDetails();
-  }, [vehicleId, getVehicleDetails]);
+    fetchVehicleImage();
+  }, [vehicleId, getVehicleDetails, viewImage,key]);
 
   const handleAssignVehicle = () => {
-    setIsModalOpen(true);
+    setIsAssignModalOpen(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+  const handleAssignModalClose = () => {
+    setIsAssignModalOpen(false);
     setSelectedUser("");
+    reset();
+  };
+
+  const handleImageUpload = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const handleImageModalClose = () => {
+    setIsImageModalOpen(false);
     reset();
   };
 
@@ -97,10 +141,35 @@ const VehicleDetail = () => {
       await assignVehicle(vehicleId, data.assignUser);
       toast.success("Vehicle assigned successfully");
       e.target.reset();
-      setIsModalOpen(false);
+      setIsAssignModalOpen(false);
     } catch (error) {
       toast.error("Failed to assign vehicle:", error);
       console.error("Failed to assign vehicle:", error);
+    }
+  };
+  const handleFileChange = (e) => {
+    // Handle file input change logic
+    setSelectedFile(e.target.files[0]);
+    console.log("File selected", e.target.files[0]);
+  };
+
+  const onImageUpload = async (data) => {
+    console.log("111111");
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    try {
+      // Implement the image upload logic here
+      await uploadImage(vehicleId, selectedFile);
+      console.log("Image file:", selectedFile);
+      toast.success("Image uploaded successfully");
+      setIsImageModalOpen(false);
+      setKey((prevKey) => prevKey + 1);
+    } catch (error) {
+      toast.error("Failed to upload image:", error);
+      console.error("Failed to upload image:", error);
     }
   };
 
@@ -215,16 +284,33 @@ const VehicleDetail = () => {
             </div>
           </div>
           <div className="w-full md:w-1/3 flex flex-col justify-between items-center">
-            <img
-              src={vehicleDetails.imageUrl || "https://via.placeholder.com/150"}
-              alt="Vehicle"
-              className="shadow-lg"
-            />
+            <div className="w-48 h-48">
+              {imageSize > 0 ?(
+                <img
+                  src={imageUrl}
+                  alt="Vehicle"
+                  className="w-full h-auto rounded-md"
+                />
+              ) : (
+                <img
+                  src="https://via.placeholder.com/200"
+                  alt="Vehicle"
+                  className="w-48 h-48 rounded-md shadow-lg"
+                />
+              )}
+              {role !== 5 && (
+                <div className="flex justify-center items-center mt-8">
+                  <MyButton type="button" onClick={handleImageUpload}>
+                    Upload Image
+                  </MyButton>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <Modal
-          open={isModalOpen}
-          onClose={handleModalClose}
+          open={isAssignModalOpen}
+          onClose={handleAssignModalClose}
           aria-labelledby="assign-vehicle-modal-title"
           aria-describedby="assign-vehicle-modal-description"
           className="flex justify-center items-center"
@@ -260,7 +346,67 @@ const VehicleDetail = () => {
               </FormControl>
               <div className="flex justify-center space-x-4">
                 <MyButton type="submit">Submit</MyButton>
-                <MyButton type="reset" onClick={handleModalClose}>
+                <MyButton type="reset" onClick={handleAssignModalClose}>
+                  Cancel
+                </MyButton>
+              </div>
+            </form>
+          </div>
+        </Modal>
+
+        <Modal
+          open={isImageModalOpen}
+          onClose={handleImageModalClose}
+          aria-labelledby="upload-image-modal-title"
+          aria-describedby="upload-image-modal-description"
+          className="flex justify-center items-center"
+        >
+          <div className="bg-white p-8 rounded-lg w-96">
+            <h2
+              id="upload-image-modal-title"
+              className="text-2xl font-bold mb-4"
+            >
+              Upload Image
+            </h2>
+            <form className="space-y-4">
+              <TextField
+                type="file"
+                id="file"
+                fullWidth
+                inputProps={{ accept: "image/*" }}
+                InputLabelProps={{ shrink: true }}
+                onChange={handleFileChange}
+                error={!!errors.file}
+                helperText={errors.file ? "Please upload a file" : null}
+              />
+              {/* <Controller
+                name="image"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <FormControl fullWidth error={!!errors.image}>
+                    <TextField
+                      type="file"
+                      id="image"
+                      label="Image"
+                      inputProps={{ accept: "image/*" }}
+                      InputLabelProps={{ shrink: true }}
+                      onChange={(e) => {
+                        field.onChange(e.target.files[0]);
+                        setSelectedFile(e.target.files[0]);
+                      }}
+                    />
+                    {errors.image && (
+                      <p className="text-red-500">{errors.image.message}</p>
+                    )}
+                  </FormControl>
+                )}
+              /> */}
+              <div className="flex justify-center space-x-4">
+                <MyButton type="button" onClick={onImageUpload}>
+                  Upload
+                </MyButton>
+                <MyButton type="reset" onClick={handleImageModalClose}>
                   Cancel
                 </MyButton>
               </div>

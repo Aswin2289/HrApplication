@@ -6,6 +6,7 @@ import com.Netforce.Qger.entity.dto.responseDto.PagedResponseDTO;
 import com.Netforce.Qger.entity.dto.responseDto.VehicleResponseDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.sql.In;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,4 +23,7 @@ public interface VehicleService {
     VehicleResponseDTO getVehicleDetail(Integer id);
 
     void updateVehicle(Integer id,VehicleRequestDto vehicleRequestDto);
+
+    void uploadImage(Integer id, MultipartFile file);
+    Vehicle getImage(Integer id);
 }
