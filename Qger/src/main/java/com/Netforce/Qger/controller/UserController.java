@@ -41,7 +41,7 @@ public class UserController {
       @RequestParam(required = false, defaultValue = "false") boolean passportExpired,
       @RequestParam(required = false, defaultValue = "false") boolean licenseExpired,
       @RequestParam(required = false, defaultValue = "joiningDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size);

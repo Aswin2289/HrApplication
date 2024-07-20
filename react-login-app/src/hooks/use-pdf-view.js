@@ -8,10 +8,12 @@ const usePdfView = () => {
   const [viewError, setViewError] = useState(null);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
 
-  const fetchPdfList = async () => {
+  const fetchPdfList = async (searchKeyword = '') => {
     setIsViewLoading(true);
     try {
-      const response = await axiosInstance.get("/pdfdocument/all");
+      const response = await axiosInstance.get("/pdfdocument/all",{
+        params: { searchKeyword }
+      });
       setPdfList(response.data);
       setIsViewLoading(false);
     } catch (error) {

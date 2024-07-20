@@ -162,10 +162,7 @@ const EmployeeDetails = () => {
               <span className="text-gray-700 font-bold">Qualification:</span>
               <span>{employeeDetails.qualification}</span>
             </div>
-            <div className="flex flex-col mb-4">
-              <span className="text-gray-700 font-bold">Experience:</span>
-              <span>{employeeDetails.experience} years</span>
-            </div>
+           
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">Total Experience:</span>
               <span>{employeeDetails.totalExperience} years</span>
@@ -197,13 +194,23 @@ const EmployeeDetails = () => {
               </span>
             </div>
             <div className="flex flex-col mb-4">
+              <span className="text-gray-700 font-bold">License:</span>
+              {employeeDetails.license ? (<span> {employeeDetails.license}</span>):("N/A")}
+            </div>
+            <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">License Expire:</span>
               <span>
-                {employeeDetails.licenseExpire.join("-")},{" "}
-                <span className="font-extrabold text-red-800">
-                  {employeeDetails.noOfDaysLicenseExpire}
-                </span>{" "}
-                days left
+                {employeeDetails.licenseExpire ? (
+                  <>
+                    {employeeDetails.licenseExpire.join("-")},{" "}
+                    <span className="font-extrabold text-red-800">
+                      {employeeDetails.noOfDaysLicenseExpire}
+                    </span>{" "}
+                    days left
+                  </>
+                ) : (
+                  "N/A"
+                )}
               </span>
             </div>
           </div>
@@ -220,7 +227,7 @@ const EmployeeDetails = () => {
               {employeeDetails.status === 1 ? "Vacation" : "Re-joining"}
             </Button>
             <Button
-              disabled={role !== 1}
+              disabled={role !== 1&&role !== 4}
               variant="contained"
               style={{
                 textTransform: "none",
@@ -266,7 +273,14 @@ const EmployeeDetails = () => {
                 label="Leave Type"
               >
                 {leaveTypesHr && leaveTypesHr.length > 0 ? (
-                  leaveTypesHr.map((leaveType) => (
+                  leaveTypesHr.filter((leaveType) => {
+                    // Check role and filter leave types accordingly
+                    if (role === 4) {
+                      return leaveType.id === 2 || leaveType.id === 3|| leaveType.id === 5;
+                    }
+                    // If role is not 4, display all leave types
+                    return true;
+                  }).map((leaveType) => (
                     <MenuItem key={leaveType.id} value={leaveType.id}>
                       {leaveType.name}
                     </MenuItem>

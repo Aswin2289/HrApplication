@@ -25,7 +25,7 @@ function Addemployee() {
       .string()
       .min(1, { message: "Contract Period is required" }),
     passport: z.string().min(1, { message: "Passport Number is required" }),
-    license: z.string(),
+    // license: z.string(),
     qualification: z.string(),
     role: z.string().min(1, { message: "Role is required" }),
     department: z.string().min(1, { message: "Department is required" }),
@@ -43,7 +43,7 @@ function Addemployee() {
   const [employeeData, setEmployeeData] = useState({
     qidExpire: tomorrow,
     passportExpire: tomorrow,
-    licenseExpire: tomorrow,
+    licenseExpire: null,
     joiningDate: today,
   });
 

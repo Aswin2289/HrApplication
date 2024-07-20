@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import workInProgressGif from "../../profile/nice.gif";
+import workinngDay from "../../profile/working2.gif";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Lottie from "lottie-react";
 import lottieSampleAnimation from "../../profile/dollar-donation.json"; // Sample Lottie animation
+import workingPerson from "../../profile/working_person.json";
 import homeIcon from "../../profile/home-button.json";
 import useAddLeaveEmployee from "../../hooks/add-leave-employee";
 import holidays from "../../profile/holiday_4343468.png";
@@ -130,15 +132,12 @@ function EmployeeDashboard() {
                   <span className="text-gray-700 font-bold">Employee ID:</span>
                   <span>{employeeDetails.employeeId}</span>
                 </div>
-                
-                
+
                 <div className="flex flex-col mb-4">
                   <span className="text-gray-700 font-bold">Passport No:</span>
                   <span>{employeeDetails.passport}</span>
                 </div>
-                
-               
-                
+
                 <div className="flex flex-col mb-4">
                   <span className="text-gray-700 font-bold">QID Expire:</span>
                   <span>
@@ -175,7 +174,7 @@ function EmployeeDashboard() {
                 </div>
               </div>
             </div>
-           
+
             <div className="w-full md:w-1/3 flex flex-col justify-between items-center">
               <img
                 src="https://via.placeholder.com/150"
@@ -185,10 +184,38 @@ function EmployeeDashboard() {
             </div>
           </div>
         </div>
+        <div>
+          <Grid container spacing={2} direction="column">
+            <Grid item style={{ marginTop: "20px" }}>
+              <Card style={cardStyle}>
+                <CardContent>
+                  <Grid container alignItems="center">
+                    <Grid item xs={3}>
+                      <img
+                        src={holidays}
+                        alt="10 Year Leave"
+                        style={{ width: "40px", height: "40px" }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={9}
+                      container
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography variant="h5">Total Leave Balance</Typography>
+                      <Typography variant="h4">100</Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </div>
       </div>
       <div className="w-full mb-14 md:w-1/3 lg:w-1/3 xl:w-1/3">
         <Grid container spacing={2} direction="column">
-          
           <Grid item style={{ marginTop: "20px" }}>
             <Card style={cardStyle}>
               <CardContent>
@@ -201,11 +228,10 @@ function EmployeeDashboard() {
                     />
                   </Grid>
                   <Grid item xs={9}>
-                  <Typography variant="h5">Total Experience</Typography>
+                    <Typography variant="h5">Total Experience</Typography>
                     <Typography variant="body1" className="text-red-600">
                       {years} years {months} months
                     </Typography>
-                    
                   </Grid>
                 </Grid>
               </CardContent>
@@ -223,7 +249,7 @@ function EmployeeDashboard() {
                     />
                   </Grid>
                   <Grid item xs={9}>
-                  <Typography variant="h5" component="span">
+                    <Typography variant="h5" component="span">
                       Air Ticket Eligibility
                     </Typography>
                     {loading ? (
@@ -249,6 +275,42 @@ function EmployeeDashboard() {
                           >
                             {ticketLeaveAvailability.eligible ? "Yes" : "No"}
                           </span>
+                        </Typography>
+                      </>
+                    ) : (
+                      <Typography variant="body2">No data available</Typography>
+                    )}
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card style={cardStyle}>
+              <CardContent>
+                <Grid container alignItems="center">
+                  <Grid item xs={3}>
+                    {/* <Lottie
+                      animationData={workingPerson}
+                      loop={true}
+                      style={{ width: "40px", height: "40px" }}
+                    /> */}
+                    <img
+                      src={workinngDay}
+                      alt="Work in Progress"
+                      style={{ width: "40px", height: "40px" }}
+                    />
+                  </Grid>
+                  <Grid item xs={9}>
+                    {loading ? (
+                      <Typography variant="body2">Loading...</Typography>
+                    ) : ticketLeaveAvailability ? (
+                      <>
+                        <Typography variant="h4" component="span">
+                          {ticketLeaveAvailability.daysWorked}
+                        </Typography>
+                        <Typography variant="body2" component="span">
+                          /Days Worked
                         </Typography>
                       </>
                     ) : (

@@ -14,6 +14,7 @@ public class EligibilityResponseDTO {
     private long daysLeft;
     private LocalDate eligibilityDate;
     private boolean applyEligibility;
+    private long daysWorked;
 
 
 }

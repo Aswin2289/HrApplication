@@ -114,7 +114,7 @@ function LeaveDetails() {
    
     if (eligibleYears === 0,1) {
       delete data["two year"];
-      delete data["one year"];
+      // delete data["one year"];
     }
     return data;
   };
@@ -196,7 +196,7 @@ function LeaveDetails() {
           }
           return (
             <div className="flex justify-center" key={leaveType}>
-              <div className="w-full sm:w-3/4 md:w-2/3 lg:w-2/3 bg-white rounded-lg p-4 flex items-center shadow-md">
+              <div className="w-full sm:w-4/4 md:w-3/3 lg:w-3/3 bg-white rounded-lg p-4 flex items-center shadow-md">
                 <div className="w-14 h-14">
                   <CircularProgressbar
                     value={percentage}
@@ -213,7 +213,6 @@ function LeaveDetails() {
                     {leaveType.replace(/ *\([^)]*\) */g, "").replace(/_/g, " ")}
                   </h2>
                   <p className="text-sm text-gray-500">
-                    <b>{totalLeave}</b> Entitled,{" "}
                     <b>{totalLeaveAddedPerYear}</b> Credited,{" "}
                     <b>{totalLeaveTakenPerYear}</b> Availed
                   </p>
@@ -225,7 +224,7 @@ function LeaveDetails() {
 
         {ticketLeaveAvailability !== null &&
           typeof ticketLeaveAvailability !== "undefined" && (
-            <div className="flex justify-center">
+            <div className="flex justify-start ">
               <div className="w-full sm:w-3/4 md:w-2/3 lg:w-2/3 bg-white rounded-lg p-4 flex flex-col items-start shadow-md">
                 <h2 className="text-lg font-semibold capitalize mb-2">
                   Air Ticket Eligibility

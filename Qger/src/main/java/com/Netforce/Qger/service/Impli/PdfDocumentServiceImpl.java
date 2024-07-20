@@ -44,8 +44,8 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
                 .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
     }
 
-    public List<PdfDocument> getAllPdfDocuments() {
-        return pdfDocumentRepository.findAllByStatus(PdfDocument.Status.ACTIVE.value);
+    public List<PdfDocument> getAllPdfDocuments(String searchKeyword) {
+        return pdfDocumentRepository.findByDocumentNameContainingIgnoreCaseAndStatus(searchKeyword,PdfDocument.Status.ACTIVE.value);
     }
     @Override
     public PdfDocument updatePdf(Integer id, MultipartFile file, String docName) {

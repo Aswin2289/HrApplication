@@ -2,13 +2,16 @@ package com.Netforce.Qger.service.Impli;
 
 import com.Netforce.Qger.entity.Leave;
 import com.Netforce.Qger.entity.User;
-import com.Netforce.Qger.entity.dto.responseDto.EligibilityResponseDTO;
-import com.Netforce.Qger.entity.dto.responseDto.YearEligibilityResponseDTO;
+import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.repository.LeaveRepository;
+import com.Netforce.Qger.repository.UserCriteriaRepository;
 import com.Netforce.Qger.service.LeaveAvailabilityService;
 import com.Netforce.Qger.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +19,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
 
     private final LeaveRepository leaveRepository;
     private final CommonUtils commonUtils;
+    private final UserCriteriaRepository userCriteriaRepository;
     @Override
     public EligibilityResponseDTO checkEligibilityForYearlyLeaveAndFlight(User user) {
 
@@ -73,7 +78,7 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
         LocalDate sixMonthsBeforeEligibilityDate = eligibilityDate.minusMonths(6);
 
         boolean applyEligibility = !currentDate.isBefore(sixMonthsBeforeEligibilityDate) && !currentDate.isAfter(eligibilityDate);
-        return new EligibilityResponseDTO(isEligible, daysLeft, eligibilityDate,applyEligibility);
+        return new EligibilityResponseDTO(isEligible, daysLeft, eligibilityDate,applyEligibility,totalDaysConsidered);
     }
 
 
@@ -83,5 +88,46 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
         YearEligibilityResponseDTO result = new YearEligibilityResponseDTO();
         result.setEligibleYears(user.getYearStatus());
         return result;
+    }
+
+    @Override
+    public PagedResponseDTO<EmployeeLeaveEligibilityResponseDTO>getListEmployee(String searchKeyword, String status, String sortBy, String sortOrder, Pageable pageable){
+        boolean qidExpiresThisMonth=false;
+        boolean passportExpired=false;
+        boolean licenseExpired=false;
+        Page<User> userPage =
+                userCriteriaRepository.getUsersWithFilters(
+                        searchKeyword,
+                        status,
+                        qidExpiresThisMonth,
+                        passportExpired,
+                        licenseExpired,
+                        sortBy,
+                        sortOrder,
+                        pageable);
+
+        List<EmployeeLeaveEligibilityResponseDTO>eligibilityResponseDTOS=userPage.getContent().stream()
+                .map(user -> {
+                    LocalDate today = LocalDate.now();
+                    EligibilityResponseDTO eligibilityResponseDTO=checkEligibilityForYearlyLeaveAndFlight(user);
+                    Integer noOfDaysPassport =
+                            Math.toIntExact(
+                                    commonUtils.calculateDaysDifference(today, user.getPassportExpire()));
+                    return new EmployeeLeaveEligibilityResponseDTO(
+                            Math.toIntExact(user.getId()),
+                            user.getEmployeeId(),
+                            user.getName(),
+                            user.getPassportExpire(),
+                            noOfDaysPassport,
+                            eligibilityResponseDTO
+                          );
+                })
+                .collect(Collectors.toList());
+
+        return new PagedResponseDTO<>(
+                eligibilityResponseDTOS,
+                userPage.getTotalPages(),
+                userPage.getTotalElements(),
+                userPage.getNumber());
     }
 }

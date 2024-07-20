@@ -49,8 +49,8 @@ public class PdfDocumentController {
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
   @GetMapping("/all")
-  public ResponseEntity<List<PdfDocument>> getAllPdfDocuments() {
-    List<PdfDocument> pdfDocuments = pdfDocumentService.getAllPdfDocuments();
+  public ResponseEntity<List<PdfDocument>> getAllPdfDocuments(@RequestParam(required = false) String searchKeyword) {
+    List<PdfDocument> pdfDocuments = pdfDocumentService.getAllPdfDocuments(searchKeyword);
     return new ResponseEntity<>(pdfDocuments, HttpStatus.OK);
   }
 

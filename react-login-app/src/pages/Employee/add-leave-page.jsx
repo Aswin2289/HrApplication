@@ -12,10 +12,11 @@ function AddLeavePage() {
           <p></p>
         {/* </div> */}
         <div className="flex ">
-          <div className="flex justify-center items-center w-2/3">
+          
+          <AddLeave />
+          <div className="flex justify-center items-center w-3/6">
             <AddLeaveImage />
           </div>
-          <AddLeave />
         </div>
       </Layout>
     </div>

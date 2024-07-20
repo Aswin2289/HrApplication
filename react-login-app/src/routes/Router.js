@@ -29,6 +29,7 @@ import VehicleDetailPage from "../pages/vehicle-detail-page";
 import ProfileViewPage from "../pages/Employee/profile-view-page";
 import ChangePasswordPage from "../pages/Employee/change-password-page";
 import AccountantDashboardPage from "../pages/accountant/accountannt-dashboard-page";
+import EmplpoyeeLeaveEligibilityPage from "../pages/employee-leave-eligibility-page";
 
 function RouterComponent() {
   const { isAuthenticated, getUserDetails } = useAuth();
@@ -105,6 +106,10 @@ function RouterComponent() {
       <Route
         path="/pdfview"
         element={<AuthGuard element={<PDFViewPage />} allowedRoles={[1, 2 ,4,5]} />}
+      />
+      <Route
+        path="/employeeLeaveEligibility"
+        element={<AuthGuard element={<EmplpoyeeLeaveEligibilityPage />} allowedRoles={[1, 2 ,4,5]} />}
       />
       {/* Employee routers added below */}
       <Route

@@ -7,7 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useTotalEmployees from "../../hooks/useTotalEmployees";
 import { useNavigate } from "react-router-dom";
 function HodDashboard() {
-    const { totalEmployees, isLoading, error } = useTotalEmployees();
+  const { totalEmployees, isLoading, error } = useTotalEmployees();
   const [total, setTotal] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
   const [vacationCount, setVacationCount] = useState(0);

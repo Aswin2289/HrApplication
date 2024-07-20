@@ -82,10 +82,12 @@ public class UserServiceImpl implements UserService {
       throw new BadRequestException(
           messageSource.getMessage("PASSPORT_EXPIRED", null, Locale.ENGLISH));
     }
-    if (employeeRequestDTO.getLicenseExpire().isBefore(currentDate)
-        || employeeRequestDTO.getLicenseExpire().isEqual(currentDate)) {
-      throw new BadRequestException(
-          messageSource.getMessage("LICENCE_EXPIRED", null, Locale.ENGLISH));
+    if (employeeRequestDTO.getLicenseExpire()!=null) {
+      if (employeeRequestDTO.getLicenseExpire().isBefore(currentDate)
+              || employeeRequestDTO.getLicenseExpire().isEqual(currentDate)) {
+        throw new BadRequestException(
+                messageSource.getMessage("LICENCE_EXPIRED", null, Locale.ENGLISH));
+      }
     }
     //    if (employeeRequestDTO.getContractPeriod().isBefore(currentDate)
     //        || employeeRequestDTO.getContractPeriod().isEqual(currentDate)) {
@@ -223,8 +225,14 @@ public class UserServiceImpl implements UserService {
         Math.toIntExact(commonUtils.calculateDaysDifference(today, user.getQidExpire()));
     Integer noOfDaysPassport =
         Math.toIntExact(commonUtils.calculateDaysDifference(today, user.getPassportExpire()));
-    Integer noOfDaysLicense =
-        Math.toIntExact(commonUtils.calculateDaysDifference(today, user.getLicenseExpire()));
+    int noOfDaysLicense;
+    if (user.getLicenseExpire()!=null) {
+      noOfDaysLicense =
+              Math.toIntExact(commonUtils.calculateDaysDifference(today, user.getLicenseExpire()));
+    }
+    else{
+      noOfDaysLicense=0;
+    }
     System.out.println(user.getJoiningDate());
     EmployeeDetailsResponseDTO employeeDetailsResponseDTO = new EmployeeDetailsResponseDTO();
     employeeDetailsResponseDTO.setId(user.getId());
@@ -511,6 +519,7 @@ public class UserServiceImpl implements UserService {
     }
 
   }
+
 
 
 

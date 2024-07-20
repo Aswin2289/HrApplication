@@ -66,7 +66,7 @@ const CertificateCard = ({
           marginTop: "10px",
         }}
       >
-        {role !== 5 && (
+        {role !== 5 && role!==4 && (
           <div>
             <IconButton onClick={handleEdit}>
               <EditIcon style={{ fontSize: 20 }} />

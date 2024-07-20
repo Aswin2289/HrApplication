@@ -45,6 +45,8 @@ const PdfView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [pdfData, setPdfData] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(true);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const {
     register,
     handleSubmit,
@@ -59,8 +61,8 @@ const PdfView = () => {
   const { role } = getUserDetails();
 
   useEffect(() => {
-    fetchPdfList();
-  }, []);
+    fetchPdfList(searchKeyword);
+  }, [searchKeyword]);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -133,32 +135,84 @@ const PdfView = () => {
       console.error("Failed to delete document:", error);
     }
   };
+  const handleSearchChange = (event) => {
+    setSearchKeyword(event.target.value);
+  };
+  const toggleSearch = () => {
+    setSearchKeyword(""); // Reset searchKeyword to empty string
+    setSearchOpen(searchOpen); // Toggle searchOpen state
+  };
 
   return (
     <div>
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      {role !== 5 && (
-        <div className="flex justify-end mb-8">
+      
+      <div className="flex justify-end">
+        {/* Search Icon */}
+        {/* <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 48 48"
+          id="search"
+          onClick={toggleSearch} // Toggle search bar visibility on click
+          className="cursor-pointer"
+        >
+          <path d="M46.599 40.236L36.054 29.691C37.89 26.718 39 23.25 39 19.5 39 8.73 30.27 0 19.5 0S0 8.73 0 19.5 8.73 39 19.5 39c3.75 0 7.218-1.11 10.188-2.943l10.548 10.545a4.501 4.501 0 0 0 6.363-6.366zM19.5 33C12.045 33 6 26.955 6 19.5S12.045 6 19.5 6 33 12.045 33 19.5 26.955 33 19.5 33z"></path>
+        </svg> */}
+      </div>
+      {searchOpen && (
+        <div className="flex justify-end gap-5 mr-8 mt-2 mb-3 ml-6">
+          <input
+            type="text"
+            placeholder="What are you looking for?"
+            value={searchKeyword}
+            onChange={handleSearchChange}
+            className="border border-gray-300 rounded-md px-2 py-1 w-full h-14" // Reduced width of the search bar
+          />
+          {/* Close Icon */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            className="cursor-pointer mt-1"
+            onClick={toggleSearch} // Toggle search bar visibility on click
+          >
+            <path
+              fill="currentColor"
+              d="M19.71 19.71c-.39.39-1.02.39-1.41 0L12 13.41l-6.29 6.3c-.39.39-1.02.39-1.41 0s-.39-1.02 0-1.41L10.59 12 4.3 5.71c-.39-.39-.39-1.02 0-1.41s1.02-.39 1.41 0L12 10.59l6.29-6.3c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41L13.41 12l6.3 6.29c.39.39.39 1.03 0 1.42z"
+            ></path>
+          </svg>
+        </div>
+      )}
+      {role !== 5 && role !== 4 && (
+        <div className="flex justify-start mb-8 ml-6">
           <MyButton onClick={() => handleModalOpen()} disabled={isViewLoading}>
             Add Document
           </MyButton>
           {uploadError && <p className="text-red-500">Error: {uploadError}</p>}
         </div>
       )}
-      <div className="flex flex-wrap justify-center items-center gap-20">
-        {pdfList.map((pdfDoc) => (
-          <CertificateCard
-            key={pdfDoc.id}
-            logoSrc="https://via.placeholder.com/100"
-            onClickView={() => handleView(pdfDoc.id)}
-            documentName={pdfDoc.documentName}
-            onEdit={() => handleEdit(pdfDoc.id)}
-            onDelete={() => handleDelete(pdfDoc.id)}
-          />
-        ))}
-        {viewError && <p className="text-red-500">Error: {viewError}</p>}
-        {isViewLoading && <p>Loading...</p>}
-      </div>
+      {pdfList !== null && pdfList.length >0 ? (
+        <div className="flex flex-wrap justify-center items-center gap-20">
+          {pdfList.map((pdfDoc) => (
+            <CertificateCard
+              key={pdfDoc.id}
+              logoSrc="https://via.placeholder.com/100"
+              onClickView={() => handleView(pdfDoc.id)}
+              documentName={pdfDoc.documentName}
+              onEdit={() => handleEdit(pdfDoc.id)}
+              onDelete={() => handleDelete(pdfDoc.id)}
+            />
+          ))}
+
+          {viewError && <p className="text-red-500">Error: {viewError}</p>}
+          {isViewLoading && <p>Loading...</p>}
+        </div>
+      ) : (
+        <p>No documents found.</p>
+      )}
       <Modal
         open={isModalOpen}
         onClose={handleModalClose}
