@@ -30,6 +30,8 @@ function AllPendingLeaveRequest() {
         return "bg-yellow-500 text-white";
       case 2:
         return "bg-orange-500 text-white";
+      case 10:
+        return "bg-orange-500 text-white";
       default:
         return "";
     }
@@ -170,7 +172,7 @@ function AllPendingLeaveRequest() {
                     <TableCell>{leave.availableLeaveBalance}</TableCell>
                     <TableCell>
                       <span className={`rounded-full px-4 py-1 ${getStatusClass(leave.status)}`}>
-                        {leave.status === 0 ? "Confirmed" : leave.status === 1 ? "Pending" : "Accepted By HR"}
+                        {leave.status === 0 ? "Confirmed" : leave.status === 1 ? "Pending" :leave.status === 2? "Accepted By HR":"Accepted By HOD"}
                       </span>
                     </TableCell>
                     <TableCell>

@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../services/interceptor";
 import VehicleDocumentView from "./vehicle-document-view";
 import useAuth from "../hooks/use-auth";
+import { differenceInYears, differenceInMonths, format } from "date-fns";
 const schema = z.object({
   assignUser: z.string().min(1, "User is required"),
 });
@@ -111,6 +112,13 @@ const VehicleDetail = () => {
   const handleImageModalClose = () => {
     setIsImageModalOpen(false);
     reset();
+  };
+  const calculateVehicleAge = (registrationDate) => {
+    const now = new Date();
+    const registration = new Date(registrationDate);
+    const years = differenceInYears(now, registration);
+    const months = differenceInMonths(now, registration) % 12;
+    return `${years} years ${months} months`;
   };
 
   const { data: employees } = useQuery({
@@ -259,6 +267,15 @@ const VehicleDetail = () => {
                 <span className="text-gray-700 font-bold">Assigned User:</span>
                 <span>{vehicleDetails.userName || "Not Assigned"}</span>
               </div>
+              <div className="flex flex-col mb-4">
+                <span className="text-gray-700 font-bold">
+                  Vehicle Age 
+                </span>
+                <span>
+                {calculateVehicleAge(vehicleDetails.registrationDate)}
+                </span>
+              </div>
+              
             </div>
             <div className="flex justify-start space-x-4">
               <Button

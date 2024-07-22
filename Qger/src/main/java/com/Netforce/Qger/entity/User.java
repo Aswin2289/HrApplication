@@ -60,6 +60,7 @@ public class User {
     private LocalDate licenseExpire;
     private byte status;
     private Date rejoiningDate;
+    private Date lastEligilibleDate;
     private byte yearStatus;
     private byte department;
     @Temporal(TemporalType.TIMESTAMP)

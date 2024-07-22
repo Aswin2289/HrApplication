@@ -17,4 +17,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle,Integer> {
 
     int countByIstimaraDateAfterAndIstimaraDateBeforeAndStatusIn(LocalDate startDate, LocalDate endDate, byte[] status);
     int countByInsuranceExpireAfterAndInsuranceExpireBeforeAndStatusIn(LocalDate startDate, LocalDate endDate, byte[] status);
+    Vehicle findByUserIdAndStatusIn(Integer id,byte[] status);
 }

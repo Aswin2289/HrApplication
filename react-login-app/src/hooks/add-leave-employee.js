@@ -70,6 +70,19 @@ const useAddLeaveEmployee = () => {
       throw error;
     }
   };
+  const getAnnualLeave = async (id) => {
+    try {
+      const response = await axiosInstance.get(`/leave/employee/annual/count/${id}`);
+      console.log("Annual Leave Response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching annual leave:",
+        error.response? error.response.data : error.message
+      );
+      throw error;
+    }
+  };
 
   return useMemo(
     () => ({
@@ -78,6 +91,7 @@ const useAddLeaveEmployee = () => {
       getTicketLeaveAvailablity,
       getYearEligiblity,
       getExperince,
+      getAnnualLeave,
     }),
     []
   );

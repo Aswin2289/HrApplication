@@ -128,6 +128,19 @@ const useAddVehicle = () => {
       throw error;
     }
   }
+  const viewVehicleNumber=async (id)=>{
+    try{
+      const response = await axiosInstance.get(`/vehicle/view/number/${id}`);
+      console.log("Vehicle Number:", response.data);
+      return response.data;
+    }catch (error) {
+      console.error(
+        "Error viewing vehicle image:",
+        error.response? error.response.data : error.message
+      );
+      throw error;
+    }
+  }
 
 
   return useMemo(
@@ -139,7 +152,8 @@ const useAddVehicle = () => {
       addVehicle,
       updateVehicle,
       uploadImage,
-      viewImage
+      viewImage,
+      viewVehicleNumber,
     }),
     []
   );

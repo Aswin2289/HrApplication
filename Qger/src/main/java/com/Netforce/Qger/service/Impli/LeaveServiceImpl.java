@@ -204,6 +204,7 @@ public class LeaveServiceImpl implements LeaveService {
                     new BadRequestException(
                         messageSource.getMessage("LEAVE_TYPE_ERROR", null, Locale.ENGLISH)));
     leaveUpdateDTO.setTransactionType(Leave.TransactionType.ADDED.value);
+
     leaveRepository.save(new Leave(leaveUpdateDTO, user, leaveType));
   }
 
@@ -474,12 +475,40 @@ public class LeaveServiceImpl implements LeaveService {
                     new BadRequestException(
                         messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
     if (getAvailableLeave(user) >= leave.getDaysAdjusted()) {
-      leave.setStatus(Leave.Status.ACCEPTED.value);
+      leave.setStatus(Leave.Status.ACCEPTED_BY_HOD.value);
       leaveRepository.save(leave);
     } else {
       throw new BadRequestException(
           messageSource.getMessage("INSUFFICIENT_LEAVE_BALANCE", null, Locale.ENGLISH));
     }
+  }
+
+  @Override
+  public Integer annualLeaveCount(Integer id){
+    byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
+    User user =
+            userRepository
+                    .findByIdAndStatusIn(id, userStatus)
+                    .orElseThrow(
+                            () ->
+                                    new BadRequestException(
+                                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+    long leaveTypeId = 1;
+    byte[] leaveStatus = {Leave.Status.ACCEPTED.value,Leave.Status.ADDED.value};
+    List<Leave> leaves = leaveRepository.findByUserAndLeaveTypeIdAndStatusIn(user, leaveTypeId,leaveStatus);
+
+    int totalLeaveBalance = 0;
+    for (Leave leave : leaves) {
+      if (leave.getTransactionType() == Leave.TransactionType.ADDED.value) {
+        totalLeaveBalance += leave.getDaysAdjusted();
+      } else if (leave.getTransactionType() == Leave.TransactionType.SUBTRACT.value) {
+        totalLeaveBalance -= leave.getDaysAdjusted();
+      }
+    }
+
+    return totalLeaveBalance;
+
   }
 
 }

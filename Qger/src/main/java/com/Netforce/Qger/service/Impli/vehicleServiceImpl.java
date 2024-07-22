@@ -310,4 +310,29 @@ public class vehicleServiceImpl implements VehicleService {
                         new BadRequestException(
                                 messageSource.getMessage("VEHICLE_NOT_FOUND", null, Locale.ENGLISH)));
     }
+
+
+    @Override
+    public String getVehicleNumber(Integer userId){
+        byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
+        byte[] vehicleStatus={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+        User user =
+                userRepository
+                        .findByIdAndStatusIn(userId, userStatus)
+                        .orElseThrow(
+                                () ->
+                                        new BadRequestException(
+                                                messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+        Vehicle vehicle=vehicleRepository.findByUserIdAndStatusIn(Math.toIntExact(user.getId()),vehicleStatus);
+        String vehicleNumber;
+        if (vehicle==null){
+            vehicleNumber=null;
+        }
+        else{
+            vehicleNumber=vehicle.getVehicleNumber();
+        }
+        return vehicleNumber;
+
+    }
 }

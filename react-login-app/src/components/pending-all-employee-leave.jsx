@@ -17,7 +17,8 @@ function PendingAllEmployeeLeave() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { rejectPendingLeave,acceptPendingLeave ,deletePendingLeave} = useHrPendingLeave();
+  const { rejectPendingLeave, acceptPendingLeave, deletePendingLeave } =
+    useHrPendingLeave();
 
   const fetchLeave = async () => {
     setIsLoading(true);
@@ -49,26 +50,32 @@ function PendingAllEmployeeLeave() {
     setCurrentPage(0);
   };
 
-  const handleDeleteClick =async (id) => {
+  const handleDeleteClick = async (id) => {
     console.log("Delete Leave with id: ", id);
     try {
       const response = await deletePendingLeave(id);
       console.log(response);
       fetchLeave();
     } catch (error) {
-      console.error('Failed to Delete Request:', error.response ? error.response.data : error.message);
+      console.error(
+        "Failed to Delete Request:",
+        error.response ? error.response.data : error.message
+      );
       setError("Failed to Delete Request");
     }
   };
 
-  const handleApproveClick = async(id) => {
+  const handleApproveClick = async (id) => {
     console.log("Approve Leave with id: ", id);
     try {
       const response = await acceptPendingLeave(id);
       console.log(response);
       fetchLeave();
     } catch (error) {
-      console.error('Failed to accept leave:', error.response ? error.response.data : error.message);
+      console.error(
+        "Failed to accept leave:",
+        error.response ? error.response.data : error.message
+      );
       setError("Failed to reject leave");
     }
   };
@@ -80,8 +87,25 @@ function PendingAllEmployeeLeave() {
       console.log(response);
       fetchLeave();
     } catch (error) {
-      console.error('Failed to reject leave:', error.response ? error.response.data : error.message);
+      console.error(
+        "Failed to reject leave:",
+        error.response ? error.response.data : error.message
+      );
       setError("Failed to reject leave");
+    }
+  };
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 0:
+        return "bg-green-500 text-white";
+      case 1:
+        return "bg-yellow-500 text-white";
+      case 2:
+        return "bg-orange-500 text-white";
+      case 10:
+        return "bg-orange-500 text-white";
+      default:
+        return "";
     }
   };
 
@@ -97,7 +121,11 @@ function PendingAllEmployeeLeave() {
               <TableCell sx={{ fontWeight: "bold" }}>From</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>To</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Reason</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Available Balance</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>
+                Available Balance
+              </TableCell>
+              
+              <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -141,6 +169,21 @@ function PendingAllEmployeeLeave() {
                     <TableCell>{leave.reason}</TableCell>
                     <TableCell>{leave.availableLeaveBalance}</TableCell>
                     <TableCell>
+                      <span
+                        className={`rounded-full px-4 py-1 ${getStatusClass(
+                          leave.status
+                        )}`}
+                      >
+                        {leave.status === 0
+                          ? "Confirmed"
+                          : leave.status === 1
+                          ? "Pending"
+                          : leave.status === 2
+                          ? "Accepted By HR"
+                          : "Accepted By HOD"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex gap-4">
                         <svg
                           version="1.1"
@@ -160,7 +203,7 @@ function PendingAllEmployeeLeave() {
         s12.727,5.698,12.727,12.725C27.855,22.156,22.156,27.854,15.129,27.854z"
                             />
                             <path
-                            fill="#02d91b"
+                              fill="#02d91b"
                               d="M25.854,9.989l-1.762-1.762c-0.322-0.324-0.85-0.324-1.172,0L12.361,18.786l-5.023-5.061
         c-0.324-0.323-0.848-0.323-1.174,0l-1.76,1.761c-0.324,0.322-0.324,0.851,0,1.175l5.586,5.626l0.016,0.025l1.219,1.219l0.283,0.281
         l0.26,0.262c0.322,0.32,0.85,0.32,1.174,0l12.912-12.912C26.178,10.839,26.178,10.312,25.854,9.989z"

@@ -229,4 +229,9 @@ public class LeaveController {
     return new ResponseEntity<>(
             new SuccessResponseDTO("201", "Employee Leave Accepted"), HttpStatus.CREATED);
   }
+
+  @GetMapping("/employee/annual/count/{id}")
+  public Integer annualCount(@PathVariable("id") Integer id){
+    return leaveService.annualLeaveCount(id);
+  }
 }

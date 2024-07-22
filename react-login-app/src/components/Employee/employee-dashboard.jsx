@@ -14,9 +14,14 @@ import holidays from "../../profile/holiday_4343468.png";
 import useAuth from "../../hooks/use-auth";
 import useEmployeeDetails from "../../hooks/useEmployeeDetails";
 import { ToastContainer, toast } from "react-toastify";
+import CardCounter from "../Progressbar/CardCounter";
+import vehicleAssign from "../../profile/vehicleassi.json";
+import useAddVehicle from "../../hooks/use-add-vehicle";
 
 function EmployeeDashboard() {
-  const { getTicketLeaveAvailablity, getExperince } = useAddLeaveEmployee();
+  const { getTicketLeaveAvailablity, getExperince, getAnnualLeave } =
+    useAddLeaveEmployee();
+  const { viewVehicleNumber } = useAddVehicle();
   const { getUserDetails } = useAuth();
   const { userId, id } = getUserDetails();
   const [ticketLeaveAvailability, setTicketLeaveAvailability] = useState(null);
@@ -26,7 +31,9 @@ function EmployeeDashboard() {
     totalWithPrev: 0,
     totalWithoutPrev: 0,
   });
+  const [annualLeave, setAnnualLeave] = useState(0);
   const { employeeDetails, isLoading, error } = useEmployeeDetails(userId);
+  const [vehicleNumber, setVehicleNumber] = useState("");
   useEffect(() => {
     const fetchTicketLeaveAvailability = async () => {
       try {
@@ -48,10 +55,37 @@ function EmployeeDashboard() {
         console.error("Failed to fetch experience:", error);
       }
     };
+    const fetchAnnualLeave = async () => {
+      try {
+        const response = await getAnnualLeave(userId);
+        setAnnualLeave(response);
+        console.log("total experience: ", response);
+      } catch (error) {
+        console.error("Failed to fetch experience:", error);
+      }
+    };
+    const fetchVehicleNumber = async () => {
+      try {
+        const response = await viewVehicleNumber(userId);
+        console.log("Vehicle Number: ", response);
+        setVehicleNumber(response);
+      } catch (error) {
+        console.error("Failed to fetch vehicle number:", error);
+      }
+    };
 
     fetchTicketLeaveAvailability();
     fetchTotalExperience();
-  }, [getTicketLeaveAvailablity, getExperince, userId]);
+    fetchAnnualLeave();
+    fetchVehicleNumber();
+  }, [
+    getTicketLeaveAvailablity,
+    getExperince,
+    userId,
+    id,
+    getAnnualLeave,
+    viewVehicleNumber,
+  ]);
 
   useEffect(() => {
     const calculateDaysLeftInMonth = () => {
@@ -72,6 +106,19 @@ function EmployeeDashboard() {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
     padding: "10px",
+    // marginBottom: "5px", // Added margin bottom for spacing between cards
+  };
+  const cardStyle1 = {
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    padding: "10px",
+    height: "150px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+
+    // alignItems: "center",
+    // marginBottom: "5px", // Added margin bottom for spacing between cards
     // marginBottom: "5px", // Added margin bottom for spacing between cards
   };
 
@@ -165,11 +212,14 @@ function EmployeeDashboard() {
                     License Expire:
                   </span>
                   <span>
-                    {employeeDetails.licenseExpire.join("-")},{" "}
-                    <span className="font-extrabold text-red-800">
-                      {employeeDetails.noOfDaysLicenseExpire}
-                    </span>{" "}
-                    days left
+                    {employeeDetails.licenseExpire
+                      ? `${employeeDetails.licenseExpire.join("-")}, `
+                      : "N/A"}{" "}
+                    {employeeDetails.licenseExpire && (
+                      <span className="font-extrabold text-red-800">
+                        {employeeDetails.noOfDaysLicenseExpire} days left
+                      </span>
+                    )}
                   </span>
                 </div>
               </div>
@@ -186,7 +236,7 @@ function EmployeeDashboard() {
         </div>
         <div>
           <Grid container spacing={2} direction="column">
-            <Grid item style={{ marginTop: "20px" }}>
+            <Grid item style={{ marginTop: "30px" }}>
               <Card style={cardStyle}>
                 <CardContent>
                   <Grid container alignItems="center">
@@ -205,7 +255,44 @@ function EmployeeDashboard() {
                       alignItems="center"
                     >
                       <Typography variant="h5">Total Leave Balance</Typography>
-                      <Typography variant="h4">100</Typography>
+                      <Typography variant="h4">
+                        <CardCounter value={annualLeave} />
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </div>
+        <div>
+          <Grid container spacing={2} direction="column">
+            <Grid item style={{ marginTop: "-25px" }}>
+              <Card style={cardStyle1}>
+                <CardContent>
+                  <Grid container alignItems="center">
+                    <Grid item xs={3}>
+                      <Lottie
+                        animationData={vehicleAssign}
+                        loop={true}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          marginLeft: "-20px",
+                        }}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={9}
+                      container
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography variant="h5">Vehicle Assigned</Typography>
+                      <Typography variant="h4">
+                        {vehicleNumber ? vehicleNumber : "N/A"}
+                      </Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -256,9 +343,9 @@ function EmployeeDashboard() {
                       <Typography variant="body2">Loading...</Typography>
                     ) : ticketLeaveAvailability ? (
                       <>
-                        <Typography variant="body2">
+                        {/* <Typography variant="body2">
                           Days Left: {ticketLeaveAvailability.daysLeft}
-                        </Typography>
+                        </Typography> */}
                         <Typography variant="body2">
                           Date:{" "}
                           {`${ticketLeaveAvailability.eligibilityDate[0]}-${ticketLeaveAvailability.eligibilityDate[1]}-${ticketLeaveAvailability.eligibilityDate[2]}`}
@@ -335,7 +422,7 @@ function EmployeeDashboard() {
                     <Typography variant="body2" component="span">
                       /Days left
                     </Typography>
-                    <Typography variant="body2"> Next Pay Check</Typography>
+                    <Typography variant="body2"> For Next Salary</Typography>
                   </Grid>
                 </Grid>
               </CardContent>

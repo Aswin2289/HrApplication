@@ -26,4 +26,5 @@ public interface VehicleService {
 
     void uploadImage(Integer id, MultipartFile file);
     Vehicle getImage(Integer id);
+    String getVehicleNumber(Integer userId);
 }

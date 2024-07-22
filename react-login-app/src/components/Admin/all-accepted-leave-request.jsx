@@ -44,6 +44,8 @@ function AllAcceptedLeaveRequest() {
         return "bg-yellow-500 text-white";
       case 2:
         return "bg-orange-500 text-white";
+      case 10:
+        return "bg-orange-500 text-white";
       default:
         return "";
     }

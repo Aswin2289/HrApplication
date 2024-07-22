@@ -37,4 +37,7 @@ List<Leave> findByUserAndStatusInAndTransactionTypeAndLeaveTypeIdIn(User user,by
                                    @Param("status") byte status);
   List<Leave> findByUserAndLeaveFromLessThanEqualAndLeaveToGreaterThanEqualAndStatus(
           User user, LocalDate fromDate, LocalDate toDate, byte status);
+
+
+  List<Leave>findByUserAndLeaveTypeIdAndStatusIn(User user,long leaveType ,byte[] status);
 }

@@ -62,6 +62,7 @@ function LeaveDetails() {
       try {
         const response = await getLeaveCountEmployee();
         const transformedData = {};
+        
         Object.keys(response.body).forEach((key) => {
           transformedData[key.toLowerCase()] = response.body[key];
         });

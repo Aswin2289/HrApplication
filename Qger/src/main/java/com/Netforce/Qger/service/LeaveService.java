@@ -33,6 +33,8 @@ public interface LeaveService {
   void hodDeleteLeaveRequest(Integer id);
   void hodAcceptLeaveRequest(Integer id);
 
+  Integer annualLeaveCount(Integer id);
+
 
 
 }
