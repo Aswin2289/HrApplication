@@ -87,7 +87,7 @@ public class LeaveAvailabilityServiceImpl implements LeaveAvailabilityService {
     public EligibilityResponseDTO checkEligibilityForYearlyLeaveAndFlight(User user) {
         LocalDate currentDate = LocalDate.now();
         int eligibilityPeriodYears = user.getYearStatus() == 0 ? 1 : 2;
-        // Use lastEligilibleDate if available, otherwise use joiningDate
+        // Use lastEligibleDate if available, otherwise use joiningDate
         LocalDate relevantJoiningDate = (user.getLastEligilibleDate() != null)
                 ? user.getLastEligilibleDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 : user.getJoiningDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();

@@ -131,7 +131,6 @@ const useAddVehicle = () => {
   const viewVehicleNumber=async (id)=>{
     try{
       const response = await axiosInstance.get(`/vehicle/view/number/${id}`);
-      console.log("Vehicle Number:", response.data);
       return response.data;
     }catch (error) {
       console.error(

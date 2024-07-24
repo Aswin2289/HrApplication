@@ -402,7 +402,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
               <Grid item xs={6}>
                 <InputLabel>License Expire</InputLabel>
                 <DatePicker
-                  selected={employeeData.licenseExpire}
+                  selected={employeeData.licenseExpire || null}
                   onChange={handleLicenseExpireChange}
                   dateFormat="dd/MM/yyyy"
                   showYearDropdown

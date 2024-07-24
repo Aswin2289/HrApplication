@@ -28,6 +28,10 @@ const schema = z.object({
     .string()
     .min(1, "Reason is required")
     .max(100, "Reason must be less than 100 characters"),
+  leaveStatus: z
+    .number()
+    .min(0, "Leave status is required")
+    .max(1, "Invalid leave status value"),
 });
 
 const EmployeeDetails = () => {
@@ -36,6 +40,7 @@ const EmployeeDetails = () => {
   const { employeeDetails, isLoading, error } = useEmployeeDetails(employeeId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
+  const [selectedTransactionType, setSelectedTransactionType] = useState();
   const { getUserDetails } = useAuth();
   const { role } = getUserDetails();
   const {
@@ -80,6 +85,12 @@ const EmployeeDetails = () => {
     // Set the value of leaveType for validation
     setValue("leaveType", value);
   };
+  const handleLeaveStatusChange = (event) => {
+    const value = event.target.value;
+    setSelectedTransactionType(value);
+    // Set the value of leaveStatus for validation
+    setValue("leaveStatus", value);
+  };
 
   const handleAddLeave = () => {
     setIsModalOpen(true);
@@ -98,7 +109,9 @@ const EmployeeDetails = () => {
         user: employeeDetails.id, // Assuming this value is fixed or determined from somewhere else
         reason: data.reason,
         leaveType: selectedLeaveType,
+        transactionType: selectedTransactionType,
       };
+      console.log(leaveData);
       await addLeave(leaveData); // Call the addLeave function from the useLeaveTypes hook
       toast.success("Leave added successfully");
       e.target.reset();
@@ -293,6 +306,23 @@ const EmployeeDetails = () => {
               </Select>
               {errors.leaveType && (
                 <p className="text-red-500">{errors.leaveType.message}</p>
+              )}
+            </FormControl>
+            <FormControl fullWidth variant="outlined" className="mb-4">
+              <InputLabel id="leave-status-label">Leave Status</InputLabel>
+              <Select
+                labelId="leave-status-label"
+                id="leave-status"
+                value={selectedTransactionType}
+                onChange={handleLeaveStatusChange}
+                label="Leave Status"
+                {...register("leaveStatus")}
+              >
+                <MenuItem value={0}>Add</MenuItem>
+                <MenuItem value={1}>Update</MenuItem>
+              </Select>
+              {errors.leaveStatus && (
+                <p className="text-red-500">{errors.leaveStatus.message}</p>
               )}
             </FormControl>
             <TextField

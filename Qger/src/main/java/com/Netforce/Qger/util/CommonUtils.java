@@ -30,7 +30,7 @@ public class CommonUtils {
   private final byte[] leaveStatus = {
     Leave.Status.ACCEPTED_BY_HR.value, Leave.Status.ACCEPTED.value
   };
-  private final byte[] leaveAddedStatus = {Leave.Status.ADDED.value};
+  private final byte[] leaveAddedStatus = {Leave.Status.ADDED.value,Leave.Status.SUBTRACT.value};
   private final Integer[] userRole = {1, 2,4,5};
   private final Integer[] adminRole = { 1};
   private final Integer[] hodRole = { 4};
@@ -145,18 +145,44 @@ public class CommonUtils {
                     ChronoUnit.DAYS.between(leave.getLeaveFrom(), leave.getLeaveTo()) + 1))
         .sum();
   }
+  public int getTotalLeaveDeleted(User user) {
+    byte[] leaveSub={Leave.Status.SUBTRACT.value};
+    List<Leave> leaves =
+            leaveRepository.findByUserAndTransactionTypeAndStatusIn(
+                    user, Leave.TransactionType.SUBTRACT.value, leaveSub);
+
+    return leaves.stream()
+            .mapToInt(
+                    leave ->
+                            Math.toIntExact(
+                                    ChronoUnit.DAYS.between(leave.getLeaveFrom(), leave.getLeaveTo()) + 1))
+            .sum();
+  }
 
   public int getTotalLeaveAddedPerYear(User user, Integer leaveTypeId) {
     int currentYear = Year.now().getValue();
 
-    List<Leave> leaves = leaveRepository.findByUserAndTransactionTypeAndStatusInAndLeaveTypeId(
-            user, Leave.TransactionType.ADDED.value, leaveAddedStatus, leaveTypeId);
+    // Fetch all leaves for the user of a specific leave type and valid statuses
+    List<Leave> leaves = leaveRepository.findByUserAndLeaveTypeIdAndStatusIn(user, leaveTypeId, leaveAddedStatus);
 
-    return leaves.stream()
-            .filter(leave -> leave.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == currentYear)
+    // Calculate the total added leaves
+    int totalAdded = leaves.stream()
+            .filter(leave -> leave.getTransactionType() == Leave.TransactionType.ADDED.value
+                    && leave.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == currentYear)
             .mapToInt(leave -> leave.getDaysAdjusted() != null ? leave.getDaysAdjusted() : 0)
             .sum();
+
+    // Calculate the total subtracted leaves
+    int totalSubtracted = leaves.stream()
+            .filter(leave -> leave.getTransactionType() == Leave.TransactionType.DELETED.value
+                    && leave.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == currentYear)
+            .mapToInt(leave -> leave.getDaysAdjusted() != null ? leave.getDaysAdjusted() : 0)
+            .sum();
+    System.out.println("totalAdded"+totalAdded+"\t totalSubtracted+"+totalSubtracted);
+    // Return the difference between added and subtracted leaves
+    return totalAdded - totalSubtracted;
   }
+
 
   public int getTotalLeaveTakenPerYear(User user, Integer leaveTypeId) {
     int currentYear = Year.now().getValue();

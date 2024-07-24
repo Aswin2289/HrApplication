@@ -30,8 +30,8 @@ public class SchedulerServiceImpl implements SchedulerService {
     //  @Scheduled(cron = "0 */2 * * * *")//every 2 mins
 
     @Override
-//  @Scheduled(cron = "0 0 0 * * ?") // every day midnight
-    @Scheduled(cron = "0 */2 * * * *")
+  @Scheduled(cron = "0 0 0 * * ?") // every day midnight
+//    @Scheduled(cron = "0 */2 * * * *")
     public void updateYearStatusUpdateScheduler() {
         System.out.println("Executing scheduled task....");
         List<User> userList = userRepository.findAllByYearStatusIn(yearStatus);
@@ -58,8 +58,8 @@ public class SchedulerServiceImpl implements SchedulerService {
     }
 
     @Override
-//  @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
-    @Scheduled(cron = "0 */2 * * * *")
+  @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
+//    @Scheduled(cron = "0 */2 * * * *")
     public void addYearlyLeaveDaysScheduler() {
         System.out.println("Executing yearly leave addition task...");
         List<User> users = userRepository.findAllByStatusIn(userStatus);
@@ -80,8 +80,8 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
     }
 
-    //  @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
-    @Scheduled(cron = "0 */2 * * * *")
+      @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
+//    @Scheduled(cron = "0 */2 * * * *")
     public void updateUserStatuses() {
         LocalDate currentDate = LocalDate.now();
         byte acceptedStatus = Leave.Status.ACCEPTED.value;

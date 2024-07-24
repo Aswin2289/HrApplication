@@ -58,8 +58,33 @@ public class Leave {
     @UpdateTimestamp
     private Date updatedDate;
 
+    public Leave(LeaveRequestDTO leaveRequestDTO, User user, LeaveType leaveType) {
+        this.leaveType = leaveType;
+        this.leaveFrom = leaveRequestDTO.getFrom();
+        this.leaveTo = leaveRequestDTO.getTo();
+        this.reason = leaveRequestDTO.getReason();
+        this.transactionType = leaveRequestDTO.getTransactionType();
+        this.daysAdjusted = Math.toIntExact(ChronoUnit.DAYS.between(leaveRequestDTO.getFrom(), leaveRequestDTO.getTo()) + 1);
+        this.user = user;
+        this.status = leaveRequestDTO.getStatus();
+    }
+
+    public Leave(LeaveUpdateDTO leaveUpdateDTO, User user, LeaveType leaveType,Integer statusCode) {
+        this.leaveType = leaveType;
+        this.daysAdjusted = leaveUpdateDTO.getDaysUpdated();
+        this.reason = leaveUpdateDTO.getReason();
+        this.transactionType = leaveUpdateDTO.getTransactionType();
+        this.user = user;
+        if (statusCode==1) {
+            this.status = Status.SUBTRACT.value;
+        }
+        else {
+            this.status=Status.ADDED.value;
+        }
+    }
+
     public enum Status {
-        ACCEPTED((byte) 0), PENDING((byte) 1), ACCEPTED_BY_HR((byte) 2), REJECTED((byte) 3), CANCELLED((byte) 4),DELETED((byte) 5),ADDED((byte) 6),APPLICATION_PENDING((byte) 7),APPLICATION_RESCHEDULED((byte) 8),APPLICATION_APPROVED((byte) 9) ,ACCEPTED_BY_HOD((byte) 10);
+        ACCEPTED((byte) 0), PENDING((byte) 1), ACCEPTED_BY_HR((byte) 2), REJECTED((byte) 3), CANCELLED((byte) 4), DELETED((byte) 5), ADDED((byte) 6), APPLICATION_PENDING((byte) 7), APPLICATION_RESCHEDULED((byte) 8), APPLICATION_APPROVED((byte) 9), ACCEPTED_BY_HOD((byte) 10), SUBTRACT((byte) 11);
 
         public final byte value;
 
@@ -67,9 +92,10 @@ public class Leave {
             this.value = value;
         }
     }
+
     public enum TransactionType {
         // added-0 taken(relieve)-1 exclude( permanent delete)-2
-        ADDED((byte) 0), SUBTRACT((byte) 1),DELETED((byte) 2),APPLICATION((byte) 3);
+        ADDED((byte) 0), SUBTRACT((byte) 1), DELETED((byte) 2), APPLICATION((byte) 3);
 
         public final byte value;
 
@@ -77,28 +103,6 @@ public class Leave {
             this.value = value;
         }
     }
-
-    public Leave(LeaveRequestDTO leaveRequestDTO,User user,LeaveType leaveType) {
-        this.leaveType = leaveType;
-        this.leaveFrom = leaveRequestDTO.getFrom();
-        this.leaveTo = leaveRequestDTO.getTo();
-        this.reason = leaveRequestDTO.getReason();
-        this.transactionType=leaveRequestDTO.getTransactionType();
-        this.daysAdjusted = Math.toIntExact(ChronoUnit.DAYS.between(leaveRequestDTO.getFrom(), leaveRequestDTO.getTo()) + 1);
-        this.user = user;
-        this.status = leaveRequestDTO.getStatus();
-    }
-    public Leave(LeaveUpdateDTO leaveUpdateDTO,User user,LeaveType leaveType){
-        this.leaveType = leaveType;
-        this.daysAdjusted=leaveUpdateDTO.getDaysUpdated();
-        this.reason = leaveUpdateDTO.getReason();
-        this.transactionType=leaveUpdateDTO.getTransactionType();
-        this.user = user;
-        this.status = Status.ADDED.value;
-    }
-
-
-
 
 
 }

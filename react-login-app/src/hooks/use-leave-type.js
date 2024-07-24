@@ -43,6 +43,7 @@ const useLeaveTypes = () => {
   
 
   const addLeave = async (data) => {
+    console.log("adding leave",data);
     try {
       setIsLoading(true);
       const response = await axiosInstance.post("/leave/hr/add", data);

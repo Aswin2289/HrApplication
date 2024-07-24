@@ -7,33 +7,37 @@ import addEditIcon from "../../profile/edit.json";
 import UpdateModal from "../update-modal";
 function ProfileView() {
   const { getUserDetails } = useAuth();
-  const { userId, role} = getUserDetails();
-  const { employeeDetails, refetch } =
-    useEmployeeDetails(userId);
+  const { userId, role } = getUserDetails();
+  const { employeeDetails, refetch } = useEmployeeDetails(userId);
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
 
   if (!employeeDetails) {
-    toast.error("No employee details found.");
     return <div>No employee details found.</div>;
   }
   const handleEditClick = (id) => {
-    if (id != null) {
-      // navigate(`/addVehicle/${id}`);
+    console.error("Invalid ID provided:", id);
+    if (id !== null && id !== undefined) {
       handleShowModal(id);
+    } else {
+      console.error("Invalid ID provided:", id);
     }
-    console.log("123456788");
-    // setIsModalOpen(true);  // Set state to open the modal
   };
   const handleShowModal = (employeeId) => {
-    setSelectedEmployeeId(employeeId);
-    setShowModal(true);
+    console.error("Invalid ID provided:", employeeId);
+    if (employeeId !== null && employeeId !== undefined) {
+      setSelectedEmployeeId(employeeId);
+      setShowModal(true);
+    } else {
+      setShowModal(false);
+    }
   };
   const handleCloseModal = () => {
     setShowModal(false);
+    refetch();
     setSelectedEmployeeId(null); // Reset selected employee ID when closing modal
 
-    refetch(); // refetch the employee details after update
+    // refetch the employee details after update
   };
   return (
     <div className="flex justify-center items-center bg-gray-100 mt-5">
@@ -49,11 +53,8 @@ function ProfileView() {
                   onClick={() => handleEditClick(userId)}
                   loop={true}
                 />
-                
               </span>
-              
             )}
-          
           </h2>
           <span
             className={`${
@@ -135,11 +136,14 @@ function ProfileView() {
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">License Expire:</span>
               <span>
-                {employeeDetails.licenseExpire.join("-")},{" "}
-                <span className="font-extrabold text-red-800">
-                  {employeeDetails.noOfDaysLicenseExpire}
-                </span>{" "}
-                days left
+                {employeeDetails.licenseExpire
+                  ? `${employeeDetails.licenseExpire.join("-")}, `
+                  : "N/A"}{" "}
+                {employeeDetails.licenseExpire && (
+                  <span className="font-extrabold text-red-800">
+                    {employeeDetails.noOfDaysLicenseExpire} days left
+                  </span>
+                )}
               </span>
             </div>
           </div>

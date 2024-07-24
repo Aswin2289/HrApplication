@@ -203,9 +203,17 @@ public class LeaveServiceImpl implements LeaveService {
                 () ->
                     new BadRequestException(
                         messageSource.getMessage("LEAVE_TYPE_ERROR", null, Locale.ENGLISH)));
-    leaveUpdateDTO.setTransactionType(Leave.TransactionType.ADDED.value);
+    int statusCode;
+    if(leaveUpdateDTO.getTransactionType()==0) {
+      statusCode=0;
+      leaveUpdateDTO.setTransactionType(Leave.TransactionType.ADDED.value);
+    }
+    else{
+      statusCode=1;
+      leaveUpdateDTO.setTransactionType(Leave.TransactionType.DELETED.value);
+    }
 
-    leaveRepository.save(new Leave(leaveUpdateDTO, user, leaveType));
+    leaveRepository.save(new Leave(leaveUpdateDTO, user, leaveType,statusCode));
   }
 
   @Override
@@ -355,8 +363,8 @@ public class LeaveServiceImpl implements LeaveService {
   public int getAvailableLeave(User user) {
     int totalLeaveAdded = commonUtils.getTotalLeaveAdded(user);
     int totalLeaveTaken = commonUtils.getTotalLeaveTaken(user);
-
-    return totalLeaveAdded - totalLeaveTaken;
+    int totalLeaveDeleted= commonUtils.getTotalLeaveDeleted(user);
+    return totalLeaveAdded - totalLeaveTaken-totalLeaveDeleted;
   }
 
   @Override

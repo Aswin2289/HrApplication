@@ -25,7 +25,7 @@ function Addemployee() {
       .string()
       .min(1, { message: "Contract Period is required" }),
     passport: z.string().min(1, { message: "Passport Number is required" }),
-    // license: z.string(),
+    license: z.string(),
     qualification: z.string(),
     role: z.string().min(1, { message: "Role is required" }),
     department: z.string().min(1, { message: "Department is required" }),
@@ -327,8 +327,8 @@ function Addemployee() {
               >
                 <option value="">Select Role</option>
                 <option value="HR">HR</option>
+                <option value="HOD">HOD</option>
                 <option value="Employee">Employee</option>
-                <option value="HOD">Employee</option>
               </select>
               {errors.role && (
                 <p className="text-red-500">{errors.role.message}</p>
