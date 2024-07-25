@@ -3,10 +3,7 @@ package com.Netforce.Qger.service.Impli;
 import com.Netforce.Qger.entity.Role;
 import com.Netforce.Qger.entity.User;
 import com.Netforce.Qger.entity.Vehicle;
-import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
-import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.expectionHandler.BadRequestException;
 import com.Netforce.Qger.repository.RoleRepository;
@@ -518,6 +515,19 @@ public class UserServiceImpl implements UserService {
       throw new BadRequestException(messageSource.getMessage("CONFIRM_PASSWORD_NOT_MATCH",null,Locale.ENGLISH));
     }
 
+  }
+  @Override
+  public void updateLastEligibleDate(Integer id , UpdateEligibilityDateRequestDTO updateEligibilityDateRequestDTO){
+    System.out.println("got here");
+    User user = userRepository.findByIdAndStatusIn(id, userStatus).orElseThrow(
+            () ->
+                    new BadRequestException(
+                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+    System.out.println(user.toString());
+    System.out.println(updateEligibilityDateRequestDTO.getLastEligilibleDate());
+    user.setLastEligilibleDate(updateEligibilityDateRequestDTO.getLastEligilibleDate());
+    System.out.println(user.toString());
+    userRepository.save(user);
   }
 
 

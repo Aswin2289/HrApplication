@@ -36,8 +36,18 @@ const useAddEmployee = () => {
       throw error; // Optionally, throw the error if you want to handle it in the component
     }
   };
+  const updateLastEligibility = async (id,data) => {
+    try {
+      const response = await axiosInstance.put(`/user/update/lastEligible/${id}`, data);
+      console.log(response.data);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error('Error updating last eligibility:', error.response? error.response.data : error.message);
+      throw error; // Optionally, throw the error if you want to handle it in the component
+    }
+  };
 
-  return { addEmployee,changePassword };
+  return { addEmployee,changePassword ,updateLastEligibility};
 };
 
 export default useAddEmployee;

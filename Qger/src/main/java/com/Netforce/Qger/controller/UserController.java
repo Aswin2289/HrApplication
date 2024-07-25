@@ -1,9 +1,6 @@
 package com.Netforce.Qger.controller;
 
-import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
-import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.service.UserService;
 import jakarta.validation.Valid;
@@ -97,5 +94,10 @@ public class UserController {
   public ResponseEntity<Object>changePassword(@PathVariable("id")Integer id, @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO){
     userService.changePassword(id,changePasswordRequestDTO);
     return new ResponseEntity<>(new SuccessResponseDTO("200","Password Changed Successfully"),HttpStatus.OK);
+  }
+  @PutMapping("/update/lastEligible/{id}")
+  public ResponseEntity<Object>updateLastEligibleDate(@PathVariable("id")Integer id, @Valid @RequestBody UpdateEligibilityDateRequestDTO updateEligibilityDateRequestDTO){
+    userService.updateLastEligibleDate(id,updateEligibilityDateRequestDTO);
+    return new ResponseEntity<>(new SuccessResponseDTO("200","Updated Successfully"),HttpStatus.OK);
   }
 }

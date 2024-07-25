@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { ToastContainer, toast } from "react-toastify";
-
+import Tooltip from "@mui/material/Tooltip";
 import {
   TableContainer,
   Table,
@@ -11,6 +11,7 @@ import {
   TableCell,
   TableBody,
   TablePagination,
+  Button,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../services/interceptor";
@@ -20,7 +21,8 @@ import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
 import UpdateModal from "./update-modal";
 import useAuth from "../hooks/use-auth";
-
+import DatePickerModal from "./date-picker-modal";
+import useEmployeeDetails from "../hooks/useEmployeeDetails";
 function EmployeeLeaveEligibility() {
   const location = useLocation();
   const { statusRender } = location.state || {};
@@ -38,6 +40,9 @@ function EmployeeLeaveEligibility() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [isModalOpenEligibility, setIsModalOpenEligibility] = useState(false);
+  const [employeeId, setEmployeeId] = useState(null);
+
   const [statusFilters, setStatusFilters] = useState({
     onPremise: false, // Initially selected
     vacation: false, // Initially selected
@@ -80,6 +85,14 @@ function EmployeeLeaveEligibility() {
       setSortBy(columnName);
       setSortOrder("asc");
     }
+  };
+  const handleUpdateEligiblity = (id) => {
+    console.log(id, "update");
+    setEmployeeId(id);
+    setIsModalOpenEligibility(true);
+  };
+  const handleCloseModalEligibility = () => {
+    setIsModalOpenEligibility(false);
   };
   const {
     data: employees,
@@ -261,7 +274,10 @@ function EmployeeLeaveEligibility() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }} onClick={() => handleSort("passportExpire")}>
+                    <TableCell
+                      sx={{ fontWeight: "bold" }}
+                      onClick={() => handleSort("passportExpire")}
+                    >
                       <div className="flex items-center cursor-pointer">
                         Passport Expire
                         {sortBy === "passportExpire" && (
@@ -287,6 +303,7 @@ function EmployeeLeaveEligibility() {
                       Eligible On
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Action </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -301,7 +318,7 @@ function EmployeeLeaveEligibility() {
                       {/* <TableCell className="items-center">
                         {employee.eligibilityResponseDTOS.eligibilityDate}
                       </TableCell> */}
-                       <TableCell className="items-center">
+                      <TableCell className="items-center">
                         <div style={{ display: "flex", alignItems: "center" }}>
                           <div style={{ flex: 0 }}>
                             {new Date(
@@ -313,7 +330,9 @@ function EmployeeLeaveEligibility() {
                           <div
                             className="text-red-700"
                             style={{ marginLeft: "5px" }}
-                          > (
+                          >
+                            {" "}
+                            (
                             <span className="font-bold">
                               {employee.noOfDaysPassportExpire}
                             </span>
@@ -344,15 +363,46 @@ function EmployeeLeaveEligibility() {
                         </div>
                       </TableCell>
                       <TableCell className="items-center">
-                      <span
-                        className={`rounded-full px-4 py-1 ${getStatusClass(
+                        <span
+                          className={`rounded-full px-4 py-1 ${getStatusClass(
                             employee.eligibilityResponseDTOS.eligible
-                        )}`}
-                      >
-                        {employee.eligibilityResponseDTOS.eligible
-                          ? "Is Eligible"
-                          : "Not Eligible"}
-                          </span>
+                          )}`}
+                        >
+                          {employee.eligibilityResponseDTOS.eligible
+                            ? "Is Eligible"
+                            : "Not Eligible"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="items-center">
+                        {employee.eligibilityResponseDTOS.eligible && (
+                          <Tooltip title="Update Eligibility" arrow>
+                           
+                            <svg
+                            disabled={role !== 1 && role !== 4 && role !== 2}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              width="29px"
+                              height="29px"
+                              xmlns="http://www.w3.org/2000/svg"
+                              style={{ cursor: "pointer" }}
+                              onClick={() =>
+                                handleUpdateEligiblity(employee.id)
+                              }
+                            >
+                              <g fill="rgb(0,0,0)">
+                                <path d="m8 5.75c-.41 0-.75-.34-.75-.75v-3c0-.41.34-.75.75-.75s.75.34.75.75v3c0 .41-.34.75-.75.75z" />
+                                <path d="m16 5.75c-.41 0-.75-.34-.75-.75v-3c0-.41.34-.75.75-.75s.75.34.75.75v3c0 .41-.34.75-.75.75z" />
+                                <path d="m8.5 14.4999c-.13 0-.26-.03-.38-.08-.13-.05-.22999-.12-.32999-.21-.18-.19-.29001-.45-.29001-.71s.11001-.52.29001-.71c.1-.09.20999-.16.32999-.21.24-.1.52-.1.76 0 .12.05.22999.12.32999.21.04.05.09.1.12.15.04.06.07002.12.09002.18.03.06.05.12.06.18.01.07.01999.14.01999.2 0 .26-.11001.52-.29001.71-.1.09-.20999.16-.32999.21s-.25.08-.38.08z" />
+                                <path d="m12 14.4999c-.13 0-.26-.0299-.38-.0799-.13-.05-.23-.1201-.33-.2101-.18-.19-.29-.45-.29-.71 0-.06.01-.13.02-.2.01-.06.03-.12.06-.18.02-.06.05-.12.09-.18.04-.05.08-.0999.12-.1499.37-.37 1.04-.37 1.42 0 .04.05.08.0999.12.1499.04.06.07.12.09.18.03.06.05.12.06.18.01.07.02.14.02.2 0 .26-.11.52-.29.71-.19.18-.44.29-.71.29z" />
+                                <path d="m8.5 17.9999c-.13 0-.26-.03-.38-.08s-.22999-.12-.32999-.21c-.18-.19-.29001-.45-.29001-.71 0-.06.00999-.13.01999-.19.01-.07.03-.13.06-.19.02-.06.05002-.12.09002-.18.03-.05.08-.1.12-.15.1-.09.20999-.16.32999-.21.24-.1.52-.1.76 0 .12.05.22999.12.32999.21.04.05.09.1.12.15.04.06.07002.12.09002.18.03.06.05.12.06.19.01.06.01999.13.01999.19 0 .26-.11001.52-.29001.71-.1.09-.20999.16-.32999.21s-.25.08-.38.08z" />
+                                <path d="m20.5 9.83984h-17c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h17c.41 0 .75.34.75.75s-.34.75-.75.75z" />
+                                <path d="m15.8196 22.7801c-.38 0-.74-.14-1-.4-.31-.31-.45-.76-.38-1.23l.19-1.35c.05-.35.26-.77.51-1.02l3.54-3.54c.48-.48.95-.73 1.46-.78.63-.06 1.24.2 1.82.78.61.61 1.43 1.85 0 3.28l-3.54 3.54c-.25.25-.67.46-1.02.51l-1.3501.19c-.08.01-.1499.02-.2299.02zm4.49-6.83c-.01 0-.02 0-.03 0-.14.01-.33.14-.54.35l-3.54 3.54c-.03.03-.08.13-.08.17l-.18 1.25 1.25-.18c.04-.01.1399-.06.1699-.09l3.5401-3.54c.44-.44.5-.66 0-1.16-.16-.15-.39-.34-.59-.34z" />
+                                <path d="m20.9206 19.2499c-.07 0-.14-.01-.2-.03-1.32-.37-2.37-1.42-2.74-2.74-.11-.4.12-.81.52-.93.4-.11.81.12.93.52.23.82.88 1.47 1.7 1.7.4.11.63.53.52.93-.1.33-.4.55-.73.55z" />
+                                <path d="m12 22.75h-4c-3.65 0-5.75-2.1-5.75-5.75v-8.5c0-3.65 2.1-5.75 5.75-5.75h8c3.65 0 5.75 2.1 5.75 5.75v3.5c0 .41-.34.75-.75.75s-.75-.34-.75-.75v-3.5c0-2.86-1.39-4.25-4.25-4.25h-8c-2.86 0-4.25 1.39-4.25 4.25v8.5c0 2.86 1.39 4.25 4.25 4.25h4c.41 0 .75.34.75.75s-.34.75-.75.75z" />
+                              </g>
+                            </svg>
+                          </Tooltip>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -373,10 +423,15 @@ function EmployeeLeaveEligibility() {
           />
         </>
       )}
-      <UpdateModal
+      {/* <UpdateModal
         show={showModal}
         handleClose={handleCloseModal}
         employeeId={selectedEmployeeId}
+      /> */}
+      <DatePickerModal
+        isOpen={isModalOpenEligibility}
+        handleClose={handleCloseModalEligibility}
+        employeeId={employeeId}
       />
     </div>
   );

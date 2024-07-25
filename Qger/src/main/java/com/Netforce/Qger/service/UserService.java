@@ -2,10 +2,7 @@ package com.Netforce.Qger.service;
 
 
 import com.Netforce.Qger.entity.User;
-import com.Netforce.Qger.entity.dto.requestDto.ChangePasswordRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
-import com.Netforce.Qger.entity.dto.requestDto.EmployeeUpdateRequestDtTO;
-import com.Netforce.Qger.entity.dto.requestDto.LoginRequestDTO;
+import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeDetailsResponseDTO;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeHrLeaveDetailDTO;
 import com.Netforce.Qger.entity.dto.responseDto.PagedResponseDTO;
@@ -33,4 +30,5 @@ public interface UserService {
     ResponseEntity<Object>getExperience(Integer id);
 
     void changePassword(Integer id, ChangePasswordRequestDTO changePasswordRequestDTO);
+    void updateLastEligibleDate(Integer id, UpdateEligibilityDateRequestDTO updateEligibilityDateRequestDTO);
 }

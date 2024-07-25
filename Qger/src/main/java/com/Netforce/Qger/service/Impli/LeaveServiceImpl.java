@@ -503,9 +503,14 @@ public class LeaveServiceImpl implements LeaveService {
                                             messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
 
     long leaveTypeId = 1;
-    byte[] leaveStatus = {Leave.Status.ACCEPTED.value,Leave.Status.ADDED.value};
+    byte[] leaveStatus = {Leave.Status.ACCEPTED.value,Leave.Status.ADDED.value,Leave.Status.SUBTRACT.value};
     List<Leave> leaves = leaveRepository.findByUserAndLeaveTypeIdAndStatusIn(user, leaveTypeId,leaveStatus);
 
+      return getTotalLeaveBalance(leaves);
+
+  }
+
+  private static int getTotalLeaveBalance(List<Leave> leaves) {
     int totalLeaveBalance = 0;
     for (Leave leave : leaves) {
       if (leave.getTransactionType() == Leave.TransactionType.ADDED.value) {
@@ -514,9 +519,12 @@ public class LeaveServiceImpl implements LeaveService {
         totalLeaveBalance -= leave.getDaysAdjusted();
       }
     }
-
+    for (Leave leave : leaves){
+      if(leave.getStatus()==Leave.Status.SUBTRACT.value || leave.getTransactionType()==Leave.TransactionType.DELETED.value){
+        totalLeaveBalance-=leave.getDaysAdjusted();
+      }
+    }
     return totalLeaveBalance;
-
   }
 
 }

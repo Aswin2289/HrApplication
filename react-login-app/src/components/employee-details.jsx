@@ -19,6 +19,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
 import useAuth from "../hooks/use-auth";
+import DatePickerModal from "./date-picker-modal";
 const schema = z.object({
   leaveType: z.number().min(1, "Leave type is required"),
   days: z.string().refine((value) => /^\d+$/.test(value), {
@@ -28,7 +29,7 @@ const schema = z.object({
     .string()
     .min(1, "Reason is required")
     .max(100, "Reason must be less than 100 characters"),
-  leaveStatus: z
+  transactionType: z
     .number()
     .min(0, "Leave status is required")
     .max(1, "Invalid leave status value"),
@@ -40,7 +41,9 @@ const EmployeeDetails = () => {
   const { employeeDetails, isLoading, error } = useEmployeeDetails(employeeId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
-  const [selectedTransactionType, setSelectedTransactionType] = useState();
+  const [selectedTransactionType, setSelectedTransactionType] = useState("");
+  const [isModalOpenEligibility, setIsModalOpenEligibility] = useState(false);
+  
   const { getUserDetails } = useAuth();
   const { role } = getUserDetails();
   const {
@@ -87,13 +90,19 @@ const EmployeeDetails = () => {
   };
   const handleLeaveStatusChange = (event) => {
     const value = event.target.value;
+    console.log(value);
     setSelectedTransactionType(value);
     // Set the value of leaveStatus for validation
-    setValue("leaveStatus", value);
+    setValue("transactionType", value);
   };
-
   const handleAddLeave = () => {
     setIsModalOpen(true);
+  };
+  const handleUpdateEligiblity = () => {
+    setIsModalOpenEligibility(true);
+  };
+  const handleCloseModalEligibility = () => {
+    setIsModalOpenEligibility(false);
   };
 
   const handleModalClose = () => {
@@ -175,7 +184,7 @@ const EmployeeDetails = () => {
               <span className="text-gray-700 font-bold">Qualification:</span>
               <span>{employeeDetails.qualification}</span>
             </div>
-           
+
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">Total Experience:</span>
               <span>{employeeDetails.totalExperience} years</span>
@@ -208,7 +217,11 @@ const EmployeeDetails = () => {
             </div>
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">License:</span>
-              {employeeDetails.license ? (<span> {employeeDetails.license}</span>):("N/A")}
+              {employeeDetails.license ? (
+                <span> {employeeDetails.license}</span>
+              ) : (
+                "N/A"
+              )}
             </div>
             <div className="flex flex-col mb-4">
               <span className="text-gray-700 font-bold">License Expire:</span>
@@ -240,7 +253,7 @@ const EmployeeDetails = () => {
               {employeeDetails.status === 1 ? "Vacation" : "Re-joining"}
             </Button>
             <Button
-              disabled={role !== 1&&role !== 4}
+              disabled={role !== 1 && role !== 4}
               variant="contained"
               style={{
                 textTransform: "none",
@@ -250,6 +263,18 @@ const EmployeeDetails = () => {
               onClick={handleAddLeave}
             >
               Add Leave
+            </Button>
+            <Button
+              disabled={role !== 1 && role !== 4&& role !== 2}
+              variant="contained"
+              style={{
+                textTransform: "none",
+                backgroundColor:
+                  employeeDetails.status === 1 ? "orange" : "green",
+              }}
+              onClick={handleUpdateEligiblity}
+            >
+              Update Last Eligiblity
             </Button>
           </div>
         </div>
@@ -286,18 +311,24 @@ const EmployeeDetails = () => {
                 label="Leave Type"
               >
                 {leaveTypesHr && leaveTypesHr.length > 0 ? (
-                  leaveTypesHr.filter((leaveType) => {
-                    // Check role and filter leave types accordingly
-                    if (role === 4) {
-                      return leaveType.id === 2 || leaveType.id === 3|| leaveType.id === 5;
-                    }
-                    // If role is not 4, display all leave types
-                    return true;
-                  }).map((leaveType) => (
-                    <MenuItem key={leaveType.id} value={leaveType.id}>
-                      {leaveType.name}
-                    </MenuItem>
-                  ))
+                  leaveTypesHr
+                    .filter((leaveType) => {
+                      // Check role and filter leave types accordingly
+                      if (role === 4) {
+                        return (
+                          leaveType.id === 2 ||
+                          leaveType.id === 3 ||
+                          leaveType.id === 5
+                        );
+                      }
+                      // If role is not 4, display all leave types
+                      return true;
+                    })
+                    .map((leaveType) => (
+                      <MenuItem key={leaveType.id} value={leaveType.id}>
+                        {leaveType.name}
+                      </MenuItem>
+                    ))
                 ) : (
                   <MenuItem value="">
                     <em>No leave types available</em>
@@ -311,18 +342,18 @@ const EmployeeDetails = () => {
             <FormControl fullWidth variant="outlined" className="mb-4">
               <InputLabel id="leave-status-label">Leave Status</InputLabel>
               <Select
+                {...register("transactionType")}
                 labelId="leave-status-label"
-                id="leave-status"
+                id="transaction-type"
                 value={selectedTransactionType}
                 onChange={handleLeaveStatusChange}
                 label="Leave Status"
-                {...register("leaveStatus")}
               >
                 <MenuItem value={0}>Add</MenuItem>
-                <MenuItem value={1}>Update</MenuItem>
+                <MenuItem value={1}>Delete</MenuItem>
               </Select>
-              {errors.leaveStatus && (
-                <p className="text-red-500">{errors.leaveStatus.message}</p>
+              {errors.transactionType && (
+                <p className="text-red-500">{errors.transactionType.message}</p>
               )}
             </FormControl>
             <TextField
@@ -357,6 +388,11 @@ const EmployeeDetails = () => {
           </form>
         </div>
       </Modal>
+      <DatePickerModal
+        isOpen={isModalOpenEligibility}
+        handleClose={handleCloseModalEligibility}
+        employeeDetails={employeeDetails}
+      />
     </div>
   );
 };

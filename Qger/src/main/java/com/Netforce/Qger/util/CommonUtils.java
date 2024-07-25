@@ -178,7 +178,7 @@ public class CommonUtils {
                     && leave.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == currentYear)
             .mapToInt(leave -> leave.getDaysAdjusted() != null ? leave.getDaysAdjusted() : 0)
             .sum();
-    System.out.println("totalAdded"+totalAdded+"\t totalSubtracted+"+totalSubtracted);
+    System.out.println("totalAdded \t"+totalAdded+"\t totalSubtracted+"+totalSubtracted);
     // Return the difference between added and subtracted leaves
     return totalAdded - totalSubtracted;
   }
