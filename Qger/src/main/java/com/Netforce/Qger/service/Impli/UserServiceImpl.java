@@ -6,6 +6,9 @@ import com.Netforce.Qger.entity.Vehicle;
 import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.expectionHandler.BadRequestException;
+import com.Netforce.Qger.expectionHandler.InvalidUserException;
+import com.Netforce.Qger.expectionHandler.UserAuthenticationException;
+import com.Netforce.Qger.expectionHandler.UserDisabledException;
 import com.Netforce.Qger.repository.RoleRepository;
 import com.Netforce.Qger.repository.UserCriteriaRepository;
 import com.Netforce.Qger.repository.UserRepository;
@@ -19,6 +22,8 @@ import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -29,7 +34,10 @@ import org.springframework.data.jpa.domain.Specification;
 //import javax.persistence.criteria.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -131,6 +139,28 @@ public class UserServiceImpl implements UserService {
     jwtResponseDTO.setUserId(user.getId());
     return new ResponseEntity<>(jwtResponseDTO, HttpStatus.OK);
   }
+@Override
+public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throws UserDisabledException, InvalidUserException, UserAuthenticationException {
+  try {
+    if (("".equals(refreshTokenDTO.getRefreshToken().trim()) || refreshTokenDTO.getRefreshToken() == null)) {
+        throw new BadRequestException(messageSource.getMessage("REFRESH_TOKEN_NEEDED", null, Locale.ENGLISH));
+      } else {
+        String username = tokenManager.getUsernameFromRefreshToken(refreshTokenDTO.getRefreshToken());
+        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+        JwtResponseDTO jwtResponse = tokenManager.generateJwtToken(userDetails);
+        RefreshTokenResponseDTO responseDTO = new RefreshTokenResponseDTO(jwtResponse.getAccessToken(), jwtResponse.getRefreshToken());
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+      }
+  }catch (DisabledException e){
+    throw new UserDisabledException();
+  }catch (ExpiredJwtException e) {
+    return new ResponseEntity<>(new ErrorResponseDTO("Refresh token has expired", "1008"), HttpStatus.UNAUTHORIZED);
+  }catch (BadCredentialsException e) {
+    throw new InvalidUserException();
+  }catch (AuthenticationException e) {
+    throw new UserAuthenticationException();
+  }
+}
 
   @Override
   @Transactional

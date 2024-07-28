@@ -19,9 +19,7 @@ function Dashboard() {
   const [statusRender, setStatusRender] = useState(0);
   const [istimaraExpire, setIstimaExpire] = useState(0);
   const [insuranceExpire, setInsuranceExpire] = useState(0);
-  console.log(statusRender);
   const navigate = useNavigate();
-
   const barChartRef = useRef(null);
   const barChartInstance = useRef(null);
 
@@ -33,11 +31,10 @@ function Dashboard() {
       setQidExpire(totalEmployees.body.qidExpire);
       setPassportExpire(totalEmployees.body.passportExpire);
       setLicenseExpire(totalEmployees.body.licenseExpire);
-      setIstimaExpire(totalEmployees.body.istimaExpire);
+      setIstimaExpire(totalEmployees.body.istimaraExpire);
       setInsuranceExpire(totalEmployees.body.insuranceExpire);
     }
   }, [totalEmployees]);
-
   useEffect(() => {
     if (barChartRef.current) {
       if (barChartInstance.current) {
@@ -197,6 +194,7 @@ function Dashboard() {
               >
                 <h3 className="text-xl font-bold">Istimara Expire</h3>
                 <CardCounter value={istimaraExpire} />
+                {/* <h2>2</h2> */}
                 <span> Number of vehicles</span>
               </div>
             </div>

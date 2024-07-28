@@ -2,6 +2,9 @@ package com.Netforce.Qger.controller;
 
 import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.*;
+import com.Netforce.Qger.expectionHandler.InvalidUserException;
+import com.Netforce.Qger.expectionHandler.UserAuthenticationException;
+import com.Netforce.Qger.expectionHandler.UserDisabledException;
 import com.Netforce.Qger.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,11 @@ public class UserController {
   public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
     return userService.login(loginRequestDTO);
   }
+  @PutMapping("/login")
+  public ResponseEntity<Object> getAccessToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) throws UserAuthenticationException, UserDisabledException, InvalidUserException {
+    return userService.refreshToken(refreshTokenDTO);
+  }
+
 
   @GetMapping("/employees")
   public ResponseEntity<PagedResponseDTO<UserResponseDTO>> getUsersWithFilters(
