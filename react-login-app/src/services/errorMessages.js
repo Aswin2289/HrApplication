@@ -1,0 +1,76 @@
+const errorMessages = {
+  // Common errors
+  "1000": "Internal error occurred.",
+  "1003": "Unauthorized URL.",
+  "1004": "Invalid status.",
+  "1007": "Refresh token needed.",
+  "1008": "Refresh token has expired.",
+  "1009": "Type mismatch for the argument.",
+  "1010": "Access restricted.",
+  "1011": "Date format error.",
+  
+  // Employee errors
+  "1012": "User already exists.",
+  "1013": "Passport number format is invalid.",
+  "1014": "Qatar ID already expired.",
+  "1015": "Passport already expired.",
+  "1016": "LICENCE already expired.",
+  "1017": "Invalid contract.",
+  "1104": "Name required.",
+  "2017": "Name should contain only alphabets.",
+  "2018": "QID required.",
+  "2019": "QID expiration required.",
+  "2020": "Contract period required.",
+  "2021": "Password length required.",
+  "2022": "Role required.",
+  "2023": "Employee ID required.",
+  "2024": "Incorrect password.",
+  "2025": "Passport expiry required.",
+  "2026": "Leave FROM required.",
+  "2027": "Leave TO required.",
+  "2028": "Leave type required.",
+  "2029": "User ID required.",
+  "2030": "To date is before from date.",
+  "2031": "Leave type not found.",
+  "2032": "Cannot apply for this many days.",
+  "2033": "User doesn't have enough leave credit.",
+  "2034": "Cannot apply for annual leave.",
+  "2035": "You are not allowed to apply for leave.",
+  "2036": "PDF Document Not Found.",
+
+  // Vehicle errors
+  "2037": "Vehicle Number Required.",
+  "2038": "Manufacture Date is Required.",
+  "2039": "Vehicle Type is Required.",
+  "2040": "Vehicle Model Required.",
+  "2041": "Vehicle Brand Required.",
+  "2042": "Insurance Provider Required.",
+  "2043": "Insurance Expire Date Required.",
+  "2044": "Istimara of vehicle required.",
+  "2045": "Total Kilometer is required.",
+  "2046": "Manufacture Date Can't be Future.",
+  "2047": "Insurance Expire Date should be future date.",
+  "2048": "Istimara Date should be future.",
+  "2049": "Vehicle with plate number already added.",
+  "2050": "Vehicle not found.",
+  "2051": "Vehicle already assigned. Can't Delete.",
+  "2052": "Vehicle can't assign to anyone.",
+  "2053": "Istimara number is required.",
+  "2054": "Registration Date required.",
+  "2055": "Vehicle Document is not Found.",
+  "2056": "Facing Error while Uploading.",
+  "2057": "Vehicle with plate number does not exist.",
+
+  // Change password errors
+  "2058": "Current password Required.",
+  "2059": "New password Required.",
+  "2060": "Confirm password Required.",
+  "2061": "Password did not match.",
+  
+  // Additional mappings
+  "UNKNOWN_ERROR": "An unknown error occurred.",
+  "2133": "No Remaining Leave Credits",
+  "2132": "Maximum 90 days can apply"
+};
+
+export default errorMessages;
