@@ -35,20 +35,27 @@ function Sidebar() {
   };
   useEffect(() => {
     const setSidebarHeight = () => {
-      const height = sidebarRef.current.scrollHeight;
-      sidebarRef.current.style.height = `calc(100% - ${height}px)`;
+      if (sidebarRef.current) {
+        const viewportHeight = window.innerHeight;
+        const contentHeight = sidebarRef.current.scrollHeight;
+
+        // Set height to full viewport height initially or content height, whichever is greater
+        sidebarRef.current.style.height = contentHeight > viewportHeight ? `${contentHeight}px` : '100vh';
+      }
     };
-    setSidebarHeight();
+
+    setSidebarHeight(); // Initial call
     window.addEventListener("resize", setSidebarHeight);
+
     return () => {
       window.removeEventListener("resize", setSidebarHeight);
     };
   }, []);
-
+   
   return (
-    <div className="text-gray-600 w-96" ref={sidebarRef}>
+    <div className="text-gray-600 w-96 h-screen overflow-auto" ref={sidebarRef}>
       <div
-        className=" flex flex-col bg-red-400 bg-opacity-25 rounded-lg"
+        className=" flex flex-col bg-red-400 bg-opacity-25 rounded-lg h-screen overflow-auto"
         ref={sidebarRef}
       >
         <div className="flex-grow p-4 ">
