@@ -46,9 +46,9 @@ function Sidebar() {
   }, []);
 
   return (
-    <div className="h-screen text-gray-600 w-96" ref={sidebarRef}>
+    <div className="text-gray-600 w-96" ref={sidebarRef}>
       <div
-        className="h-screen flex flex-col bg-red-400 bg-opacity-25 rounded-lg"
+        className=" flex flex-col bg-red-400 bg-opacity-25 rounded-lg"
         ref={sidebarRef}
       >
         <div className="flex-grow p-4 ">
