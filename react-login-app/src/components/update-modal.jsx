@@ -4,7 +4,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import useAddEmployee from "../hooks/use-add-employee";
 import useEmployeeDetails from "../hooks/useEmployeeDetails";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

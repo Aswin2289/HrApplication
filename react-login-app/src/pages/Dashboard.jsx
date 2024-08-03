@@ -35,6 +35,7 @@ function Dashboard() {
       setInsuranceExpire(totalEmployees.body.insuranceExpire);
     }
   }, [totalEmployees]);
+
   useEffect(() => {
     if (barChartRef.current) {
       if (barChartInstance.current) {
@@ -56,6 +57,7 @@ function Dashboard() {
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
@@ -73,31 +75,37 @@ function Dashboard() {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  const handleTotalEmployee= () =>{
+
+  const handleTotalEmployee = () => {
     navigate('/listEmployee');
-    console.log("Total Employee")
-  }
-  const handleActiveEmployee= () =>{
-    
+    console.log("Total Employee");
+  };
+
+  const handleActiveEmployee = () => {
     setStatusRender(1);
-    navigate('/listEmployee', { state: { statusRender:1 } });
-  }
-  const handleVacationEmployee= () =>{
+    navigate('/listEmployee', { state: { statusRender: 1 } });
+  };
+
+  const handleVacationEmployee = () => {
     setStatusRender(2);
-    navigate('/listEmployee', { state: { statusRender:2 } });
-  }
-  const handleQidExpireeEmployee= () =>{
+    navigate('/listEmployee', { state: { statusRender: 2 } });
+  };
+
+  const handleQidExpireeEmployee = () => {
     setStatusRender(3);
-    navigate('/listEmployee', { state: { statusRender:3 } });
-  }
-  const handlePassportExpireeEmployee= () =>{
+    navigate('/listEmployee', { state: { statusRender: 3 } });
+  };
+
+  const handlePassportExpireeEmployee = () => {
     setStatusRender(4);
-    navigate('/listEmployee', { state: { statusRender:4 } });
-  }
-  const handleLicenseExpireeEmployee= () =>{
+    navigate('/listEmployee', { state: { statusRender: 4 } });
+  };
+
+  const handleLicenseExpireeEmployee = () => {
     setStatusRender(5);
-    navigate('/listEmployee', { state: { statusRender:5 } });
-  }
+    navigate('/listEmployee', { state: { statusRender: 5 } });
+  };
+
   const handleIstimaExpire = () => {
     setStatusRender(5);
     navigate("/listVehicle", { state: { statusRender: 6 } });
@@ -105,104 +113,75 @@ function Dashboard() {
 
   return (
     <Layout>
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center" >
-          <div onClick={handleTotalEmployee} className="cursor-pointer hover:rounded-lgcursor-pointer rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+          <div onClick={handleTotalEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
             <h3 className="text-xl font-normal">Total Employee</h3>
             <CardCounter value={total} />
           </div>
         </div>
         <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-          <div onClick={handleActiveEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          <div onClick={handleActiveEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
             <h3 className="text-xl font-normal">Active Employee</h3>
             <CardCounter value={activeCount} />
           </div>
           <div>
-            <AnimatedProgressProvider
-              valueStart={0}
-              valueEnd={activeCount}
-              duration={2}
-              easingFunction={(t) => t}
-            >
+            <AnimatedProgressProvider valueStart={0} valueEnd={activeCount} duration={2} easingFunction={(t) => t}>
               {(value) => (
-                <CircularProgressBar
-                  percentage={activeCount}
-                  width="50px"
-                  height="50px"
-                />
+                <CircularProgressBar percentage={activeCount} width="50px" height="50px" />
               )}
             </AnimatedProgressProvider>
           </div>
         </div>
         <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-          <div onClick={handleVacationEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          <div onClick={handleVacationEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
             <h3 className="text-xl font-normal">On Vacation</h3>
             <CardCounter value={vacationCount} className="fontSize=4xl" />
           </div>
           <div>
-            <AnimatedProgressProvider
-              valueStart={0}
-              valueEnd={vacationCount}
-              duration={2}
-              easingFunction={(t) => t}
-            >
+            <AnimatedProgressProvider valueStart={0} valueEnd={vacationCount} duration={2} easingFunction={(t) => t}>
               {(value) => (
-                <CircularProgressBar
-                  percentage={vacationCount}
-                  width="50px"
-                  height="50px"
-                />
+                <CircularProgressBar percentage={vacationCount} width="50px" height="50px" />
               )}
             </AnimatedProgressProvider>
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-8 mt-6 justify-center items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 justify-center items-center">
         <div className="mt-8">
-          <canvas
-            id="employeeChart"
-            width="200"
-            height="100"
-            ref={barChartRef}
-          ></canvas>
+          <div className="relative w-full h-64">
+            <canvas id="employeeChart" ref={barChartRef}></canvas>
+          </div>
         </div>
-  
-        <div className=" p-1 flex flex-col justify-end pl-48">
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handleQidExpireeEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+        <div className="p-1 flex flex-col justify-end md:pl-48">
+          <div className="bg-red-200 p-8 rounded-lg shadow-md flex mb-6">
+            <div onClick={handleQidExpireeEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
               <h3 className="text-xl font-bold">QID Expire</h3>
               <CardCounter value={qidExpire} /><span> Number of persons</span>
             </div>
           </div>
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handlePassportExpireeEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          <div className="bg-red-200 p-8 rounded-lg shadow-md flex mb-6">
+            <div onClick={handlePassportExpireeEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
               <h3 className="text-xl font-bold">Passport Expire</h3>
               <CardCounter value={passportExpire} /><span> Number of persons</span>
             </div>
           </div>
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handleLicenseExpireeEmployee}  className="cursor-pointer hover:p-4 rounded-lgcursor-pointer p-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
+          <div className="bg-red-200 p-8 rounded-lg shadow-md flex mb-6">
+            <div onClick={handleLicenseExpireeEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
               <h3 className="text-xl font-bold">License Expire</h3>
               <CardCounter value={licenseExpire} /><span> Number of persons</span>
             </div>
           </div>
-          <div className="flex flex-row p-1 gap-3">
+          <div className="flex flex-row p-8 gap-5">
             <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
-              <div
-                onClick={handleIstimaExpire}
-                className="cursor-pointer hover:p-4 rounded-lg p-4  transition duration-300 ease-in-out transform hover:scale-105"
-              >
+              <div onClick={handleIstimaExpire} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                 <h3 className="text-xl font-bold">Istimara Expire</h3>
                 <CardCounter value={istimaraExpire} />
-                {/* <h2>2</h2> */}
                 <span> Number of vehicles</span>
               </div>
             </div>
             <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
-              <div
-                onClick={handleIstimaExpire}
-                className="cursor-pointer hover:p-4 rounded-lg  p-4 r transition duration-300 ease-in-out transform hover:scale-105"
-              >
+              <div onClick={handleIstimaExpire} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
                 <h3 className="text-lg font-bold">Insurance Expire</h3>
                 <CardCounter value={insuranceExpire} />
                 <span> Number of vehicles</span>
