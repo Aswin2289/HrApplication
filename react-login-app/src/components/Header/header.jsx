@@ -23,33 +23,38 @@ function Header() {
   };
 
   return (
-    <div className="bg-red-800 text-white py-4 px-8 flex justify-between items-center fixed w-full">
+    <header className="bg-red-800 text-white py-4 px-8 flex justify-between items-center fixed w-full top-0 z-50 shadow-lg">
       {/* Logo */}
       <Link
         to="/"
         className="flex items-center"
         onClick={handleNavigateToDashboard}
       >
-        <img src={logoImg} alt="Logo" className="rounded-full h-16 w-16 mr-5" />
+        <img src={logoImg} alt="Logo" className="rounded-full h-16 w-16 mr-4" />
         {/* Adjust height and width as needed */}
         <h1 className="text-xl font-bold">Qatar German Gasket Factory</h1>
       </Link>
       {/* Navigation */}
       <nav>
         <ul className="flex space-x-4">
-          <li>
-            <Link to="/">Home</Link>
+        <li className="hidden md:block">
+            <Link to="/" className="hover:underline">Home</Link>
           </li>
           {/* Conditionally render the logout button if authenticated */}
           {isAuthenticated() && (
             <li>
-              <button onClick={handleLogout}>Logout</button>
+              <button 
+                onClick={handleLogout} 
+                className="bg-white text-red-800 py-2 px-4 rounded hover:bg-gray-200"
+              >
+                Logout
+              </button>
             </li>
           )}
           {/* Add other navigation links here */}
         </ul>
       </nav>
-    </div>
+    </header>
   );
 }
 
