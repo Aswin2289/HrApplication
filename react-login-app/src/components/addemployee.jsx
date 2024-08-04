@@ -73,6 +73,8 @@ function Addemployee() {
       data.role = 3;
     }else if (data.role === "HOD") {
       data.role = 4;
+    }else if (data.role === "Accountant") {
+      data.role = 5;
     }
 
     data.qidExpire = employeeData.qidExpire;
@@ -328,7 +330,7 @@ function Addemployee() {
                 <option value="">Select Role</option>
                 <option value="HR">HR</option>
                 <option value="HOD">HOD</option>
-                <option value="Employee">Employee</option>
+                <option value="Accountant">Accountant</option>
               </select>
               {errors.role && (
                 <p className="text-red-500">{errors.role.message}</p>
