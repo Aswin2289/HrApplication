@@ -63,14 +63,17 @@ public class User {
     private Date lastEligilibleDate;
     private byte yearStatus;
     private byte department;
+    @Lob
+    @Column(columnDefinition="LONGBLOB")
+    private byte[] image;
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date updatedDate;
 
+    private Date updatedDate;
 
     public enum Status {
         // active-1 inactive(relieve)-0 exclude( permanent delete)-2

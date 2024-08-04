@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
 import useAuth from "../hooks/use-auth";
 import DatePickerModal from "./date-picker-modal";
+import useAddEmployeeImage from "../hooks/use-add-employee-image";
 const schema = z.object({
   leaveType: z.number().min(1, "Leave type is required"),
   days: z.string().refine((value) => /^\d+$/.test(value), {
@@ -38,12 +39,17 @@ const schema = z.object({
 const EmployeeDetails = () => {
   const location = useLocation();
   const { employeeId } = location.state;
-  const { employeeDetails, isLoading, error } = useEmployeeDetails(employeeId);
+  const { employeeDetails, isLoading, error,refetch } = useEmployeeDetails(employeeId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const [isModalOpenEligibility, setIsModalOpenEligibility] = useState(false);
-  
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [key, setKey] = useState(0);
+  const [imageSize, setImageSize] = useState(0);
+  const { uploadImage, viewImage } = useAddEmployeeImage();
   const { getUserDetails } = useAuth();
   const { role } = getUserDetails();
   const {
@@ -64,6 +70,23 @@ const EmployeeDetails = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      if (employeeDetails && employeeDetails.id) {
+        try {
+          const imageResponse = await viewImage(employeeDetails.id);
+          console.log("User Image:", imageResponse.data.size);
+          setImageSize(imageResponse.data.size);
+          const imageUrl = URL.createObjectURL(imageResponse.data);
+          setImageUrl(imageUrl);
+          console.log(imageUrl);
+        } catch (error) {
+          console.error("Error fetching User image:", error);
+        }
+      }
+    };
+    fetchUserImage();
+  }, [employeeDetails, viewImage, key]);
   useEffect(() => {
     // Reset form when modal opens
     if (isModalOpen) {
@@ -99,16 +122,50 @@ const EmployeeDetails = () => {
     setIsModalOpen(true);
   };
   const handleUpdateEligiblity = () => {
+    console.log("------");
     setIsModalOpenEligibility(true);
   };
   const handleCloseModalEligibility = () => {
     setIsModalOpenEligibility(false);
+    refetch();
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedLeaveType("");
     reset();
+  };
+  const handleFileChange = (e) => {
+    // Handle file input change logic
+    setSelectedFile(e.target.files[0]);
+    console.log("File selected", e.target.files[0]);
+  };
+
+  const onImageUpload = async (data) => {
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    try {
+      // Implement the image upload logic here
+      await uploadImage(employeeDetails.id, selectedFile);
+      console.log("Image file:", selectedFile);
+      toast.success("Image uploaded successfully");
+      setIsImageModalOpen(false);
+      setKey((prevKey) => prevKey + 1);
+    } catch (error) {
+      toast.error("Failed to upload image:", error);
+      console.error("Failed to upload image:", error);
+    }
+  };
+
+  const handleImageUpload = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const handleImageModalClose = () => {
+    setIsImageModalOpen(false);
   };
 
   const onSubmit = async (data, e) => {
@@ -239,6 +296,19 @@ const EmployeeDetails = () => {
                 )}
               </span>
             </div>
+            <div className="flex flex-col mb-4">
+              <span className="text-gray-700 font-bold">Eligible Date:</span>
+              <span>
+                {employeeDetails.lastEligibilityDate ? (
+                  <>
+                   {new Date(employeeDetails.lastEligibilityDate).toLocaleDateString()}
+                  
+                  </>
+                ) : (
+                  "N/A"
+                )}
+              </span>
+            </div>
           </div>
           <div className="flex justify-start space-x-4">
             <Button
@@ -265,7 +335,7 @@ const EmployeeDetails = () => {
               Add Leave
             </Button>
             <Button
-              disabled={role !== 1 && role !== 4&& role !== 2}
+              disabled={role !== 1 && role !== 4 && role !== 2}
               variant="contained"
               style={{
                 textTransform: "none",
@@ -278,12 +348,17 @@ const EmployeeDetails = () => {
             </Button>
           </div>
         </div>
-        <div className="w-full md:w-1/3 flex flex-col justify-between items-center">
+        <div className="w-full md:w-1/3 flex flex-col justify-center items-center">
           <img
-            src="https://via.placeholder.com/150"
-            alt=""
-            className="rounded-full shadow-lg"
+            src={imageUrl || "/default-profile.png"}
+            alt="Profile"
+            className="w-64 h-64 rounded-full object-cover mb-6"
           />
+          <div className="flex justify-center items-center mt-8">
+            <MyButton type="button" onClick={handleImageUpload}>
+              Upload Image
+            </MyButton>
+          </div>
         </div>
       </div>
       <Modal
@@ -388,11 +463,36 @@ const EmployeeDetails = () => {
           </form>
         </div>
       </Modal>
-      <DatePickerModal
-        isOpen={isModalOpenEligibility}
-        handleClose={handleCloseModalEligibility}
-        employeeDetails={employeeDetails}
-      />
+      {employeeDetails && (
+        <DatePickerModal
+          isOpen={isModalOpenEligibility}
+          handleClose={handleCloseModalEligibility}
+          employeeId={employeeDetails.id}
+        />
+      )}
+      <Modal
+        open={isImageModalOpen}
+        onClose={handleImageModalClose}
+        className="flex justify-center items-center"
+      >
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+          <h2 className="text-lg font-bold mb-4">Upload Profile Picture</h2>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mb-4"
+          />
+          <div className="flex justify-end">
+            <MyButton type="button" onClick={onImageUpload}>
+              Upload
+            </MyButton>
+            <MyButton type="reset" onClick={handleImageModalClose}>
+              Cancel
+            </MyButton>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

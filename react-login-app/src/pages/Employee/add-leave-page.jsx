@@ -8,13 +8,12 @@ function AddLeavePage() {
     <div>
       <Layout>
         {/* <div className="border-b border-gray-300 pb-20 mb-4"> */}
-          <LeaveDetails />
-          <p></p>
+        <LeaveDetails />
+        <p></p>
         {/* </div> */}
         <div className="flex ">
-          
           <AddLeave />
-          <div className="flex justify-center items-center w-3/6">
+          <div className="flex justify-center items-center w-3/6 hidden md:block">
             <AddLeaveImage />
           </div>
         </div>

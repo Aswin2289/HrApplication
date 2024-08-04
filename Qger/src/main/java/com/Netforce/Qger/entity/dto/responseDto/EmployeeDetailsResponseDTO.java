@@ -36,4 +36,5 @@ public class EmployeeDetailsResponseDTO {
     private Integer noOfDaysLicenseExpire;
     private byte department;
     private Integer prevExperience;
+    private Date lastEligibilityDate;
 }

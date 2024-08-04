@@ -17,6 +17,8 @@ import com.Netforce.Qger.security.JwtUserDetailsService;
 import com.Netforce.Qger.security.TokenManager;
 import com.Netforce.Qger.service.UserService;
 import com.Netforce.Qger.util.CommonUtils;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -44,6 +46,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -286,6 +289,7 @@ public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throw
     employeeDetailsResponseDTO.setStatus(user.getStatus());
     employeeDetailsResponseDTO.setDepartment(user.getDepartment());
     employeeDetailsResponseDTO.setPrevExperience(user.getPrevExperience());
+    employeeDetailsResponseDTO.setLastEligibilityDate(user.getLastEligilibleDate());
     return employeeDetailsResponseDTO;
   }
 
@@ -559,6 +563,40 @@ public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throw
     System.out.println(user.toString());
     userRepository.save(user);
   }
+
+
+  @Override
+  public void uploadImage(Integer id, MultipartFile file){
+    if (file.getSize() > 2 * 1024 * 1024) {
+      throw new BadRequestException(
+              messageSource.getMessage("IMAGE_SIZE", null, Locale.ENGLISH));
+    }
+    byte[] userStat={User.Status.ACTIVE.value,User.Status.VACATION.value};
+
+    User user=userRepository.findByIdAndStatusIn(id,userStat).orElseThrow(
+            () ->
+                    new BadRequestException(
+                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+
+    try{
+      user.setImage(file.getBytes());
+      userRepository.save(user);
+
+    }catch (IOException e){
+      throw new BadRequestException(messageSource.getMessage("UNEXPECTED_ERROR",null,Locale.ENGLISH));
+    }
+
+  }
+  @Override
+  public User getImage(Integer id){
+    byte[] userStat={Vehicle.Status.ACTIVE.value,Vehicle.Status.INACTIVE.value};
+
+    return userRepository.findByIdAndStatusIn(id,userStat).orElseThrow(
+            () ->
+                    new BadRequestException(
+                            messageSource.getMessage("VEHICLE_NOT_FOUND", null, Locale.ENGLISH)));
+  }
+
 
 
 
