@@ -330,6 +330,7 @@ function Addemployee() {
                 <option value="">Select Role</option>
                 <option value="HR">HR</option>
                 <option value="HOD">HOD</option>
+                <option value="Employee">Employee</option>
                 <option value="Accountant">Accountant</option>
               </select>
               {errors.role && (
