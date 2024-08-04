@@ -20,7 +20,12 @@ const schema = z.object({
 });
 
 const DatePickerModal = ({ isOpen, handleClose, employeeId }) => {
-  const { employeeDetails, isLoading, error } = useEmployeeDetails(employeeId);
+  console.log("inside datepicker",isOpen,employeeId);
+  const [empId, setEmpId] = useState(employeeId);
+  useEffect(() => {
+    setEmpId(employeeId);
+  }, [employeeId]);
+  const { employeeDetails, isLoading, error } = useEmployeeDetails(empId);
   const { updateLastEligibility } = useAddEmployee();
   
   const {

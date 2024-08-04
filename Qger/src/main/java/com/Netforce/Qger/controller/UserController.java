@@ -1,5 +1,7 @@
 package com.Netforce.Qger.controller;
 
+import com.Netforce.Qger.entity.User;
+import com.Netforce.Qger.entity.Vehicle;
 import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.*;
 import com.Netforce.Qger.expectionHandler.InvalidUserException;
@@ -10,9 +12,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -107,5 +112,21 @@ public class UserController {
   public ResponseEntity<Object>updateLastEligibleDate(@PathVariable("id")Integer id, @Valid @RequestBody UpdateEligibilityDateRequestDTO updateEligibilityDateRequestDTO){
     userService.updateLastEligibleDate(id,updateEligibilityDateRequestDTO);
     return new ResponseEntity<>(new SuccessResponseDTO("200","Updated Successfully"),HttpStatus.OK);
+  }
+
+  @PutMapping("upload/{id}")
+  public ResponseEntity<Object> uploadImage(@PathVariable("id") Integer id, @RequestParam("file") MultipartFile file) {
+    userService.uploadImage(id, file);
+    return new ResponseEntity<>(
+            new SuccessResponseDTO("201", "User Image Uploaded Successfully"), HttpStatus.CREATED);
+
+  }
+  @GetMapping("/viewImage/{id}")
+  public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+    User user = userService.getImage(Math.toIntExact(id));
+    byte[] imageData = user.getImage();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.IMAGE_JPEG); // Adjust media type if needed (e.g., MediaType.IMAGE_PNG)
+    return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
   }
 }

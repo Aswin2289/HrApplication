@@ -22,7 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../services/interceptor";
 import VehicleDocumentView from "./vehicle-document-view";
 import useAuth from "../hooks/use-auth";
-import { differenceInYears, differenceInMonths, format } from "date-fns";
+import { differenceInYears, differenceInMonths } from "date-fns";
 const schema = z.object({
   assignUser: z.string().min(1, "User is required"),
 });
@@ -396,29 +396,6 @@ const VehicleDetail = () => {
                 error={!!errors.file}
                 helperText={errors.file ? "Please upload a file" : null}
               />
-              {/* <Controller
-                name="image"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.image}>
-                    <TextField
-                      type="file"
-                      id="image"
-                      label="Image"
-                      inputProps={{ accept: "image/*" }}
-                      InputLabelProps={{ shrink: true }}
-                      onChange={(e) => {
-                        field.onChange(e.target.files[0]);
-                        setSelectedFile(e.target.files[0]);
-                      }}
-                    />
-                    {errors.image && (
-                      <p className="text-red-500">{errors.image.message}</p>
-                    )}
-                  </FormControl>
-                )}
-              /> */}
               <div className="flex justify-center space-x-4">
                 <MyButton type="button" onClick={onImageUpload}>
                   Upload
