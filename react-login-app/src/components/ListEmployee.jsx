@@ -227,7 +227,31 @@ function ListEmployee() {
     setPassportExpireState(filterType === "passport" && isChecked);
     setlisenceExpireState(filterType === "license" && isChecked);
   };
-
+  const handleDownload = async () => {
+    try {
+      const response = await axiosInstance.get("/user/download", {
+        params: {
+          searchKeyword,
+          status: statusEmployee,
+          qidExpiresThisMonth: qidExpireState,
+          passportExpired: passportExpireState,
+          licenseExpired: lisenceExpireState,
+        },
+        responseType: 'blob', // Ensure the response is treated as a file
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'employees_data.xlsx'); // Set the file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("Download started");
+    } catch (error) {
+      toast.error("Error downloading file");
+      console.error("Error downloading file:", error);
+    }
+  };
   return (
     <div className="container mx-auto mt-8">
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
@@ -307,7 +331,7 @@ function ListEmployee() {
               License Expire
             </MenuItem>
           </Menu>
-        </div>
+        </div> 
         <div>
           {/* Download Icon */}
           <svg
@@ -316,6 +340,8 @@ function ListEmployee() {
             width="24"
             height="24"
             id="download"
+            className="cursor-pointer"
+            onClick={handleDownload}
           >
             <g>
               <g>

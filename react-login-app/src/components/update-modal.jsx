@@ -60,7 +60,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
       .string()
       .min(1, { message: "Contract Period is required" }),
     passport: z.string().min(1, { message: "Passport Number is required" }),
-    license: z.string(),
+    license: z.string().nullable().optional(),
     qualification: z.string(),
     role: z.number().min(1, { message: "Role is required" }),
     department: z.string().min(1, { message: "Department is required" }),
@@ -96,8 +96,9 @@ function UpdateModal({ show, handleClose, employeeId }) {
     setEmployeeData({ ...employeeData, passportExpire: date });
   };
 
+
   const handleLicenseExpireChange = (date) => {
-    setEmployeeData({ ...employeeData, licenseExpire: date });
+    setEmployeeData({ ...employeeData, licenseExpire: date || null });
   };
 
   const handleJoiningDateChange = (date) => {
@@ -119,7 +120,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
       setValue("experience", employeeDetails.experience);
       setValue("contractPeriod", employeeDetails.contractPeriod);
       setValue("passport", employeeDetails.passport);
-      setValue("license", employeeDetails.license);
+      setValue("license", employeeDetails.license || "");
       setValue("qualification", employeeDetails.qualification);
       setValue("role", mapRoleStringToValue(employeeDetails.role));
       setValue("department", employeeDetails.department);
@@ -127,22 +128,30 @@ function UpdateModal({ show, handleClose, employeeId }) {
 
       // Set date fields
       setEmployeeData({
-        qidExpire: new Date(
-          employeeDetails.qidExpire[0],
-          employeeDetails.qidExpire[1] - 1,
-          employeeDetails.qidExpire[2]
-        ),
-        passportExpire: new Date(
-          employeeDetails.passportExpire[0],
-          employeeDetails.passportExpire[1] - 1,
-          employeeDetails.passportExpire[2]
-        ),
-        licenseExpire: new Date(
-          employeeDetails.licenseExpire[0],
-          employeeDetails.licenseExpire[1] - 1,
-          employeeDetails.licenseExpire[2]
-        ),
-        joiningDate: new Date(employeeDetails.joiningDate),
+        qidExpire: employeeDetails.qidExpire
+          ? new Date(
+              employeeDetails.qidExpire[0],
+              employeeDetails.qidExpire[1] - 1,
+              employeeDetails.qidExpire[2]
+            )
+          : null, // Set to null if qidExpire is null or undefined
+        passportExpire: employeeDetails.passportExpire
+          ? new Date(
+              employeeDetails.passportExpire[0],
+              employeeDetails.passportExpire[1] - 1,
+              employeeDetails.passportExpire[2]
+            )
+          : null, // Set to null if passportExpire is null or undefined
+        licenseExpire: employeeDetails.licenseExpire
+          ? new Date(
+              employeeDetails.licenseExpire[0],
+              employeeDetails.licenseExpire[1] - 1,
+              employeeDetails.licenseExpire[2]
+            )
+          : null, // Set to null if licenseExpire is null or undefined
+        joiningDate: employeeDetails.joiningDate
+          ? new Date(employeeDetails.joiningDate)
+          : null, // Handle joiningDate
       });
     }
   }, [employeeDetails, setValue]);
@@ -183,7 +192,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
 
     data.qidExpire = employeeData.qidExpire;
     data.passportExpire = employeeData.passportExpire;
-    data.licenseExpire = employeeData.licenseExpire;
+    data.licenseExpire = employeeData.licenseExpire || null;
     data.joiningDate = employeeData.joiningDate;
     console.log("---->", data.gender);
     try {
@@ -220,8 +229,12 @@ function UpdateModal({ show, handleClose, employeeId }) {
       aria-describedby="modal-modal-description"
     >
       <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg w-1/2 p-8">
-          <Typography variant="h5" gutterBottom style={{marginBottom:"50px"}}>
+        <div className="bg-white rounded-lg w-11/12 md:w-1/2 p-8 max-h-[90vh] overflow-y-auto">
+          <Typography
+            variant="h5"
+            gutterBottom
+            style={{ marginBottom: "50px" }}
+          >
             Update Employee
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -396,6 +409,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   error={!!errors.license}
                   disabled={role === 3 || role === 4}
                   helperText={errors.license ? errors.license.message : ""}
+                  value={getValues("license") || ""} // Ensure an empty string if null
                 />
               </Grid>
               <Grid item xs={6}>
@@ -429,7 +443,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   }
                 />
               </Grid>
-              {(role !== 4 && role !==3) && (
+              {role !== 4 && role !== 3 && (
                 <Grid item xs={6}>
                   <FormControl fullWidth>
                     <InputLabel>Role</InputLabel>
@@ -453,7 +467,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   </FormControl>
                 </Grid>
               )}
-              {(role !== 4 && role !==3) && (
+              {role !== 4 && role !== 3 && (
                 <Grid item xs={6}>
                   <TextField
                     label="Department"
