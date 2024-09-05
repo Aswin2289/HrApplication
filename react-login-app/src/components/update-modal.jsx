@@ -34,8 +34,14 @@ const genderOptions = Object.keys(GenderEnum).map((key) => ({
 }));
 
 const roleOptions = [
-  { value: "employee", label: "Employee", id: 3 },
+  { value: "3", label: "Employee", id: 3 },
+  { value: "2", label: "HR", id: 2 },
+  { value: "4", label: "HOD", id: 4 },
+];
+const roleOptions1 = [
+  { value: "super_admin", label: "super_admin", id: 1 },
   { value: "HR", label: "HR", id: 2 },
+  { value: "emplyee", label: "emplyee", id: 3 },
   { value: "HOD", label: "HOD", id: 4 },
 ];
 
@@ -62,7 +68,7 @@ function UpdateModal({ show, handleClose, employeeId }) {
     passport: z.string().min(1, { message: "Passport Number is required" }),
     license: z.string().nullable().optional(),
     qualification: z.string(),
-    role: z.number().min(1, { message: "Role is required" }),
+    role: z.string().min(1, { message: "Role is required" }).nullable(),
     department: z.string().min(1, { message: "Department is required" }),
     prevExperience: z
       .string()
@@ -96,7 +102,6 @@ function UpdateModal({ show, handleClose, employeeId }) {
     setEmployeeData({ ...employeeData, passportExpire: date });
   };
 
-
   const handleLicenseExpireChange = (date) => {
     setEmployeeData({ ...employeeData, licenseExpire: date || null });
   };
@@ -117,14 +122,14 @@ function UpdateModal({ show, handleClose, employeeId }) {
       setValue("nationality", employeeDetails.nationality);
       setValue("gender", mapGenderValueToString(employeeDetails.gender)); // Ensure this line is setting the correct value
       setValue("jobTitle", employeeDetails.jobTitle);
-      setValue("experience", employeeDetails.experience);
+      setValue("experience", String(employeeDetails.experience));
       setValue("contractPeriod", employeeDetails.contractPeriod);
       setValue("passport", employeeDetails.passport);
       setValue("license", employeeDetails.license || "");
       setValue("qualification", employeeDetails.qualification);
       setValue("role", mapRoleStringToValue(employeeDetails.role));
-      setValue("department", employeeDetails.department);
-      setValue("prevExperience", employeeDetails.prevExperience);
+      setValue("department", String(employeeDetails.department));
+      setValue("prevExperience", String(employeeDetails.prevExperience));
 
       // Set date fields
       setEmployeeData({
@@ -186,6 +191,11 @@ function UpdateModal({ show, handleClose, employeeId }) {
       roleOptions.find((option) => option.value === roleString)?.id || null
     );
   };
+  const mapRoleStringToValue1 = (roleString) => {
+    return (
+      roleOptions1.find((option) => option.value === roleString)?.id || null
+    );
+  };
 
   const onSubmit = async (data) => {
     data.gender = mapGenderStringToValue(data.gender);
@@ -194,7 +204,10 @@ function UpdateModal({ show, handleClose, employeeId }) {
     data.passportExpire = employeeData.passportExpire;
     data.licenseExpire = employeeData.licenseExpire || null;
     data.joiningDate = employeeData.joiningDate;
-    console.log("---->", data.gender);
+    
+    if(data.role==null){
+      data.role=mapRoleStringToValue1(employeeDetails.role);
+    }
     try {
       await updateEmployee(employeeId, data);
       toast.success("Employee updated successfully");
@@ -443,15 +456,19 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   }
                 />
               </Grid>
-              {role !== 4 && role !== 3 && (
+              {role !== 4 && role !== 3 && role !== 2 &&(
                 <Grid item xs={6}>
                   <FormControl fullWidth>
                     <InputLabel>Role</InputLabel>
                     <Select
                       label="Role"
                       {...register("role")}
-                      value={getValues("role") || ""}
-                      onChange={(e) => setValue("role", e.target.value)}
+                      value={getValues("role") || ""} // Bind value correctly
+                      onChange={(e) => {
+                        setValue("role", e.target.value, {
+                          shouldValidate: true,
+                        }); // Ensure value is set and field is validated
+                      }}
                       error={!!errors.role}
                     >
                       {roleOptions.map((option) => (
@@ -467,19 +484,31 @@ function UpdateModal({ show, handleClose, employeeId }) {
                   </FormControl>
                 </Grid>
               )}
-              {role !== 4 && role !== 3 && (
+
+              {role !== 4 && role !== 3 &&  (
                 <Grid item xs={6}>
-                  <TextField
-                    label="Department"
-                    variant="outlined"
-                    fullWidth
-                    {...register("department")}
-                    InputLabelProps={{ shrink: true }}
-                    error={!!errors.department}
-                    helperText={
-                      errors.department ? errors.department.message : ""
-                    }
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel shrink>Department</InputLabel>
+                    <Select
+                      label="Department"
+                      {...register("department")}
+                      value={getValues("department") || ""}
+                      onChange={(e) =>
+                        setValue("department", e.target.value, {
+                          shouldValidate: true,
+                        })
+                      }
+                      error={!!errors.department}
+                    >
+                      <MenuItem value="0">Office</MenuItem>
+                      <MenuItem value="1">Production</MenuItem>
+                    </Select>
+                    {errors.department && (
+                      <p className="text-red-500">
+                        {errors.department.message}
+                      </p>
+                    )}
+                  </FormControl>
                 </Grid>
               )}
               <Grid item xs={6}>
