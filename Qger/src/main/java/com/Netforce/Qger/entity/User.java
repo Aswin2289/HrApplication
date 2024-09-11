@@ -1,6 +1,7 @@
 package com.Netforce.Qger.entity;
 
 import com.Netforce.Qger.entity.dto.requestDto.EmployeeRequestDTO;
+import com.Netforce.Qger.util.CommonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.time.YearMonth;
 
@@ -111,6 +113,17 @@ public class User {
         Gender(byte value) {
             this.value = value;
         }
+    }
+    public LocalDate getLastEligilibleDateAsLocalDate() {
+        return CommonUtils.toLocalDate(lastEligilibleDate);
+    }
+
+    public void setLastEligilibleDate(Date date) {
+        this.lastEligilibleDate = date;
+    }
+
+    public void setLastEligilibleDate(LocalDate localDate) {
+        this.lastEligilibleDate = CommonUtils.toDate(localDate);
     }
 
  public User(EmployeeRequestDTO employeeRequestDTO,Role role) {

@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     //  @Scheduled(cron = "0 */2 * * * *")//every 2 mins
 
     @Override
-  @Scheduled(cron = "0 0 0 * * ?") // every day midnight
+    @Scheduled(cron = "0 0 0 * * ?") // every day midnight
 //    @Scheduled(cron = "0 */2 * * * *")
     public void updateYearStatusUpdateScheduler() {
         System.out.println("Executing scheduled task....");
@@ -58,7 +59,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     }
 
     @Override
-  @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
+    @Scheduled(cron = "0 0 0 * * ?") // every day at midnight
 //    @Scheduled(cron = "0 */2 * * * *")
     public void addYearlyLeaveDaysScheduler() {
         System.out.println("Executing yearly leave addition task...");
@@ -80,7 +81,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
     }
 
-      @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
+    @Scheduled(cron = "0 0 0 * * ?") // Runs every day at midnight
 //    @Scheduled(cron = "0 */2 * * * *")
     public void updateUserStatuses() {
         LocalDate currentDate = LocalDate.now();
@@ -90,15 +91,54 @@ public class SchedulerServiceImpl implements SchedulerService {
         List<User> users = userRepository.findAllByStatusIn(userStatus);
 
         for (User user : users) {
-            List<Leave> currentLeaves =
-                    leaveRepository.findByUserAndLeaveFromLessThanEqualAndLeaveToGreaterThanEqualAndStatus(
-                            user, currentDate, currentDate, acceptedStatus);
+            List<Leave> currentLeaves = leaveRepository.findByUserAndLeaveFromLessThanEqualAndLeaveToGreaterThanEqualAndStatus(user, currentDate, currentDate, acceptedStatus);
 
             if (currentLeaves.isEmpty()) {
                 user.setStatus(User.Status.ACTIVE.value);
             } else {
                 user.setStatus(User.Status.VACATION.value);
             }
+            userRepository.save(user);
+        }
+    }
+
+//    @Scheduled(cron = "0 */2 * * * *") // Runs every 2 minutes (adjust this as needed)
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateEligibilityDates() {
+        List<User> users = userRepository.findAll(); // Fetch all users
+
+        for (User user : users) {
+            LocalDate currentDate = LocalDate.now();
+
+            // If lastEligibleDate is null, set it to the current date
+            if (user.getLastEligilibleDate() == null) {
+                user.setLastEligilibleDate(currentDate);  // Set the current date if null
+            }
+
+            LocalDate lastEligibleDate = user.getLastEligilibleDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            // Calculate the eligibility period based on user experience
+            int eligibilityPeriodYears = user.getYearStatus() == 0 ? 1 : 2;
+            LocalDate nextEligibilityDate = lastEligibleDate.plusYears(eligibilityPeriodYears);
+
+            // Fetch leaves taken after the last eligibility date
+            List<Leave> relevantLeaves = leaveRepository.findByUserAndLeaveTypeIdInAndLeaveFromAfterAndStatusIn(user, Arrays.asList(1L, 3L, 4L), lastEligibleDate, List.of((byte) 0));
+
+            // Calculate total leave days taken
+            int totalLeaveDays = relevantLeaves.stream().mapToInt(Leave::getDaysAdjusted).sum();
+
+            // Calculate the adjusted eligibility date
+            LocalDate adjustedEligibilityDate = nextEligibilityDate.plusDays(totalLeaveDays);
+
+            // Update last eligibility date if required
+            if (currentDate.isAfter(nextEligibilityDate)) {
+                // If the user has not taken leave in the last 6 months, update last eligibility date
+                if (currentDate.isAfter(nextEligibilityDate.minusMonths(6))) {
+                    user.setLastEligilibleDate(adjustedEligibilityDate);
+                }
+            }
+
+            // Save the updated user
             userRepository.save(user);
         }
     }

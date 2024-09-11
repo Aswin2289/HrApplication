@@ -32,6 +32,7 @@
     "react-datetime": "^3.2.0",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.51.5",
+    "react-login-app": "file:",
     "react-modal": "^3.16.1",
     "react-move": "^6.5.0",
     "react-pdf": "^9.0.0",
