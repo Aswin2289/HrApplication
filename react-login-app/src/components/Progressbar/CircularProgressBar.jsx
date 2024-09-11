@@ -5,16 +5,19 @@ import AnimatedProgressProvider from './AnimatedProgressProvider';
 import { easeQuadIn } from 'd3-ease';
 
 export default function CircularProgressBar({ percentage, width, height }) {
-    const data = parseFloat(percentage); // Convert percentage to a floating-point number
+    const data = parseFloat(percentage) || 0; // Ensure valid percentage
+    
     return (
         <AnimatedProgressProvider
             valueStart={0}
-            valueEnd={data} // Use the converted value
-            duration={2}
+            valueEnd={data} // Use the correct percentage
+            duration={2} // 2 seconds for animation
             easingFunction={easeQuadIn}
         >
             {(value) => {
-                const roundedValue = Math.round(value * 100); // Round the value
+                value=data;
+                const roundedValue = Math.round(value); // Round for display
+
                 let color;
                 if (roundedValue < 50) {
                     color = 'red';
@@ -23,16 +26,17 @@ export default function CircularProgressBar({ percentage, width, height }) {
                 } else {
                     color = 'green';
                 }
+
                 return (
                     <div style={{ width: width, height: height }}>
                         <CircularProgressbar
-                            value={value * 100}
-                            text={`${roundedValue}%`}
+                            value={roundedValue} // Set the value directly as percentage
+                            text={`${roundedValue}%`} // Display the percentage text
                             styles={{
-                                root: {},
                                 path: {
                                     stroke: color,
                                     strokeLinecap: 'round',
+                                    transition: 'stroke-dashoffset 0.5s ease 0s',
                                 },
                                 trail: {
                                     stroke: '#d6d6d6',
@@ -43,11 +47,6 @@ export default function CircularProgressBar({ percentage, width, height }) {
                                 text: {
                                     fill: color,
                                     fontSize: '20px',
-                                    textAnchor: 'middle',
-                                    dominantBaseline: 'middle',
-                                },
-                                background: {
-                                    fill: '#00000',
                                 },
                             }}
                         />

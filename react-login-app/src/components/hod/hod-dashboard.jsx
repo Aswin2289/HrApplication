@@ -17,6 +17,7 @@ function HodDashboard() {
   const [licenseExpire, setLicenseExpire] = useState(0);
   const [istimaraExpire, setIstimaraExpire] = useState(0);
   const [insuranceExpire, setInsuranceExpire] = useState(0);
+  const [documentExpire, setDocumentExpire] = useState(0);
   const [statusRender, setStatusRender] = useState(0);
   const navigate = useNavigate();
   const barChartRef = useRef(null);
@@ -32,6 +33,7 @@ function HodDashboard() {
       setLicenseExpire(totalEmployees.body.licenseExpire);
       setIstimaraExpire(totalEmployees.body.istimaraExpire);
       setInsuranceExpire(totalEmployees.body.insuranceExpire);
+      setDocumentExpire(totalEmployees.body.documentExpire || 0);
     }
   }, [totalEmployees]);
 
@@ -113,87 +115,203 @@ function HodDashboard() {
     setStatusRender(7);
     navigate('/listVehicle', { state: { statusRender: 7 } });
   };
-
+  const handleDocumentExpire = () => {
+    setStatusRender(8);
+    navigate("/listDocument", { state: { statusRender: 8 } });
+  };
+  const calculatePercentage = (total, value) => {
+    if (total === 0) return 0;
+    return (value / total) * 100;
+  };
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-          <div onClick={handleTotalEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-            <h3 className="text-xl font-normal">Total Employee</h3>
-            <CardCounter value={total} />
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+        <div
+          onClick={handleTotalEmployee}
+          className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          <h3 className="text-xl font-normal">Total Employee</h3>
+          <CardCounter value={total} />
         </div>
-        <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-          <div onClick={handleActiveEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-            <h3 className="text-xl font-normal">Active Employee</h3>
-            <CardCounter value={activeCount} />
-          </div>
-          <div>
-            <AnimatedProgressProvider valueStart={0} valueEnd={activeCount} duration={2} easingFunction={(t) => t}>
+      </div>
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+        <div
+          onClick={handleActiveEmployee}
+          className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          <h3 className="text-xl font-normal">Active Employee</h3>
+          <CardCounter value={activeCount} />
+        </div>
+        <div>
+          {activeCount !== undefined && activeCount !== 0 && (
+            <AnimatedProgressProvider
+              valueStart={0}
+              valueEnd={activeCount}
+              duration={2}
+              easingFunction={(t) => t}
+            >
               {(value) => (
-                <CircularProgressBar percentage={activeCount} width="50px" height="50px" />
+                <CircularProgressBar
+                  percentage={calculatePercentage(total, activeCount)}
+                  width="50px"
+                  height="50px"
+                />
               )}
             </AnimatedProgressProvider>
-          </div>
+          )}
         </div>
-        <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
-          <div onClick={handleVacationEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-            <h3 className="text-xl font-normal">On Vacation</h3>
-            <CardCounter value={vacationCount} className="fontSize=4xl" />
-          </div>
-          <div>
-            <AnimatedProgressProvider valueStart={0} valueEnd={vacationCount} duration={2} easingFunction={(t) => t}>
-              {(value) => (
-                <CircularProgressBar percentage={vacationCount} width="50px" height="50px" />
-              )}
-            </AnimatedProgressProvider>
+      </div>
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex justify-between items-center">
+        <div
+          onClick={handleVacationEmployee}
+          className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+        >
+          <h3 className="text-xl font-normal">On Vacation</h3>
+          <CardCounter value={vacationCount} />
+        </div>
+        <div>
+          <AnimatedProgressProvider
+            valueStart={0}
+            valueEnd={vacationCount}
+            duration={2}
+            easingFunction={(t) => t}
+          >
+            {(value) => (
+              <CircularProgressBar
+                percentage={calculatePercentage(total, vacationCount)}
+                width="50px"
+                height="50px"
+              />
+            )}
+          </AnimatedProgressProvider>
+        </div>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+        {/* Card Counter on the Left */}
+        <div className="flex-shrink-0 mr-4 ml-3">
+          <CardCounter value={qidExpire} className="text-9xl" />{" "}
+          {/* Adjust size as needed */}
+        </div>
+
+        {/* Text Content on the Right */}
+        <div className="flex-1 ml-4">
+          <div
+            onClick={handleQidExpireEmployee}
+            className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            <h3 className="text-xl font-bold">{`QID Expire`}</h3>
+            <span className="block text-sm mt-4">Number of persons</span>
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 justify-center items-center">
-        <div className="mt-8">
-          <div className="relative w-full h-64">
-            <canvas id="employeeChart" ref={barChartRef}></canvas>
+
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+        {/* Card Counter on the Left */}
+        <div className="flex-shrink-0 mr-4 ml-3">
+          <CardCounter value={passportExpire} className="text-9xl" />{" "}
+          {/* Adjust size as needed */}
+        </div>
+
+        {/* Text Content on the Right */}
+        <div className="flex-1 ml-4">
+          <div
+            onClick={handlePassportExpireEmployee}
+            className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            <h3 className="text-xl font-bold">{`Passport Expire`}</h3>
+            <span className="block text-sm mt-4">Number of persons</span>
           </div>
         </div>
-        <div className="p-2 flex flex-col justify-end md:pl-48 ml-4">
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handleQidExpireEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-              <h3 className="text-xl font-bold">QID Expire</h3>
-              <CardCounter value={qidExpire} /><span> Number of persons</span>
+      </div>
+
+      <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+        {/* Card Counter on the Left */}
+        <div className="flex-shrink-0 mr-4 ml-3">
+          <CardCounter value={licenseExpire} className="text-9xl" />{" "}
+          {/* Adjust size as needed */}
+        </div>
+
+        {/* Text Content on the Right */}
+        <div className="flex-1 ml-4">
+          <div
+            onClick={handleLicenseExpireEmployee}
+            className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            <h3 className="text-xl font-bold">{`License Expire`}</h3>
+            <span className="block text-sm mt-4">Number of persons</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      {/* Third Row */}
+      <div className="col-span-2 bg-gray-100 p-4 rounded-lg shadow-md flex flex-col justify-between items-center">
+        <canvas ref={barChartRef} width="400" height="200"></canvas>
+      </div>
+      <div className="flex flex-col gap-3">
+        <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+          {/* Card Counter on the Left */}
+          <div className="flex-shrink-0 mr-4 ml-3">
+            <CardCounter value={istimaraExpire} className="text-9xl" />{" "}
+            {/* Adjust size as needed */}
+          </div>
+
+          {/* Text Content on the Right */}
+          <div className="flex-1 ml-4">
+            <div
+              onClick={handleIstimaraExpire}
+              className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              <h3 className="text-xl font-bold">{`Istimara Expire`}</h3>
+              <span className="block text-sm mt-4">Number of vehicles</span>
             </div>
           </div>
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handlePassportExpireEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-              <h3 className="text-xl font-bold">Passport Expire</h3>
-              <CardCounter value={passportExpire} /><span> Number of persons</span>
+        </div>
+        <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+          {/* Card Counter on the Left */}
+          <div className="flex-shrink-0 mr-4 ml-3">
+            <CardCounter value={insuranceExpire} className="text-9xl" />{" "}
+            {/* Adjust size as needed */}
+          </div>
+
+          {/* Text Content on the Right */}
+          <div className="flex-1 ml-4">
+            <div
+              onClick={handleInsuranceExpire}
+              className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              <h3 className="text-xl font-bold">{`Insurance Expire`}</h3>
+              <span className="block text-sm mt-4">Number of vehicles</span>
             </div>
           </div>
-          <div className="bg-red-200 p-4 rounded-lg shadow-md flex mb-6">
-            <div onClick={handleLicenseExpireEmployee} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-              <h3 className="text-xl font-bold">License Expire</h3>
-              <CardCounter value={licenseExpire} /><span> Number of persons</span>
-            </div>
+        </div>
+
+        <div className="bg-red-200 p-4 rounded-lg shadow-md flex items-center">
+          {/* Card Counter on the Left */}
+          <div className="flex-shrink-0 mr-4 ml-3">
+            <CardCounter value={documentExpire} className="text-9xl" />{" "}
+            {/* Adjust size as needed */}
           </div>
-          <div className="flex flex-row p-8 gap-5">
-            <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
-              <div onClick={handleIstimaraExpire} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                <h3 className="text-xl font-bold">Istimara Expire</h3>
-                <CardCounter value={istimaraExpire} />
-                <span> Number of vehicles</span>
-              </div>
-            </div>
-            <div className="bg-red-200 p-2 rounded-lg shadow-md flex mb-6">
-              <div onClick={handleInsuranceExpire} className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105">
-                <h3 className="text-lg font-bold">Insurance Expire</h3>
-                <CardCounter value={insuranceExpire} />
-                <span> Number of vehicles</span>
-              </div>
+
+          {/* Text Content on the Right */}
+          <div className="flex-1 ml-4">
+            <div
+              onClick={handleDocumentExpire}
+              className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              <h3 className="text-xl font-bold">{`Document Expire`}</h3>
+              <span className="block text-sm mt-4">Number of documents</span>
             </div>
           </div>
         </div>
       </div>
-      </>
+    </div>
+  </>
   );
 }
 

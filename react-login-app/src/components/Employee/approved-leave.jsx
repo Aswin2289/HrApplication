@@ -63,6 +63,10 @@ function ApprovedLeave() {
         return "";
     }
   };
+  const isDeleteButtonDisabled = (fromDate) => {
+    const leaveDate = new Date(fromDate[0], fromDate[1] - 1, fromDate[2]);
+    return leaveDate < new Date();
+  };
 
   return (
     <div className="container mx-auto mt-8">
@@ -125,7 +129,8 @@ function ApprovedLeave() {
                           height="24"
                           fill="none"
                           id="delete"
-                          onClick={() => handleDeleteClick(leave.id)}
+                          // onClick={() => handleDeleteClick(leave.id)}
+                          onClick={() => !isDeleteButtonDisabled(leave.from) && handleDeleteClick(leave.id)}
                           style={{ cursor: "pointer" }}
                         >
                           <path
