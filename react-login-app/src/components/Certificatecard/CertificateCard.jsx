@@ -8,6 +8,7 @@ import useAuth from "../../hooks/use-auth";
 const CertificateCard = ({
   logoSrc,
   documentName,
+  documentExpire,
   onClickView,
   onEdit,
   onDelete,
@@ -57,6 +58,21 @@ const CertificateCard = ({
           <span className="text-lg">↗</span>
         </button>
       </div>
+      <div className="flex justify-center text-sm gap-3">
+        <span>Expiry Date :</span>
+        <span className=" text-sm">
+          <div style={{ flex: 0 }}>
+            {documentExpire
+              ? new Date(
+                  documentExpire[0],
+                  documentExpire[1] - 1,
+                  documentExpire[2]
+                ).toLocaleDateString()
+              : "N/A" // You can replace "N/A" with null or any placeholder value you prefer
+            }
+          </div>
+        </span>
+      </div>
 
       <div
         style={{
@@ -66,7 +82,7 @@ const CertificateCard = ({
           marginTop: "10px",
         }}
       >
-        {role !== 5 && role!==4 && (
+        {role !== 5 && role !== 4 && (
           <div>
             <IconButton onClick={handleEdit}>
               <EditIcon style={{ fontSize: 20 }} />

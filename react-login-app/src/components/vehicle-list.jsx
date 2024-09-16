@@ -19,13 +19,14 @@ import {
   FormControl,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../services/interceptor";
+import { axiosInstance,axiosInstance2 } from "../services/interceptor";
 import useAddVehicle from "../hooks/use-add-vehicle";
 import MyButton from "./Button/my-button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import useAuth from "../hooks/use-auth";
+import PrintIcon from "@mui/icons-material/Print";
 const schema = z.object({
   // userId: z.string().min(1, "Document name is required"),
 });
@@ -51,7 +52,7 @@ function VehicleList() {
     istimara: false,
     insurance: false,
   });
-  const { deleteVehicle, assignVehicle ,removeAssignee} = useAddVehicle();
+  const { deleteVehicle, assignVehicle, removeAssignee } = useAddVehicle();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [employeeId, setEmployeeId] = useState(null);
   const [vehicleData, setVehicleData] = useState(null);
@@ -270,7 +271,7 @@ function VehicleList() {
     // setSelectedDocumentId(null);
     // setFile(null);
   };
-  const handleRemoveAssignment=async() => {
+  const handleRemoveAssignment = async () => {
     try {
       const response = await removeAssignee(vehicleData.id);
       console.log(response);
@@ -283,17 +284,53 @@ function VehicleList() {
     }
   };
   const handleEditClick = (id) => {
-    if(id!=null) {
-    navigate(`/addVehicle/${id}`);
+    if (id != null) {
+      navigate(`/addVehicle/${id}`);
     }
-  // setIsModalOpen(true);  // Set state to open the modal
-};
+    // setIsModalOpen(true);  // Set state to open the modal
+  };
+  const handleDownload = async () => {
+    try {
+      const response = await axiosInstance2.get(
+        "/download/vehicle/list",
+        {
+          params: {
+            page: currentPage,
+            size: rowsPerPage,
+            searchKeyword,
+            sortBy,
+            sortOrder,
+            istimaraExpireDate: istimaraExpireState,
+            insuranceExpire: insuranceExpireState,
+            status: statusVehicle,
+          },
+          responseType: "blob", // Treat response as a file
+        }
+      );
 
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "vehicle_data.csv"); // Use CSV extension
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success("CSV download started");
+    } catch (error) {
+      toast.error("Error downloading CSV file");
+      console.error("Error downloading CSV file:", error);
+    }
+  };
+  const handlePrint = async () => {
+    window.print();
+  };
   return (
     <div className="container mx-auto mt-8">
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      <h2 className="text-2xl font-bold mb-4">Vehicle List</h2>
-
+      <div className="flex">
+        <h2 className="text-2xl font-bold mb-4">Vehicle List</h2>
+      
+      </div>
       <div className="flex justify-end gap-5 mr-8">
         <div>
           <svg
@@ -368,6 +405,8 @@ function VehicleList() {
             width="24"
             height="24"
             id="download"
+            className="cursor-pointer"
+            onClick={handleDownload}
           >
             <g>
               <g>
@@ -395,6 +434,11 @@ function VehicleList() {
               </g>
             </g>
           </svg>
+        </div>
+        <div>
+        <button onClick={handlePrint} className="ml-0 print-button">
+          <PrintIcon />
+        </button>
         </div>
       </div>
 
@@ -558,20 +602,20 @@ function VehicleList() {
                     </TableCell>
                     <TableCell className="items-center">
                       <div className="flex gap-3">
-                      {role!==5 &&(
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          id="edit"
-                          onClick={() => handleEditClick(vehicle.id)} 
-                          style={{ cursor: "pointer" }}
-                        >
-                          <path fill="none" d="M0 0h24v24H0V0z"></path>
-                          <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                        </svg>
-                      )}
+                        {role !== 5 && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            id="edit"
+                            onClick={() => handleEditClick(vehicle.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <path fill="none" d="M0 0h24v24H0V0z"></path>
+                            <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                          </svg>
+                        )}
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -586,29 +630,29 @@ function VehicleList() {
                             <circle cx="12" cy="12" r="3"></circle>
                           </g>
                         </svg>
-                        {role!==5 &&(
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          fill="none"
-                          id="delete"
-                          onClick={() => handleDeleteClick(vehicle.id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <path
-                            fill="#000"
-                            d="M15 3a1 1 0 0 1 1 1h2a1 1 0 1 1 0 2H6a1 1 0 0 1 0-2h2a1 1 0 0 1 1-1h6Z"
-                          ></path>
-                          <path
-                            fill="#000"
-                            fillRule="evenodd"
-                            d="M6 7h12v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7Zm3.5 2a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Zm5 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
+                        {role !== 5 && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            id="delete"
+                            onClick={() => handleDeleteClick(vehicle.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <path
+                              fill="#000"
+                              d="M15 3a1 1 0 0 1 1 1h2a1 1 0 1 1 0 2H6a1 1 0 0 1 0-2h2a1 1 0 0 1 1-1h6Z"
+                            ></path>
+                            <path
+                              fill="#000"
+                              fillRule="evenodd"
+                              d="M6 7h12v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7Zm3.5 2a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Zm5 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Z"
+                              clipRule="evenodd"
+                            ></path>
+                          </svg>
                         )}
-                        {vehicle.status === 1 && role!==5 && (
+                        {vehicle.status === 1 && role !== 5 && (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 51.665 51.665"
@@ -641,7 +685,6 @@ function VehicleList() {
                           </svg>
                         )}
                       </div>
-                   
                     </TableCell>
                   </TableRow>
                 ))}

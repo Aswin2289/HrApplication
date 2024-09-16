@@ -17,9 +17,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyButton from "./Button/my-button";
 import useAuth from "../hooks/use-auth";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 const schema = z.object({
   documentName: z.string().min(1, "Document name is required"),
+  documentExpire: z
+    .date({
+      required_error: "Document expire date is required",
+      invalid_type_error: "Invalid date",
+    })
+    .nullable()
+    .optional(),
   file: z
     .object({
       name: z.string(),
@@ -52,6 +60,7 @@ const PdfView = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
     reset,
   } = useForm({
     resolver: zodResolver(schema),
@@ -75,10 +84,12 @@ const PdfView = () => {
       const selectedPdf = pdfList.find((pdf) => pdf.id === id);
       if (selectedPdf) {
         setValue("documentName", selectedPdf.documentName);
+        setValue("documentExpire", selectedPdf.documentExpire);
       }
     } else {
       reset();
       setValue("documentName", "");
+      setValue("documentExpire", "");
     }
   };
 
@@ -92,13 +103,18 @@ const PdfView = () => {
   const onSubmit = async (data) => {
     try {
       if (selectedDocumentId === null) {
-        const response = await uploadPdf(file, data.documentName);
+        const response = await uploadPdf(
+          file,
+          data.documentName,
+          data.documentExpire
+        );
         console.log(response); // Handle response if needed
       } else {
         const response = await updatePdf(
           selectedDocumentId,
           file,
-          data.documentName
+          data.documentName,
+          data.documentExpire
         );
         console.log(response); // Handle response if needed
       }
@@ -146,7 +162,7 @@ const PdfView = () => {
   return (
     <div>
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      
+
       <div className="flex justify-end">
         {/* Search Icon */}
         {/* <svg
@@ -194,7 +210,7 @@ const PdfView = () => {
           {uploadError && <p className="text-red-500">Error: {uploadError}</p>}
         </div>
       )}
-      {pdfList !== null && pdfList.length >0 ? (
+      {pdfList !== null && pdfList.length > 0 ? (
         <div className="flex flex-wrap justify-center items-center gap-20">
           {pdfList.map((pdfDoc) => (
             <CertificateCard
@@ -202,6 +218,7 @@ const PdfView = () => {
               logoSrc="https://via.placeholder.com/100"
               onClickView={() => handleView(pdfDoc.id)}
               documentName={pdfDoc.documentName}
+              documentExpire={pdfDoc.documentExpire}
               onEdit={() => handleEdit(pdfDoc.id)}
               onDelete={() => handleDelete(pdfDoc.id)}
             />
@@ -251,6 +268,28 @@ const PdfView = () => {
                 errors.documentName ? errors.documentName.message : null
               }
             />
+
+            <div className="flex-1">
+              <label className="block mb-1 label">Document Expire Date</label>
+
+              <DatePicker
+                selected={watch("documentExpire")}
+                onChange={(date) => setValue("documentExpire", date)} // Pass Date object
+                dateFormat="dd/MM/yyyy"
+                showYearDropdown
+                showMonthDropdown
+                placeholderText="dd/MM/yyyy"
+                className={`border border-gray-300 rounded px-3 py-2 w-full ${
+                  errors.documentExpire ? "border-red-500" : ""
+                }`}
+              />
+              {errors.documentExpire && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.documentExpire.message}
+                </p>
+              )}
+            </div>
+
             <TextField
               type="file"
               id="file"

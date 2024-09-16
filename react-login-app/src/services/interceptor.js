@@ -66,6 +66,31 @@ axiosInstance1.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+export const axiosInstance2 = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+  headers: {
+    "Content-Type": "text/csv",
+  },
+});
+axiosInstance2.interceptors.request.use((request) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+  return request; 
+});
+axiosInstance2.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle unauthorized (401) or forbidden (403) errors
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Handle unauthorized access here
+      // For example, you can logout the user or redirect them to login page
+      // logout();
+    }
+    return Promise.reject(error);
+  }
+);
 
 let isRefreshing = false;
 let failedQueue = [];

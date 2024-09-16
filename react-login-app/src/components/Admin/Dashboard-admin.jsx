@@ -112,7 +112,7 @@ function DashboardAdmin() {
   };
   const handleDocumentExpire = () => {
     setStatusRender(8);
-    navigate("/listDocument", { state: { statusRender: 8 } });
+    navigate("/pdfview", { state: { statusRender: 8 } });
   };
   const calculatePercentage = (total, value) => {
     if (total === 0) return 0;
@@ -135,7 +135,7 @@ function DashboardAdmin() {
             onClick={handleActiveEmployee}
             className="cursor-pointer hover:rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
           >
-            <h3 className="text-xl font-normal">Active Employee</h3>
+            <h3 className="text-xl font-normal">On premises Employee</h3>
             <CardCounter value={activeCount} />
           </div>
           <div>

@@ -9,6 +9,7 @@ import {
   TablePagination,
 } from "@mui/material";
 import { axiosInstance } from "../../services/interceptor";
+import PrintIcon from "@mui/icons-material/Print";
 
 function ApprovedLeave() {
   const [leaveTypes, setLeaveTypes] = useState([]);
@@ -67,10 +68,17 @@ function ApprovedLeave() {
     const leaveDate = new Date(fromDate[0], fromDate[1] - 1, fromDate[2]);
     return leaveDate < new Date();
   };
-
+  const handlePrint = async () => {
+    window.print();
+  };
   return (
     <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Approved Leave</h1>
+      <div className="flex ">
+        <h1 className="text-2xl font-bold mb-4">Approved Leave</h1>
+        <button onClick={handlePrint} className="ml-3 print-button mb-3">
+          <PrintIcon />
+        </button>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>
@@ -86,11 +94,15 @@ function ApprovedLeave() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">Loading...</TableCell>
+                <TableCell colSpan={6} align="center">
+                  Loading...
+                </TableCell>
               </TableRow>
             ) : error ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">Error: {error}</TableCell>
+                <TableCell colSpan={6} align="center">
+                  Error: {error}
+                </TableCell>
               </TableRow>
             ) : leaveTypes && leaveTypes.length > 0 ? (
               leaveTypes
@@ -117,8 +129,16 @@ function ApprovedLeave() {
                     </TableCell>
                     <TableCell>{leave.reason}</TableCell>
                     <TableCell>
-                      <span className={`rounded-full px-4 py-1 ${getStatusClass(leave.status)}`}>
-                        {leave.status === 0 ? "Confirmed" : leave.status === 1 ? "Pending" : "Accepted By HR"}
+                      <span
+                        className={`rounded-full px-4 py-1 ${getStatusClass(
+                          leave.status
+                        )}`}
+                      >
+                        {leave.status === 0
+                          ? "Confirmed"
+                          : leave.status === 1
+                          ? "Pending"
+                          : "Accepted By HR"}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -130,7 +150,10 @@ function ApprovedLeave() {
                           fill="none"
                           id="delete"
                           // onClick={() => handleDeleteClick(leave.id)}
-                          onClick={() => !isDeleteButtonDisabled(leave.from) && handleDeleteClick(leave.id)}
+                          onClick={() =>
+                            !isDeleteButtonDisabled(leave.from) &&
+                            handleDeleteClick(leave.id)
+                          }
                           style={{ cursor: "pointer" }}
                         >
                           <path
@@ -150,7 +173,9 @@ function ApprovedLeave() {
                 ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center">No records found.</TableCell>
+                <TableCell colSpan={6} align="center">
+                  No records found.
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

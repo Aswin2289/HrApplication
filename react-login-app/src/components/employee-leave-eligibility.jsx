@@ -15,21 +15,18 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../services/interceptor";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
-import UpdateModal from "./update-modal";
 import useAuth from "../hooks/use-auth";
 import DatePickerModal from "./date-picker-modal";
 import useEmployeeDetails from "../hooks/useEmployeeDetails";
+import PrintIcon from "@mui/icons-material/Print";
+
 function EmployeeLeaveEligibility() {
   const location = useLocation();
   const { statusRender } = location.state || {};
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState("");
   const [statusEmployee, setStatusEmployee] = useState("1,2");
@@ -164,11 +161,18 @@ function EmployeeLeaveEligibility() {
         return "";
     }
   };
+  const handlePrint = async () => {
+    window.print();
+  };
   return (
     <div className="container mx-auto mt-8">
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
+      <div className="flex">
       <h2 className="text-2xl font-bold mb-4">Employee Annual Leave List</h2>
-
+      <button onClick={handlePrint} className="ml-3 print-button mb-3">
+          <PrintIcon />
+        </button>
+      </div>
       <div className="flex justify-end gap-5 mr-8">
         <div>
           {/* Search Icon */}

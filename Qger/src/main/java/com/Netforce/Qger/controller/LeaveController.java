@@ -34,7 +34,7 @@ public class LeaveController {
   @GetMapping("/pendingLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getPendingLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     byte[] status = {
@@ -51,7 +51,7 @@ public class LeaveController {
   @GetMapping("/approvedLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getApprovedLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     byte[] status = {Leave.Status.ACCEPTED.value};
@@ -65,7 +65,7 @@ public class LeaveController {
   @GetMapping("/rejectedLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getRejectedLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     byte[] status = {Leave.Status.REJECTED.value, Leave.Status.CANCELLED.value};
@@ -103,7 +103,7 @@ public class LeaveController {
   @GetMapping("/hr/pendingLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getAllPendingLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     byte[] status = {Leave.Status.PENDING.value, Leave.Status.ACCEPTED_BY_HOD.value};
@@ -182,7 +182,7 @@ public class LeaveController {
   @GetMapping("/admin/acceptedLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getAllAdminAcceptedLeave(
       @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-      @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+      @RequestParam(required = false, defaultValue = "desc") String sortOrder,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
     byte[] status = {Leave.Status.ACCEPTED.value};
@@ -201,7 +201,7 @@ public class LeaveController {
   @GetMapping("/hod/pendingLeave")
   public ResponseEntity<PagedResponseDTO<LeavePendingResponseDTO>> getAllPendingLeaveHOD(
           @RequestParam(required = false, defaultValue = "createdDate") String sortBy,
-          @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+          @RequestParam(required = false, defaultValue = "desc") String sortOrder,
           @RequestParam(defaultValue = "0") int page,
           @RequestParam(defaultValue = "10") int size) {
     byte[] status = {Leave.Status.PENDING.value};
@@ -233,5 +233,10 @@ public class LeaveController {
   @GetMapping("/employee/annual/count/{id}")
   public Integer annualCount(@PathVariable("id") Integer id){
     return leaveService.annualLeaveCount(id);
+  }
+
+  @GetMapping("/notification")
+  public Integer getLeaveCountNotification(){
+    return leaveService.getLeaveCount();
   }
 }
