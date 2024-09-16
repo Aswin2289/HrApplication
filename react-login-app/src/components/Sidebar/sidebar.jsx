@@ -49,12 +49,11 @@ function Sidebar() {
           console.log("User Image:", imageResponse.data.size);
           setImageSize(imageResponse.data.size);
           const imageUrl = URL.createObjectURL(imageResponse.data);
-          if(imageSize<1){
+          if(imageResponse.data.size<1){
             setImageUrl(null)
           }else{
             setImageUrl(imageUrl);
           }
-          console.log(imageUrl);
         } catch (error) {
           console.error("Error fetching User image:", error);
         }
