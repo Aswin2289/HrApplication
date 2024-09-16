@@ -13,7 +13,7 @@ import {
   TablePagination,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../services/interceptor";
+import { axiosInstance, axiosInstance2 } from "../services/interceptor";
 import useDeleteEmployee from "../hooks/useDeleteEmployee";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -22,6 +22,7 @@ import { useLocation } from "react-router-dom";
 import UpdateModal from "./update-modal";
 import useAuth from "../hooks/use-auth";
 
+import PrintIcon from "@mui/icons-material/Print";
 function ListEmployee() {
   const location = useLocation();
   const { statusRender } = location.state || {};
@@ -229,7 +230,7 @@ function ListEmployee() {
   };
   const handleDownload = async () => {
     try {
-      const response = await axiosInstance.get("/user/download", {
+      const response = await axiosInstance2.get("/download/employees/csv", {
         params: {
           searchKeyword,
           status: statusEmployee,
@@ -237,20 +238,24 @@ function ListEmployee() {
           passportExpired: passportExpireState,
           licenseExpired: lisenceExpireState,
         },
-        responseType: 'blob', // Ensure the response is treated as a file
+        responseType: "blob", // Treat response as a file
       });
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'employees_data.xlsx'); // Set the file name
+      link.setAttribute("download", "employees_data.csv"); // Use CSV extension
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast.success("Download started");
+      toast.success("CSV download started");
     } catch (error) {
-      toast.error("Error downloading file");
-      console.error("Error downloading file:", error);
+      toast.error("Error downloading CSV file");
+      console.error("Error downloading CSV file:", error);
     }
+  };
+  const handlePrint = async () => {
+    window.print();
   };
   return (
     <div className="container mx-auto mt-8">
@@ -304,7 +309,7 @@ function ListEmployee() {
                 checked={statusFilters.vacation}
                 onChange={handleStatusCheckboxChange("vacation")}
               />
-              Vacation 
+              Vacation
             </MenuItem>
             <MenuItem>
               <p className="text-sm">Expire details</p>
@@ -331,7 +336,7 @@ function ListEmployee() {
               License Expire
             </MenuItem>
           </Menu>
-        </div> 
+        </div>
         <div>
           {/* Download Icon */}
           <svg
@@ -369,6 +374,11 @@ function ListEmployee() {
               </g>
             </g>
           </svg>
+        </div>
+        <div>
+          <button onClick={handlePrint} className="print-button">
+            <PrintIcon />
+          </button>
         </div>
       </div>
 
@@ -410,7 +420,10 @@ function ListEmployee() {
               <Table>
                 <TableHead>
                   <TableRow className="items-center">
-                    <TableCell sx={{ fontWeight: "bold" }} onClick={() => handleSort("employeeId")}>
+                    <TableCell
+                      sx={{ fontWeight: "bold" }}
+                      onClick={() => handleSort("employeeId")}
+                    >
                       <div className="flex items-center cursor-pointer">
                         Employee ID
                         {sortBy === "employeeId" && (
@@ -432,7 +445,10 @@ function ListEmployee() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }} onClick={() => handleSort("name")}>
+                    <TableCell
+                      sx={{ fontWeight: "bold" }}
+                      onClick={() => handleSort("name")}
+                    >
                       <div className="flex items-center cursor-pointer">
                         Name
                         {sortBy === "name" && (
@@ -455,7 +471,10 @@ function ListEmployee() {
                       </div>
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Job Title</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }} onClick={() => handleSort("qidExpire")}>
+                    <TableCell
+                      sx={{ fontWeight: "bold" }}
+                      onClick={() => handleSort("qidExpire")}
+                    >
                       <div className="flex items-center cursor-pointer">
                         QID Expire
                         {sortBy === "qidExpire" && (
@@ -477,7 +496,10 @@ function ListEmployee() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }} onClick={() => handleSort("passportExpire")}>
+                    <TableCell
+                      sx={{ fontWeight: "bold" }}
+                      onClick={() => handleSort("passportExpire")}
+                    >
                       <div className="flex items-center cursor-pointer">
                         Passport Expire
                         {sortBy === "passportExpire" && (
@@ -558,19 +580,19 @@ function ListEmployee() {
                       </TableCell>
                       <TableCell className="items-center">
                         <div className="flex gap-3">
-                          {role !==5 &&(
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            id="edit"
-                            onClick={() => handleEditClick(employee.id)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <path fill="none" d="M0 0h24v24H0V0z"></path>
-                            <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                          </svg>
+                          {role !== 5 && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              id="edit"
+                              onClick={() => handleEditClick(employee.id)}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <path fill="none" d="M0 0h24v24H0V0z"></path>
+                              <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                            </svg>
                           )}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -586,27 +608,27 @@ function ListEmployee() {
                               <circle cx="12" cy="12" r="3"></circle>
                             </g>
                           </svg>
-                          {role !==5 &&(
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            id="delete"
-                            onClick={() => handleDeleteClick(employee.id)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            <path
-                              fill="#000"
-                              d="M15 3a1 1 0 0 1 1 1h2a1 1 0 1 1 0 2H6a1 1 0 0 1 0-2h2a1 1 0 0 1 1-1h6Z"
-                            ></path>
-                            <path
-                              fill="#000"
-                              fillRule="evenodd"
-                              d="M6 7h12v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7Zm3.5 2a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Zm5 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Z"
-                              clipRule="evenodd"
-                            ></path>
-                          </svg>
+                          {role !== 5 && (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              fill="none"
+                              id="delete"
+                              onClick={() => handleDeleteClick(employee.id)}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <path
+                                fill="#000"
+                                d="M15 3a1 1 0 0 1 1 1h2a1 1 0 1 1 0 2H6a1 1 0 0 1 0-2h2a1 1 0 0 1 1-1h6Z"
+                              ></path>
+                              <path
+                                fill="#000"
+                                fillRule="evenodd"
+                                d="M6 7h12v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7Zm3.5 2a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Zm5 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 1 0v-9a.5.5 0 0 0-.5-.5Z"
+                                clipRule="evenodd"
+                              ></path>
+                            </svg>
                           )}
                         </div>
                         {deleteLoading && <CircularProgress size={24} />}{" "}
@@ -624,7 +646,7 @@ function ListEmployee() {
             <div>No results found.</div>
           )}
           <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
+            rowsPerPageOptions={[5, 10, 50, 100]}
             component="div"
             count={employees.totalItems}
             rowsPerPage={rowsPerPage}
@@ -634,8 +656,11 @@ function ListEmployee() {
           />
         </>
       )}
-      <UpdateModal show={showModal} handleClose={handleCloseModal} employeeId={selectedEmployeeId} />
-  
+      <UpdateModal
+        show={showModal}
+        handleClose={handleCloseModal}
+        employeeId={selectedEmployeeId}
+      />
     </div>
   );
 }

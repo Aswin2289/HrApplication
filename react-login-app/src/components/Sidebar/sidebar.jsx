@@ -6,12 +6,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import useAuth from "../../hooks/use-auth";
 import Footer from "../Footer/footer";
 import CloseIcon from '@mui/icons-material/Close'; 
-
+import useAddEmployeeImage from "../../hooks/use-add-employee-image";
 function Sidebar() {
   const { getUserDetails } = useAuth();
   // Example user name
   // const userName = "John Doe";
-  const { username, id, role } = getUserDetails();
+  const { username, id,userId, role } = getUserDetails();
   const sidebarRef = useRef(null);
   // State to manage the dropdown menu
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -20,6 +20,9 @@ function Sidebar() {
   const [dropdownDocumentOpen, setDropdownDocumentOpen] = useState(false);
   const [dropdownVehicleOpen, setDropdownVehicleOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageSize, setImageSize] = useState(0);
+  const { viewImage } = useAddEmployeeImage();
   // Function to toggle the dropdown menu
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -37,6 +40,28 @@ function Sidebar() {
   const toggleVehicleDocument = () => {
     setDropdownVehicleOpen(!dropdownVehicleOpen);
   };
+
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      if (userId) {
+        try {
+          const imageResponse = await viewImage(userId);
+          console.log("User Image:", imageResponse.data.size);
+          setImageSize(imageResponse.data.size);
+          const imageUrl = URL.createObjectURL(imageResponse.data);
+          if(imageSize<1){
+            setImageUrl(null)
+          }else{
+            setImageUrl(imageUrl);
+          }
+          console.log(imageUrl);
+        } catch (error) {
+          console.error("Error fetching User image:", error);
+        }
+      }
+    };
+    fetchUserImage();
+  }, [id, viewImage]);
   useEffect(() => {
     const setSidebarHeight = () => {
       if (sidebarRef.current) {
@@ -71,7 +96,7 @@ function Sidebar() {
             // onClick={toggleDropdown}
           >
             <img
-              src={userProfileImage}
+              src={imageUrl || userProfileImage}
               alt="User Profile"
               className="rounded-full h-12 w-12 mr-4"
             />
@@ -701,6 +726,15 @@ function Sidebar() {
                       className="block pl-2 rounded-lg"
                     >
                       All Pending Request
+                    </NavLink>
+                  </li>
+                  <li className="py-2 cursor-pointer">
+                    <NavLink
+                      to="/allAcceptedLeaveRequestHod"
+                      activeclassname="bg-gray-600 bg-opacity-25"
+                      className="block pl-2 rounded-lg"
+                    >
+                      All Accepted Request
                     </NavLink>
                   </li>
                   <li className="py-2 cursor-pointer">

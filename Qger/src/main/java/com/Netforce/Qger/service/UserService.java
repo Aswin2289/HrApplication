@@ -2,7 +2,6 @@ package com.Netforce.Qger.service;
 
 
 import com.Netforce.Qger.entity.User;
-import com.Netforce.Qger.entity.Vehicle;
 import com.Netforce.Qger.entity.dto.requestDto.*;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeDetailsResponseDTO;
 import com.Netforce.Qger.entity.dto.responseDto.EmployeeHrLeaveDetailDTO;
@@ -14,8 +13,6 @@ import com.Netforce.Qger.expectionHandler.UserDisabledException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface UserService {
 

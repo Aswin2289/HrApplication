@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { axiosInstance } from '../services/interceptor';
+import { axiosInstance } from "../services/interceptor";
 
 const usePdfView = () => {
   const [pdfList, setPdfList] = useState([]);
@@ -8,11 +8,11 @@ const usePdfView = () => {
   const [viewError, setViewError] = useState(null);
   const [isUploadLoading, setIsUploadLoading] = useState(false);
 
-  const fetchPdfList = async (searchKeyword = '') => {
+  const fetchPdfList = async (searchKeyword = "") => {
     setIsViewLoading(true);
     try {
-      const response = await axiosInstance.get("/pdfdocument/all",{
-        params: { searchKeyword }
+      const response = await axiosInstance.get("/pdfdocument/all", {
+        params: { searchKeyword },
       });
       setPdfList(response.data);
       setIsViewLoading(false);
@@ -26,20 +26,31 @@ const usePdfView = () => {
     }
   };
 
-  const uploadPdf = async (file, documentName) => {
+  const uploadPdf = async (file, documentName, documentExpire) => {
     setIsUploadLoading(true);
     setUploadError(null);
+    const formattedDate =
+      documentExpire.getFullYear() +
+      "-" +
+      String(documentExpire.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(documentExpire.getDate()).padStart(2, "0");
 
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("documentName", documentName);
+      formData.append("documentExpire", formattedDate);
 
-      const response = await axiosInstance.post("/pdfdocument/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axiosInstance.post(
+        "/pdfdocument/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setIsUploadLoading(false);
       return response.data;
     } catch (error) {
@@ -52,20 +63,30 @@ const usePdfView = () => {
     }
   };
 
-  const updatePdf = async (id, file, documentName) => {
+  const updatePdf = async (id, file, documentName,documentExpire) => {
     setIsUploadLoading(true);
     setUploadError(null);
-
+    const formattedDate =
+    documentExpire.getFullYear() +
+    "-" +
+    String(documentExpire.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(documentExpire.getDate()).padStart(2, "0");
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("documentName", documentName);
+      formData.append("documentExpire", formattedDate);
 
-      const response = await axiosInstance.put(`/pdfdocument/update/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axiosInstance.put(
+        `/pdfdocument/update/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       setIsUploadLoading(false);
       return response.data;
     } catch (error) {
@@ -120,7 +141,7 @@ const usePdfView = () => {
     updatePdf,
     getPdf,
     fetchPdfList,
-    deletePdf
+    deletePdf,
   };
 };
 

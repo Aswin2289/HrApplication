@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,7 +20,7 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
 
     private final PdfDocumentRepository pdfDocumentRepository;
     private final MessageSource messageSource;
-    public PdfDocument savePdf(MultipartFile file,String documentName) {
+    public PdfDocument savePdf(MultipartFile file,String documentName,LocalDate documentExpire) {
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new BadRequestException(
                     messageSource.getMessage("PDF_NOT_FOUND", null, Locale.ENGLISH));
@@ -30,6 +31,7 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
             pdfDocument.setName(file.getOriginalFilename());
             pdfDocument.setData(file.getBytes());
             pdfDocument.setDocumentName(documentName);
+            pdfDocument.setDocumentExpire(documentExpire);
             pdfDocument.setStatus(PdfDocument.Status.ACTIVE.value);// Set documentName from original filename
             return pdfDocumentRepository.save(pdfDocument);
         } catch (IOException e) {
@@ -48,7 +50,7 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
         return pdfDocumentRepository.findByDocumentNameContainingIgnoreCaseAndStatus(searchKeyword,PdfDocument.Status.ACTIVE.value);
     }
     @Override
-    public PdfDocument updatePdf(Integer id, MultipartFile file, String docName) {
+    public PdfDocument updatePdf(Integer id, MultipartFile file, String docName,LocalDate documentExpire) {
         PdfDocument existingPdf = pdfDocumentRepository.findByIdAndStatus(id, PdfDocument.Status.ACTIVE.value)
                 .orElseThrow(() -> new RuntimeException("Document not found with id " + id));
 
@@ -58,6 +60,7 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
                 existingPdf.setData(file.getBytes());
             }
             existingPdf.setDocumentName(docName);
+            existingPdf.setDocumentExpire(documentExpire);
             return pdfDocumentRepository.save(existingPdf);
         } catch (IOException e) {
             throw new RuntimeException("Error while updating file", e);
@@ -67,7 +70,6 @@ public class PdfDocumentServiceImpl implements PdfDocumentService {
 
     @Override
     public void deletePdfDocument(long id){
-        System.out.println("---------+"+id);
         PdfDocument existingPdf = pdfDocumentRepository.findByIdAndStatus(id,PdfDocument.Status.ACTIVE.value)
                 .orElseThrow(
                         () ->

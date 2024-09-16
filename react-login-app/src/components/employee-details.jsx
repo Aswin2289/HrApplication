@@ -21,6 +21,7 @@ import MyButton from "./Button/my-button";
 import useAuth from "../hooks/use-auth";
 import DatePickerModal from "./date-picker-modal";
 import useAddEmployeeImage from "../hooks/use-add-employee-image";
+import PrintIcon from "@mui/icons-material/Print";
 const schema = z.object({
   leaveType: z.number().min(1, "Leave type is required"),
   days: z.string().refine((value) => /^\d+$/.test(value), {
@@ -39,7 +40,8 @@ const schema = z.object({
 const EmployeeDetails = () => {
   const location = useLocation();
   const { employeeId } = location.state;
-  const { employeeDetails, isLoading, error,refetch } = useEmployeeDetails(employeeId);
+  const { employeeDetails, isLoading, error, refetch } =
+    useEmployeeDetails(employeeId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
@@ -190,23 +192,43 @@ const EmployeeDetails = () => {
   const handleRejoinVacation = () => {
     toast.success("Leave added successfully");
   };
+  const handlePrint = async () => {
+    window.print();
+  };
   return (
-    <div className="flex justify-center items-center bg-gray-100 mt-5">
+    <div className="flex flex-col md:flex-row bg-gray-100 mt-5">
       <ToastContainer theme="colored" autoClose={2000} stacked closeOnClick />
-      <div className="bg-white rounded-lg shadow-lg p-6 md:p-12 flex flex-col md:flex-row w-full md:max-w-4/5 lg:max-w-3/4 xl:max-w-2/3">
-        <div className="w-full md:w-2/3 md:pr-6">
-          <h2 className="text-3xl font-bold mb-4">
-            {employeeDetails.name}{" "}
-            <span
-              className={`${
-                employeeDetails.status === 1
-                  ? "bg-green-500 text-white rounded-md p-1"
-                  : "bg-red-500 text-white rounded-md p-1"
-              } font-normal text-sm`}
-            >
-              {employeeDetails.status === 1 ? "On Premises" : "Vacation"}
-            </span>
-          </h2>
+      <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg p-6 md:p-12 w-full">
+        <div className="w-full md:w-1/3 flex flex-col justify-center items-center mb-6 md:mb-0">
+          <img
+            src={imageUrl || "/default-profile.png"}
+            alt="Profile"
+            className="w-64 h-64 rounded-full object-cover mb-6"
+          />
+          <div className="flex justify-center items-center mt-4">
+            <MyButton type="button" onClick={handleImageUpload}>
+              Upload Image
+            </MyButton>
+          </div>
+        </div>
+        <div className="w-full md:w-2/3 md:pl-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-3xl font-bold">
+              {employeeDetails.name}{" "}
+              <span
+                className={`${
+                  employeeDetails.status === 1
+                    ? "bg-green-500 text-white"
+                    : "bg-red-500 text-white"
+                } font-normal text-sm rounded-md p-1`}
+              >
+                {employeeDetails.status === 1 ? "On Premises" : "Vacation"}
+              </span>
+              <button onClick={handlePrint} className="ml-3 print-button">
+                <PrintIcon />
+              </button>
+            </h2>
+          </div>
           <p className="text-gray-600 mb-4">{employeeDetails.role}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col mb-4">
@@ -301,8 +323,9 @@ const EmployeeDetails = () => {
               <span>
                 {employeeDetails.lastEligibilityDate ? (
                   <>
-                   {new Date(employeeDetails.lastEligibilityDate).toLocaleDateString()}
-                  
+                    {new Date(
+                      employeeDetails.lastEligibilityDate
+                    ).toLocaleDateString()}
                   </>
                 ) : (
                   "N/A"
@@ -348,18 +371,7 @@ const EmployeeDetails = () => {
             </Button>
           </div>
         </div>
-        <div className="w-full md:w-1/3 flex flex-col justify-center items-center">
-          <img
-            src={imageUrl || "/default-profile.png"}
-            alt="Profile"
-            className="w-64 h-64 rounded-full object-cover mb-6"
-          />
-          <div className="flex justify-center items-center mt-8">
-            <MyButton type="button" onClick={handleImageUpload}>
-              Upload Image
-            </MyButton>
-          </div>
-        </div>
+        
       </div>
       <Modal
         open={isModalOpen}

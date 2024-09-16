@@ -22,6 +22,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
+
     private final LeaveRepository leaveRepository;
     private final CommonUtils commonUtils;
     private final MessageSource messageSource;

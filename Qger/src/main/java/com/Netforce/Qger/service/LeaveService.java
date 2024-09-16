@@ -35,6 +35,9 @@ public interface LeaveService {
 
   Integer annualLeaveCount(Integer id);
 
+  Integer getLeaveCount();
+
+
 
 
 }

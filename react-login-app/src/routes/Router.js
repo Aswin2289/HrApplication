@@ -247,6 +247,15 @@ function RouterComponent() {
           />
         }
       />
+      <Route
+        path="/allAcceptedLeaveRequestHod"
+        element={
+          <AuthGuard
+            element={<AllAcceptedLeaveRequestPage />}
+            allowedRoles={[4]}
+          />
+        }
+      />
       {/* ACCOUNTANT routers added below */}
       <Route
         path="/accountantDashboard"
@@ -257,6 +266,7 @@ function RouterComponent() {
           />
         }
         />
+        
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

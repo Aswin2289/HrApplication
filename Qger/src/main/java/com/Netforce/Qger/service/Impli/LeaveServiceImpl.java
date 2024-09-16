@@ -216,44 +216,118 @@ public class LeaveServiceImpl implements LeaveService {
     leaveRepository.save(new Leave(leaveUpdateDTO, user, leaveType,statusCode));
   }
 
-  @Override
-  public PagedResponseDTO<LeavePendingResponseDTO> getAllForHrLeavePendingResponse(
-      Integer page, Integer size, String sort, String order, byte[] status, byte[] department) {
+//  @Override
+//  public PagedResponseDTO<LeavePendingResponseDTO> getAllForHrLeavePendingResponse(
+//      Integer page, Integer size, String sort, String order, byte[] status, byte[] department) {
+//
+//    boolean orderD = !order.equalsIgnoreCase("asc");
+//    User user = commonUtils.validateAllUser();
+//    if (user == null) {
+//      throw new BadRequestException(
+//          messageSource.getMessage("ACCESS_DENIED", null, Locale.ENGLISH));
+//    }
+//    if (page == null || page < 0) {
+//      page = 0;
+//    }
+//    List<Sort.Order> orders = new ArrayList<>();
+//    if (sort != null && !sort.isEmpty()) {
+//      // Primary sort field
+//      orders.add(new Sort.Order(orderD ? Sort.Direction.DESC : Sort.Direction.ASC, sort));
+//      // Secondary sort fields
+//      if (!"name".equalsIgnoreCase(sort)) {
+//        orders.add(new Sort.Order(Sort.Direction.ASC, "name")); // Add sorting by name if not primary
+//      }
+//      if (!"leaveType".equalsIgnoreCase(sort)) {
+//        orders.add(new Sort.Order(Sort.Direction.ASC, "leaveType")); // Add sorting by leaveType if not primary
+//      }
+//    }
+//    Pageable pageable =
+//        PageRequest.of(page , size, (orderD) ? Sort.Direction.DESC : Sort.Direction.ASC, sort);
+//    Page<Leave> leavePage =
+//        leaveRepository.findAllByStatusInAndTransactionTypeAndUserDepartmentIn(
+//            status, Leave.TransactionType.SUBTRACT.value, department, pageable);
+//
+//    List<LeavePendingResponseDTO> pendingResponses =
+//        leavePage.getContent().stream()
+//            .map(
+//                leave -> {
+//                  LeavePendingResponseDTO dto = new LeavePendingResponseDTO();
+//                  dto.setId(leave.getId());
+//                  dto.setLeaveType(leave.getLeaveType().getName());
+//                  dto.setFrom(leave.getLeaveFrom());
+//                  dto.setTo(leave.getLeaveTo());
+//                  dto.setReason(leave.getReason());
+//                  dto.setStatus(leave.getStatus());
+//                  dto.setName(leave.getUser().getName());
+//                  Integer availableLeave = getAvailableLeave(leave.getUser());
+//                  dto.setAvailableLeaveBalance(availableLeave);
+//                  return dto;
+//                })
+//            .collect(Collectors.toList());
+//
+//    return new PagedResponseDTO<>(
+//        pendingResponses, leavePage.getTotalPages(), leavePage.getTotalElements(), page);
+//  }
+@Override
+public PagedResponseDTO<LeavePendingResponseDTO> getAllForHrLeavePendingResponse(
+        Integer page, Integer size, String sortBy, String sortOrder, byte[] status, byte[] department) {
 
-    boolean orderD = !order.equalsIgnoreCase("asc");
-    User user = commonUtils.validateAllUser();
-    if (user == null) {
-      throw new BadRequestException(
-          messageSource.getMessage("ACCESS_DENIED", null, Locale.ENGLISH));
-    }
-    page = Math.max(page, 1);
-    Pageable pageable =
-        PageRequest.of(page - 1, size, (orderD) ? Sort.Direction.DESC : Sort.Direction.ASC, sort);
-    Page<Leave> leavePage =
-        leaveRepository.findAllByStatusInAndTransactionTypeAndUserDepartmentIn(
-            status, Leave.TransactionType.SUBTRACT.value, department, pageable);
-
-    List<LeavePendingResponseDTO> pendingResponses =
-        leavePage.getContent().stream()
-            .map(
-                leave -> {
-                  LeavePendingResponseDTO dto = new LeavePendingResponseDTO();
-                  dto.setId(leave.getId());
-                  dto.setLeaveType(leave.getLeaveType().getName());
-                  dto.setFrom(leave.getLeaveFrom());
-                  dto.setTo(leave.getLeaveTo());
-                  dto.setReason(leave.getReason());
-                  dto.setStatus(leave.getStatus());
-                  dto.setName(leave.getUser().getName());
-                  Integer availableLeave = getAvailableLeave(leave.getUser());
-                  dto.setAvailableLeaveBalance(availableLeave);
-                  return dto;
-                })
-            .collect(Collectors.toList());
-
-    return new PagedResponseDTO<>(
-        pendingResponses, leavePage.getTotalPages(), leavePage.getTotalElements(), page);
+  boolean orderD = sortOrder.equalsIgnoreCase("desc");
+  User user = commonUtils.validateAllUser();
+  if (user == null) {
+    throw new BadRequestException(
+            messageSource.getMessage("ACCESS_DENIED", null, Locale.ENGLISH));
   }
+  if (page == null || page < 0) {
+    page = 0;
+  }
+
+  // Handle sorting fields
+  List<Sort.Order> orders = new ArrayList<>();
+  if (sortBy != null && !sortBy.isEmpty()) {
+    // Primary sort field
+    orders.add(new Sort.Order(orderD ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy));
+    if (!"leaveType".equalsIgnoreCase(sortBy)) {
+      orders.add(new Sort.Order(Sort.Direction.ASC, "leaveType")); // Add sorting by leaveType if not primary
+    }
+    if (!"leaveFrom".equalsIgnoreCase(sortBy)) {
+      orders.add(new Sort.Order(Sort.Direction.ASC, "leaveFrom")); // Add sorting by leaveType if not primary
+    }
+    if (!"status".equalsIgnoreCase(sortBy)) {
+      orders.add(new Sort.Order(Sort.Direction.ASC, "status")); // Add sorting by leaveType if not primary
+    }
+    if (!"createdDate".equalsIgnoreCase(sortBy)) {
+      orders.add(new Sort.Order(Sort.Direction.ASC, "createdDate")); // Add sorting by leaveType if not primary
+    }
+
+  }
+
+  Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
+  Page<Leave> leavePage =
+          leaveRepository.findAllByStatusInAndTransactionTypeAndUserDepartmentIn(
+                  status, Leave.TransactionType.SUBTRACT.value, department, pageable);
+
+  List<LeavePendingResponseDTO> pendingResponses =
+          leavePage.getContent().stream()
+                  .map(
+                          leave -> {
+                            LeavePendingResponseDTO dto = new LeavePendingResponseDTO();
+                            dto.setId(leave.getId());
+                            dto.setLeaveType(leave.getLeaveType().getName());
+                            dto.setFrom(leave.getLeaveFrom());
+                            dto.setTo(leave.getLeaveTo());
+                            dto.setReason(leave.getReason());
+                            dto.setStatus(leave.getStatus());
+                            dto.setName(leave.getUser().getName());
+                            Integer availableLeave = getAvailableLeave(leave.getUser());
+                            dto.setAvailableLeaveBalance(availableLeave);
+                            return dto;
+                          })
+                  .collect(Collectors.toList());
+
+  return new PagedResponseDTO<>(
+          pendingResponses, leavePage.getTotalPages(), leavePage.getTotalElements(), page);
+}
 
   @Override
   public void rejectLeaveRequest(Integer id) {
@@ -418,10 +492,10 @@ public class LeaveServiceImpl implements LeaveService {
   @Override
   public void adminDeleteLeaveRequest(Integer id) {
     commonUtils.validateAdmin();
-    byte status = Leave.Status.ACCEPTED_BY_HR.value;
+    byte[] status = {Leave.Status.ACCEPTED_BY_HR.value,Leave.Status.ACCEPTED.value};
     Leave leave =
         leaveRepository
-            .findByIdAndStatusAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
+            .findByIdAndStatusInAndTransactionType(id, status, Leave.TransactionType.SUBTRACT.value)
             .orElseThrow(
                 () ->
                     new BadRequestException(
@@ -525,6 +599,37 @@ public class LeaveServiceImpl implements LeaveService {
       }
     }
     return totalLeaveBalance;
+  }
+
+
+  @Override
+  public Integer getLeaveCount() {
+    UserDetails userDetails=commonUtils.getCurrentUser();
+    int leaveApplication=0;
+    byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
+    User user =
+            userRepository
+                    .findByEmployeeIdAndStatusIn(userDetails.getUsername(), userStatus)
+                    .orElseThrow(
+                            () ->
+                                    new BadRequestException(
+                                            messageSource.getMessage("USER_NOT_FOUND", null, Locale.ENGLISH)));
+    if (user.getRole().getId().equals(1)){
+      byte[] leaveStatus={Leave.Status.ACCEPTED_BY_HR.value};
+      leaveApplication=leaveRepository.countAllByStatusIn(leaveStatus);
+      return leaveApplication;
+    } else if (user.getRole().getId().equals(2)) {
+      byte[] leaveStatus={Leave.Status.PENDING.value,Leave.Status.ACCEPTED_BY_HOD.value};
+      leaveApplication=leaveRepository.countAllByStatusIn(leaveStatus);
+      return leaveApplication;
+    }else if (user.getRole().getId().equals(4)){
+      byte[] leaveStatus={Leave.Status.PENDING.value};
+      leaveApplication=leaveRepository.countAllByStatusInAndUserDepartment(leaveStatus,User.Department.PRODUCTION.value);
+      return leaveApplication;
+    }
+    else {
+      return leaveApplication;
+    }
   }
 
 }

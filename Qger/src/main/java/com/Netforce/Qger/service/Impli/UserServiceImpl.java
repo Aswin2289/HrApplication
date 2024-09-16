@@ -1,5 +1,6 @@
 package com.Netforce.Qger.service.Impli;
 
+import com.Netforce.Qger.entity.PdfDocument;
 import com.Netforce.Qger.entity.Role;
 import com.Netforce.Qger.entity.User;
 import com.Netforce.Qger.entity.Vehicle;
@@ -9,10 +10,7 @@ import com.Netforce.Qger.expectionHandler.BadRequestException;
 import com.Netforce.Qger.expectionHandler.InvalidUserException;
 import com.Netforce.Qger.expectionHandler.UserAuthenticationException;
 import com.Netforce.Qger.expectionHandler.UserDisabledException;
-import com.Netforce.Qger.repository.RoleRepository;
-import com.Netforce.Qger.repository.UserCriteriaRepository;
-import com.Netforce.Qger.repository.UserRepository;
-import com.Netforce.Qger.repository.VehicleRepository;
+import com.Netforce.Qger.repository.*;
 import com.Netforce.Qger.security.JwtUserDetailsService;
 import com.Netforce.Qger.security.TokenManager;
 import com.Netforce.Qger.service.UserService;
@@ -68,6 +66,7 @@ public class UserServiceImpl implements UserService {
   private final UserCriteriaRepository userCriteriaRepository;
 
   private final CommonUtils commonUtils;
+  private final PdfDocumentRepository pdfDocumentRepository;
 
   private final byte[] userStatus = {User.Status.ACTIVE.value, User.Status.VACATION.value};
 
@@ -310,7 +309,7 @@ public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throw
     int passportExpire =
         userRepository.countByPassportExpireAfterAndPassportExpireBeforeAndStatusIn(
             today, sixMonthsFromNow, userStatusQid);
-    LocalDate twoMonthsFromNow = today.plusMonths(2);
+    LocalDate twoMonthsFromNow = today.plusMonths(1);
 
     int licenseExpire =
         userRepository.countByLicenseExpireAfterAndLicenseExpireBeforeAndStatusIn(
@@ -320,6 +319,8 @@ public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throw
     int countIstimaraExpire=vehicleRepository.countByIstimaraDateAfterAndIstimaraDateBeforeAndStatusIn(today,expireDayIn,vehicleStatus);
 
     int countInsuranceExpire=vehicleRepository.countByInsuranceExpireAfterAndInsuranceExpireBeforeAndStatusIn(today,expireDayIn,vehicleStatus);
+    byte[] docStatus={PdfDocument.Status.ACTIVE.value};
+    int countDocumentExpire=pdfDocumentRepository.countByDocumentExpireAfterAndDocumentExpireBeforeAndStatusIn(today,expireDayIn,docStatus);
     Map<String, Integer> counts = new HashMap<>();
     counts.put("total", total);
     counts.put("activeCount", activeCount);
@@ -329,7 +330,7 @@ public ResponseEntity<Object>refreshToken(RefreshTokenDTO refreshTokenDTO) throw
     counts.put("licenseExpire", licenseExpire);
     counts.put("istimaraExpire", countIstimaraExpire);
     counts.put("insuranceExpire", countInsuranceExpire);
-
+    counts.put("documentExpire", countDocumentExpire);
     return new ResponseEntity<>(counts, HttpStatus.OK);
   }
 
