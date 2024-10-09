@@ -69,6 +69,7 @@ public class SecurityConfig {
                 registry.addMapping("/api/v1/**") // Cleaned up the path pattern
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") // Specify allowed HTTP methods
 //                        .allowedOrigins("http://192.168.1.196:3000","http://10.5.17.110:3000","*")
+                        .allowedOrigins("*")
                         .allowedOriginPatterns("*")
                         .allowCredentials(true);
             }
